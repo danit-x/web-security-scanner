@@ -1,11 +1,14 @@
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../services/authService';
 
 function Register() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
     password: '',
+    confirmPassword: '',
   });
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
@@ -23,16 +26,32 @@ function Register() {
     event.preventDefault();
     setMessage('');
     setError('');
+
+    if (!formData.name || !formData.email || !formData.password || !formData.confirmPassword) {
+      setError('Please fill in all fields.');
+      return;
+    }
+
+    if (formData.password !== formData.confirmPassword) {
+      setError('Passwords do not match.');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
-      const data = await registerUser(formData);
+      const data = await registerUser({
+        name: formData.name,
+        email: formData.email,
+        password: formData.password,
+      });
 
       localStorage.setItem('token', data.token);
       localStorage.setItem('user', JSON.stringify(data.user));
 
       setMessage(`Account created for ${data.user.name}`);
-      setFormData({ name: '', email: '', password: '' });
+      setFormData({ name: '', email: '', password: '', confirmPassword: '' });
+      navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
     } finally {
@@ -81,6 +100,20 @@ function Register() {
             name="password"
             type="password"
             value={formData.password}
+            onChange={handleChange}
+            minLength="6"
+            required
+            style={styles.input}
+          />
+        </label>
+
+        <label style={styles.label} htmlFor="register-confirm-password">
+          Confirm password
+          <input
+            id="register-confirm-password"
+            name="confirmPassword"
+            type="password"
+            value={formData.confirmPassword}
             onChange={handleChange}
             minLength="6"
             required
