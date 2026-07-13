@@ -1,7 +1,5 @@
 import { useState } from 'react';
-import axios from 'axios';
-
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
+import { registerUser } from '../services/authService';
 
 function Register() {
   const [formData, setFormData] = useState({
@@ -28,12 +26,12 @@ function Register() {
     setIsSubmitting(true);
 
     try {
-      const response = await axios.post(`${API_URL}/api/auth/register`, formData);
+      const data = await registerUser(formData);
 
-      localStorage.setItem('token', response.data.token);
-      localStorage.setItem('user', JSON.stringify(response.data.user));
+      localStorage.setItem('token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
 
-      setMessage(`Account created for ${response.data.user.name}`);
+      setMessage(`Account created for ${data.user.name}`);
       setFormData({ name: '', email: '', password: '' });
     } catch (err) {
       setError(err.response?.data?.message || 'Registration failed. Please try again.');
