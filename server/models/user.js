@@ -1,5 +1,5 @@
-import mongoose from 'mongoose';
-import bcrypt from 'bcryptjs';
+const mongoose = require('mongoose');
+const bcrypt = require('bcrypt');
 
 const userSchema = new mongoose.Schema(
   {
@@ -26,32 +26,23 @@ const userSchema = new mongoose.Schema(
     },
   },
   {
-    // Automatically handles createdAt and updatedAt timestamps cleanly
     timestamps: true,
   }
 );
 
-// Pre-save middleware: Automatically hashes password before saving to the database
-userSchema.pre('save', async function (next) {
-  // Only hash the password if it has been modified (or is new)
+userSchema.pre('save', async function () {
   if (!this.isModified('password')) {
-    return next();
+    return;
   }
 
-  try {
-    const salt = await bcrypt.genSalt(10);
-    this.password = await bcrypt.hash(this.password, salt);
-    next();
-  } catch (error) {
-    next(error);
-  }
+  const salt = await bcrypt.genSalt(10);
+  this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Instance method: Compares entered password with the hashed password in DB
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
 
 const User = mongoose.model('User', userSchema);
 
-export default User;
+module.exports = User;
