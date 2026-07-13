@@ -11,10 +11,14 @@ const MONGO_URI = process.env.MONGO_URI;
 // Middleware to parse JSON bodies (useful for future routes)
 app.use(express.json());
 
+const authRoutes = require("./routes/authRoutes");
+
 // Health check route
 app.get("/api/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
+
+app.use("/api/auth", authRoutes);
 
 const startServer = async () => {
   try {

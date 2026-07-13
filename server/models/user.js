@@ -11,7 +11,7 @@ const userSchema = new mongoose.Schema(
     email: {
       type: String,
       required: [true, 'Please add an email'],
-      unique: true,
+      unique: true, // creates a unique index in MongoDB
       lowercase: true,
       trim: true,
       match: [
@@ -26,12 +26,18 @@ const userSchema = new mongoose.Schema(
     },
   },
   {
-    timestamps: true,
+    timestamps: true, // adds createdAt and updatedAt automatically
   }
 );
 
+// Hash plain-text passwords on save (backup for any path that skips the controller)
 userSchema.pre('save', async function () {
   if (!this.isModified('password')) {
+    return;
+  }
+
+  // Skip if password was already hashed (e.g. in authController register)
+  if (this.password.startsWith('$2')) {
     return;
   }
 
@@ -39,6 +45,7 @@ userSchema.pre('save', async function () {
   this.password = await bcrypt.hash(this.password, salt);
 });
 
+// Compare entered password against stored hash (useful for login or password updates)
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
