@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
-const User = require('../models/user');
+const User = require('../models/User');
 
 // Sign a JWT containing the user's MongoDB _id for protected routes
 const generateToken = (id) => {
@@ -9,7 +9,7 @@ const generateToken = (id) => {
   }
 
   return jwt.sign({ id }, process.env.JWT_SECRET, {
-    expiresIn: '30d',
+    expiresIn: '7d',
   });
 };
 
@@ -97,4 +97,21 @@ const login = async (req, res) => {
   }
 };
 
-module.exports = { register, login };
+// @desc    Get logged-in user's profile
+// @route   GET /api/auth/me
+const getMe = async (req, res) => {
+  try {
+    const user = await User.findById(req.userId).select('-password');
+
+    if (!user) {
+      return res.status(404).json({ message: 'User not found' });
+    }
+
+    res.status(200).json({ user: formatUser(user) });
+  } catch (error) {
+    console.error('Get current user error:', error.message);
+    res.status(500).json({ message: 'Server error' });
+  }
+};
+
+module.exports = { register, login, getMe };
