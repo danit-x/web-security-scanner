@@ -152,6 +152,8 @@ const runScan = async (req, res) => {
       isSuccess,
       headersReceived: Object.keys(response.headers),
       htmlLength: response.data ? response.data.length : 0,
+      findings, // NEW
+      findingsCount: findings.length, // NEW
     });
   } catch (error) {
     console.error("Scan error:", error.message);
