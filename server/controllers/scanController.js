@@ -1,7 +1,7 @@
 // controllers/scanController.js
 // Handles the logic for POST /api/scan.
-// Hour 2: now fetches the actual target page using axios so we have
-// real headers/HTML/status to analyze in later steps.
+// Hour 3: distinguishes between different failure types (DNS, connection
+// refused, timeout) and captures the final URL after redirects.
 
 const axios = require("axios");
 
@@ -12,21 +12,19 @@ const runScan = async (req, res) => {
   try {
     const { url } = req.body;
 
-    // 1. Check it's a non-empty string at all
+    // --- Basic validation (from earlier steps) ---
     if (!url || typeof url !== "string" || url.trim() === "") {
       return res.status(400).json({ message: "Please provide a url to scan" });
     }
 
     const trimmedUrl = url.trim();
 
-    // 2. Must start with http:// or https://
     if (!/^https?:\/\//i.test(trimmedUrl)) {
       return res.status(400).json({
         message: "URL must start with http:// or https://",
       });
     }
 
-    // 3. Stricter structural check using the built-in URL constructor
     try {
       new URL(trimmedUrl);
     } catch (err) {
@@ -35,50 +33,120 @@ const runScan = async (req, res) => {
 
     console.log(`Scan requested by user ${req.userId} for url: ${trimmedUrl}`);
 
-    // 4. Fetch the target page.
+    // --- Fetch the target page ---
     let response;
     try {
       response = await axios.get(trimmedUrl, {
-        // Vibe-coded sites may be slow or hang — don't let our server hang with them.
-        timeout: 8000, // 8 seconds
+        timeout: 8000, // 8 seconds — don't let slow/hanging sites block us
 
-        // Some servers block requests with no/default user-agent (like axios's
-        // default "axios/1.x.x"), so we pretend to be a normal browser.
         headers: {
           "User-Agent":
             "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 " +
             "(KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36 SecScanner/1.0",
         },
 
-        // Don't throw on 4xx/5xx responses — we WANT to inspect error pages
-        // too (e.g. a 403 might still leak headers worth checking).
-        // We'll only let axios throw on network-level failures (timeout, DNS, etc.)
+        // Don't throw on 4xx/5xx — we still want to inspect those responses.
+        // Only network-level failures (DNS, timeout, connection refused)
+        // will land in the catch block below.
         validateStatus: () => true,
+
+        // axios follows redirects by default; keep it explicit for clarity.
+        maxRedirects: 5,
       });
     } catch (fetchError) {
-      // Network-level failure: DNS not found, connection refused, timeout, etc.
+      // --- Differentiate WHY the request failed ---
+
+      // 1. Timeout: axios sets this specific code when `timeout` is exceeded.
       if (fetchError.code === "ECONNABORTED") {
         return res.status(408).json({
-          message: "Target site took too long to respond (timeout)",
+          message: "Site took too long to respond.",
         });
       }
 
-      console.error("Fetch error:", fetchError.message);
+      // 2. DNS lookup failure — the hostname doesn't resolve at all.
+      if (fetchError.code === "ENOTFOUND") {
+        return res.status(502).json({
+          message: "Site could not be reached.",
+          detail: "DNS lookup failed — the domain may not exist.",
+        });
+      }
+
+      // 3. Connection actively refused by the target (nothing listening on that port).
+      if (fetchError.code === "ECONNREFUSED") {
+        return res.status(502).json({
+          message: "Site could not be reached.",
+          detail: "Connection was refused by the server.",
+        });
+      }
+
+      // 4. Connection reset mid-request (server dropped the connection).
+      if (fetchError.code === "ECONNRESET") {
+        return res.status(502).json({
+          message: "Site could not be reached.",
+          detail: "Connection was reset by the server.",
+        });
+      }
+
+      // 5. SSL/TLS certificate problems — still "unreachable" from our
+      // perspective, but worth calling out separately since it's a common
+      // case for a security scanner specifically.
+      if (
+        fetchError.code === "CERT_HAS_EXPIRED" ||
+        fetchError.code === "DEPTH_ZERO_SELF_SIGNED_CERT" ||
+        fetchError.code === "UNABLE_TO_VERIFY_LEAF_SIGNATURE"
+      ) {
+        return res.status(502).json({
+          message: "Site could not be reached.",
+          detail: `SSL/TLS certificate issue: ${fetchError.code}`,
+        });
+      }
+
+      // 6. Anything else we didn't explicitly plan for — generic fallback.
+      console.error(
+        "Unhandled fetch error:",
+        fetchError.code,
+        fetchError.message,
+      );
       return res.status(502).json({
-        message: "Could not reach the target URL",
+        message: "Site could not be reached.",
         detail: fetchError.message,
       });
     }
 
-    // TEMPORARY: for now just confirm what we got back from the fetch.
-    // In later steps we'll pull out response.headers, response.data (HTML),
-    // response.status, and cookies to build the actual findings + grade.
+    // --- Capture the final URL after any redirects ---
+    // If the site redirected (e.g. http -> https, or example.com -> www.example.com),
+    // axios's underlying request object tracks the final resolved URL.
+    // This matters for the report: findings should reflect what was actually
+    // scanned, not just what the user typed in.
+    const finalUrl =
+      response.request?.res?.responseUrl || // Node http adapter (most common)
+      response.request?._currentUrl || // fallback for some axios versions
+      trimmedUrl; // fallback: no redirect info available
+
+    if (finalUrl !== trimmedUrl) {
+      console.log(`Redirected: ${trimmedUrl} -> ${finalUrl}`);
+    }
+
+    // --- Handle non-2xx responses ---
+    // Decision: we still return the status code and continue reporting,
+    // rather than hard-failing. A 404 or 500 page still has response headers
+    // worth checking (missing CSP, no HSTS, etc.), so partial scanning is
+    // more useful than refusing outright. We just flag it clearly for the user.
+    const isSuccess = response.status >= 200 && response.status < 300;
+
+    // TEMPORARY: still just echoing a summary — real header/HTML analysis
+    // comes in the next step.
     return res.status(200).json({
-      message: "Target page fetched successfully (stub — no analysis yet)",
-      url: trimmedUrl,
+      message: isSuccess
+        ? "Target page fetched successfully."
+        : `Target responded with status ${response.status} — partial scan only.`,
+      requestedUrl: trimmedUrl,
+      finalUrl,
+      redirected: finalUrl !== trimmedUrl,
       requestedBy: req.userId,
       statusCode: response.status,
-      headersReceived: Object.keys(response.headers), // just the header names for now
+      isSuccess,
+      headersReceived: Object.keys(response.headers),
       htmlLength: response.data ? response.data.length : 0,
     });
   } catch (error) {
