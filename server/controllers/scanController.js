@@ -3,6 +3,7 @@
 // Hour 3: distinguishes between different failure types (DNS, connection
 // refused, timeout) and captures the final URL after redirects.
 const checkSecurityHeaders = require("../utils/checks/checkSecurityHeaders");
+const checkSsl = require("../utils/checks/sslCheck");
 const axios = require("axios");
 
 // @desc    Run a security scan against a target URL
@@ -136,7 +137,15 @@ const runScan = async (req, res) => {
 
     // --- Run the security headers check ---
     const headerFindings = checkSecurityHeaders(response.headers, finalUrl);
-    const findings = [...headerFindings];
+
+    // Separate from the axios fetch above — this opens its own raw TLS
+    // --- Run the SSL/TLS check ---
+    const sslFindings = await checkSsl(finalUrl);
+    // connection so we can inspect the actual certificate, not just headers.
+
+    // HTML-based issues, etc.) will just get spread in here too on later days.
+    // Combine findings from every check run so far. More checks (cookies,
+    const findings = [...headerFindings, ...sslFindings];
 
     // TEMPORARY: still just echoing a summary — real header/HTML analysis
     // comes in the next step.
