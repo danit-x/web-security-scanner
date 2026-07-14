@@ -2,7 +2,7 @@
 // Handles the logic for POST /api/scan.
 // Hour 3: distinguishes between different failure types (DNS, connection
 // refused, timeout) and captures the final URL after redirects.
-
+const checkSecurityHeaders = require("../utils/checks/checkSecurityHeaders");
 const axios = require("axios");
 
 // @desc    Run a security scan against a target URL
@@ -133,6 +133,10 @@ const runScan = async (req, res) => {
     // worth checking (missing CSP, no HSTS, etc.), so partial scanning is
     // more useful than refusing outright. We just flag it clearly for the user.
     const isSuccess = response.status >= 200 && response.status < 300;
+
+    // --- Run the security headers check ---
+    const headerFindings = checkSecurityHeaders(response.headers, finalUrl);
+    const findings = [...headerFindings];
 
     // TEMPORARY: still just echoing a summary — real header/HTML analysis
     // comes in the next step.
