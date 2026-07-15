@@ -7,6 +7,10 @@ const checkSsl = require("../utils/checks/sslCheck");
 const checkFileExposure = require("../utils/checks/fileExposureCheck");
 const checkCookies = require("../utils/checks/cookieCheck");
 const checkMixedContent = require("../utils/checks/mixedContentCheck");
+const extractLibraryVersions = require("../utils/checks/libraryCheck");
+const {
+  checkVulnerableLibraries,
+} = require("../utils/checks/vulnerableLibraryCheck");
 
 const axios = require("axios");
 
@@ -247,12 +251,31 @@ const runScan = async (req, res) => {
       ];
     }
 
+    let libraryFindings = [];
+    try {
+      const detectedLibraries = extractLibraryVersions(response.data);
+      libraryFindings = checkVulnerableLibraries(detectedLibraries);
+    } catch (err) {
+      console.error("Vulnerable library check failed:", err.message);
+      libraryFindings = [
+        {
+          category: "Library Check Failed",
+          severity: "LOW",
+          description:
+            "Could not complete the outdated/vulnerable library check due to an unexpected error.",
+          recommendation:
+            "Manually review frontend library versions used on this page.",
+        },
+      ];
+    }
+
     const findings = [
       ...headerFindings,
       ...sslFindings,
       ...fileExposureFindings,
       ...cookieFindings,
       ...mixedContentFindings,
+      ...libraryFindings,
     ];
 
     // TEMPORARY: still just echoing a summary — real header/HTML analysis
