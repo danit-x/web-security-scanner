@@ -1,0 +1,72 @@
+[
+  {
+    "library": "jquery",
+    "vulnerableBelow": "3.5.0",
+    "severity": "MEDIUM",
+    "cve": "CVE-2020-11022",
+    "description": "jQuery versions before 3.5.0 are affected by a cross-site scripting (XSS) vulnerability: passing HTML from untrusted sources to DOM manipulation methods like .html() or .append() can execute untrusted code, even after the input was sanitized."
+  },
+  {
+    "library": "jquery",
+    "vulnerableBelow": "3.0.0",
+    "severity": "MEDIUM",
+    "cve": "CVE-2015-9251",
+    "description": "jQuery versions before 3.0.0 are affected by a cross-site scripting (XSS) vulnerability in jQuery.ajax() when using cross-domain requests, allowing execution of attacker-supplied JavaScript."
+  },
+  {
+    "library": "bootstrap",
+    "vulnerableBelow": "4.3.1",
+    "severity": "MEDIUM",
+    "cve": "CVE-2019-8331",
+    "description": "Bootstrap versions before 4.3.1 are affected by a cross-site scripting (XSS) vulnerability in the tooltip and popover components, where the 'container' data attribute is not properly sanitized, allowing attacker-controlled HTML to be injected."
+  },
+  {
+    "library": "bootstrap",
+    "vulnerableBelow": "3.4.0",
+    "severity": "MEDIUM",
+    "cve": "CVE-2018-14041",
+    "description": "Bootstrap versions before 3.4.0 are affected by a cross-site scripting (XSS) vulnerability in the 'data-target' attribute (affecting tooltip/popover/scrollspy), allowing arbitrary HTML/JS injection."
+  },
+  {
+    "library": "angular",
+    "vulnerableBelow": "1.8.0",
+    "severity": "HIGH",
+    "cve": "CVE-2020-7676",
+    "description": "AngularJS (1.x) versions before 1.8.0 are affected by a cross-site scripting (XSS) vulnerability where crafted 'ng-srcset' and similar attribute bindings can bypass Angular's built-in sanitization, allowing arbitrary script execution."
+  },
+  {
+    "library": "angular",
+    "vulnerableBelow": "1.6.9",
+    "severity": "HIGH",
+    "cve": "CVE-2018-1000116",
+    "description": "AngularJS (1.x) versions before 1.6.9 are affected by a cross-site scripting (XSS) vulnerability in the '$sanitize' service, where certain crafted HTML can bypass sanitization and execute attacker-controlled scripts."
+  },
+  {
+    "library": "lodash",
+    "vulnerableBelow": "4.17.21",
+    "severity": "HIGH",
+    "cve": "CVE-2021-23337",
+    "description": "Lodash versions before 4.17.21 are affected by a command injection vulnerability via the 'template' function, allowing attackers to execute arbitrary JavaScript if attacker-controlled input reaches the templating function."
+  },
+  {
+    "library": "lodash",
+    "vulnerableBelow": "4.17.19",
+    "severity": "HIGH",
+    "cve": "CVE-2020-8203",
+    "description": "Lodash versions before 4.17.19 are affected by a prototype pollution vulnerability in the 'zipObjectDeep' function, allowing attackers to modify JavaScript object prototypes and potentially achieve denial of service or remote code execution."
+  },
+  {
+    "library": "moment",
+    "vulnerableBelow": "2.29.4",
+    "severity": "MEDIUM",
+    "cve": "CVE-2022-31129",
+    "description": "Moment.js versions before 2.29.4 are affected by a regular expression denial-of-service (ReDoS) vulnerability when parsing certain crafted date strings, allowing an attacker to degrade or hang the application."
+  },
+  {
+    "library": "moment",
+    "vulnerableBelow": "2.19.3",
+    "severity": "MEDIUM",
+    "cve": "CVE-2017-18214",
+    "description": "Moment.js versions before 2.19.3 are affected by a regular expression denial-of-service (ReDoS) vulnerability that can be triggered through malicious user-supplied date strings, causing excessive CPU consumption."
+  }
+]
