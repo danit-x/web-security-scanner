@@ -140,11 +140,28 @@ const runScan = async (req, res) => {
 
     // Separate from the axios fetch above — this opens its own raw TLS
     // --- Run the SSL/TLS check ---
-    const sslFindings = await checkSsl(finalUrl);
-    // connection so we can inspect the actual certificate, not just headers.
+    // --- Run the SSL/TLS check ---
+    // Wrapped in its own try/catch as a safety net: checkSsl() already
+    // handles its own connection failures internally and returns a finding
+    // for them, but this guards against any unexpected/unhandled error
+    // inside the check itself so it can NEVER crash the whole scan request.
+    let sslFindings = [];
+    try {
+      sslFindings = await checkSsl(finalUrl);
+    } catch (err) {
+      console.error("SSL check threw unexpectedly:", err.message);
+      sslFindings = [
+        {
+          category: "SSL Check Failed",
+          severity: "LOW",
+          description:
+            "The SSL/TLS check could not complete due to an unexpected error.",
+          recommendation:
+            "Manually verify the site's certificate in a browser.",
+        },
+      ];
+    }
 
-    // HTML-based issues, etc.) will just get spread in here too on later days.
-    // Combine findings from every check run so far. More checks (cookies,
     const findings = [...headerFindings, ...sslFindings];
 
     // TEMPORARY: still just echoing a summary — real header/HTML analysis

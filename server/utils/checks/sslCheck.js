@@ -94,14 +94,23 @@ const checkSsl = async (finalUrl) => {
   try {
     certInfo = await getCertificateInfo(parsed.hostname);
   } catch (err) {
-    // Couldn't even complete a TLS handshake — worth surfacing as its own
-    // finding rather than silently returning nothing.
+    // IMPORTANT: a failed raw TLS connection here does NOT necessarily mean
+    // the site is insecure. Some servers/firewalls/CDNs behave oddly with a
+    // bare tls.connect() (WAF blocking non-browser clients, IP allowlisting,
+    // SNI quirks, etc.) even though HTTPS works perfectly fine in a real
+    // browser. Since we can't actually confirm anything about the cert in
+    // this case, report it as "unable to verify" (MEDIUM, informational)
+    // rather than implying a concrete problem like an expired/self-signed
+    // cert (which stay HIGH/CRITICAL).
+    console.error(
+      `SSL check could not connect to ${parsed.hostname}: ${err.message}`,
+    );
     findings.push({
-      category: "TLS Connection Failed",
-      severity: "HIGH",
-      description: `Could not establish a TLS connection to inspect the certificate: ${err.message}`,
+      category: "SSL Check Inconclusive",
+      severity: "MEDIUM",
+      description: `Could not independently verify this site's SSL/TLS certificate (${err.message}). This may be caused by network restrictions, a firewall, or non-standard server behavior — it does not necessarily mean the certificate is invalid.`,
       recommendation:
-        "Verify the server is correctly configured to accept HTTPS connections on port 443.",
+        "Manually verify the certificate in a browser (click the padlock icon) to confirm it is valid, not expired, and issued by a trusted authority.",
     });
     return findings;
   }
