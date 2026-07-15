@@ -5,6 +5,7 @@
 const checkSecurityHeaders = require("../utils/checks/checkSecurityHeaders");
 const checkSsl = require("../utils/checks/sslCheck");
 const checkFileExposure = require("../utils/checks/fileExposureCheck");
+const checkCookies = require("../utils/checks/cookieCheck");
 
 const axios = require("axios");
 
@@ -185,11 +186,37 @@ const runScan = async (req, res) => {
       ];
     }
 
+    // --- Run the cookie flags check ---
+    const isHttps = finalUrl.toLowerCase().startsWith("https://");
+    let cookieFindings = [];
+    let cookiesObserved = false;
+
+    try {
+      const setCookieHeader = response.headers["set-cookie"];
+      cookiesObserved =
+        Array.isArray(setCookieHeader) && setCookieHeader.length > 0;
+      cookieFindings = checkCookies(setCookieHeader, isHttps);
+    } catch (err) {
+      console.error("Cookie check failed:", err.message);
+      cookieFindings = [
+        {
+          category: "Cookie Check Failed",
+          severity: "LOW",
+          description:
+            "Could not complete the cookie flags check due to an unexpected error.",
+          recommendation:
+            "Manually inspect Set-Cookie headers in browser dev tools.",
+        },
+      ];
+    }
+
     const findings = [
       ...headerFindings,
       ...sslFindings,
       ...fileExposureFindings,
+      ...cookieFindings,
     ];
+
     // TEMPORARY: still just echoing a summary — real header/HTML analysis
     // comes in the next step.
     return res.status(200).json({
@@ -206,6 +233,7 @@ const runScan = async (req, res) => {
       htmlLength: response.data ? response.data.length : 0,
       findings, // NEW
       findingsCount: findings.length, // NEW
+      cookiesObserved, // NEW: true/false — informational, separate from findings
     });
   } catch (error) {
     console.error("Scan error:", error.message);
