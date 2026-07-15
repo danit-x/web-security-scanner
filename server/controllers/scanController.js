@@ -6,6 +6,7 @@ const checkSecurityHeaders = require("../utils/checks/checkSecurityHeaders");
 const checkSsl = require("../utils/checks/sslCheck");
 const checkFileExposure = require("../utils/checks/fileExposureCheck");
 const checkCookies = require("../utils/checks/cookieCheck");
+const checkMixedContent = require("../utils/checks/mixedContentCheck");
 
 const axios = require("axios");
 
@@ -139,7 +140,23 @@ const runScan = async (req, res) => {
     const isSuccess = response.status >= 200 && response.status < 300;
 
     // --- Run the security headers check ---
-    const headerFindings = checkSecurityHeaders(response.headers, finalUrl);
+    // --- Run the security headers check ---
+    let headerFindings = [];
+    try {
+      headerFindings = checkSecurityHeaders(response.headers, finalUrl);
+    } catch (err) {
+      console.error("Security headers check failed:", err.message);
+      headerFindings = [
+        {
+          category: "Security Headers Check Failed",
+          severity: "LOW",
+          description:
+            "Could not complete the security headers check due to an unexpected error.",
+          recommendation:
+            "Manually inspect response headers using browser dev tools.",
+        },
+      ];
+    }
 
     // Separate from the axios fetch above — this opens its own raw TLS
     // --- Run the SSL/TLS check ---
@@ -210,11 +227,32 @@ const runScan = async (req, res) => {
       ];
     }
 
+    // --- Run the mixed content check ---
+    // Uses the HTML body already fetched in the main axios request — no
+    // extra network calls needed for this one.
+    let mixedContentFindings = [];
+    try {
+      mixedContentFindings = checkMixedContent(response.data, finalUrl);
+    } catch (err) {
+      console.error("Mixed content check failed:", err.message);
+      mixedContentFindings = [
+        {
+          category: "Mixed Content Check Failed",
+          severity: "LOW",
+          description:
+            "Could not complete the mixed content check due to an unexpected error.",
+          recommendation:
+            "Manually inspect the browser console for mixed content warnings.",
+        },
+      ];
+    }
+
     const findings = [
       ...headerFindings,
       ...sslFindings,
       ...fileExposureFindings,
       ...cookieFindings,
+      ...mixedContentFindings,
     ];
 
     // TEMPORARY: still just echoing a summary — real header/HTML analysis
