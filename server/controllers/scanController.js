@@ -11,8 +11,42 @@ const extractLibraryVersions = require("../utils/checks/libraryCheck");
 const {
   checkVulnerableLibraries,
 } = require("../utils/checks/vulnerableLibraryCheck");
+const { calculateGrade } = require("../utils/scoring");
 
 const axios = require("axios");
+
+/**
+ * Groups a flat findings array by category, e.g.
+ *   { "Missing Security Header": [...], "Outdated / Vulnerable Library": [...] }
+ * Purely a presentation helper for the frontend — doesn't change the data,
+ * just reorganizes it.
+ */
+const groupFindingsByCategory = (findings) => {
+  const grouped = {};
+  for (const finding of findings) {
+    const key = finding.category || "Other";
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(finding);
+  }
+  return grouped;
+};
+
+/**
+ * Builds a quick-glance count of findings per severity, e.g.
+ *   { critical: 1, high: 2, medium: 3, low: 1 }
+ * Always includes all four keys (even if 0) so the frontend doesn't have
+ * to guard against missing keys when rendering a dashboard widget.
+ */
+const summarizeSeverity = (findings) => {
+  const summary = { critical: 0, high: 0, medium: 0, low: 0 };
+  for (const finding of findings) {
+    const key = (finding.severity || "").toLowerCase();
+    if (key in summary) {
+      summary[key] += 1;
+    }
+  }
+  return summary;
+};
 
 // @desc    Run a security scan against a target URL
 // @route   POST /api/scan
@@ -278,8 +312,10 @@ const runScan = async (req, res) => {
       ...libraryFindings,
     ];
 
-    // TEMPORARY: still just echoing a summary — real header/HTML analysis
-    // comes in the next step.
+    const { score, grade } = calculateGrade(findings);
+    const findingsByCategory = groupFindingsByCategory(findings);
+    const summary = summarizeSeverity(findings);
+
     return res.status(200).json({
       message: isSuccess
         ? "Target page fetched successfully."
@@ -289,12 +325,17 @@ const runScan = async (req, res) => {
       redirected: finalUrl !== trimmedUrl,
       requestedBy: req.userId,
       statusCode: response.status,
+      grade,
+      score,
       isSuccess,
+      scannedAt: new Date().toISOString(),
       headersReceived: Object.keys(response.headers),
       htmlLength: response.data ? response.data.length : 0,
       findings, // NEW
       findingsCount: findings.length, // NEW
       cookiesObserved, // NEW: true/false — informational, separate from findings
+      findingsByCategory, // same findings grouped by category — handy for a categorized UI
+      summary, // { critical, high, medium, low } counts for a dashboard widget
     });
   } catch (error) {
     console.error("Scan error:", error.message);
