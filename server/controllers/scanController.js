@@ -4,6 +4,8 @@
 // refused, timeout) and captures the final URL after redirects.
 const checkSecurityHeaders = require("../utils/checks/checkSecurityHeaders");
 const checkSsl = require("../utils/checks/sslCheck");
+const checkFileExposure = require("../utils/checks/fileExposureCheck");
+
 const axios = require("axios");
 
 // @desc    Run a security scan against a target URL
@@ -162,8 +164,32 @@ const runScan = async (req, res) => {
       ];
     }
 
-    const findings = [...headerFindings, ...sslFindings];
+    // --- Run the exposed sensitive files check ---
+    // Uses just the origin (protocol + host), not the full finalUrl with any
+    // path/query — we're probing baseUrl + "/.env" etc, not finalUrl + that.
+    let fileExposureFindings = [];
+    try {
+      const baseUrl = new URL(finalUrl).origin;
+      fileExposureFindings = await checkFileExposure(baseUrl);
+    } catch (err) {
+      console.error("File exposure check failed:", err.message);
+      fileExposureFindings = [
+        {
+          category: "File Exposure Check Failed",
+          severity: "LOW",
+          description:
+            "Could not complete the sensitive file exposure check due to an unexpected error.",
+          recommendation:
+            "Manually verify common sensitive paths are not publicly accessible.",
+        },
+      ];
+    }
 
+    const findings = [
+      ...headerFindings,
+      ...sslFindings,
+      ...fileExposureFindings,
+    ];
     // TEMPORARY: still just echoing a summary — real header/HTML analysis
     // comes in the next step.
     return res.status(200).json({
