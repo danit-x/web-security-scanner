@@ -1,56 +1,38 @@
 // Dashboard.jsx
-// Main landing page after login. Lets the user submit a URL to scan and
-// shows a basic result once the scan completes.
-
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { scanUrl } from '../services/scanService';
 
 function Dashboard() {
-  const { user, token, logout } = useAuth();
+  const { user, logout } = useAuth();
   const navigate = useNavigate();
 
   const [url, setUrl] = useState('');
   const [validationError, setValidationError] = useState('');
   const [apiError, setApiError] = useState('');
   const [isScanning, setIsScanning] = useState(false);
-  const [result, setResult] = useState(null); // holds the scan report once one comes back
+  const [result, setResult] = useState(null);
 
   const handleLogout = () => {
     logout();
     navigate('/login');
   };
 
-  // Client-side validation before we even attempt the API call — catches
-  // the obvious mistakes instantly instead of making the user wait on a
-  // round trip just to be told "URL must start with http://".
-  // NOTE: this is a UX convenience only. The backend still validates
-  // (and enforces SSRF protection) independently — never trust the
-  // frontend check alone for security.
   const validateUrl = (value) => {
     const trimmed = value.trim();
-
-    if (!trimmed) {
-      return 'Please enter a URL to scan.';
-    }
-
-    if (!/^https?:\/\//i.test(trimmed)) {
-      return 'URL must start with http:// or https://';
-    }
-
+    if (!trimmed) return 'Please enter a URL to scan.';
+    if (!/^https?:\/\//i.test(trimmed)) return 'URL must start with http:// or https://';
     try {
       new URL(trimmed);
     } catch {
       return 'Please enter a valid URL.';
     }
-
-    return ''; // no error
+    return '';
   };
 
   const handleSubmit = async (event) => {
     event.preventDefault();
-
     setApiError('');
     setResult(null);
 
@@ -60,17 +42,35 @@ function Dashboard() {
       return;
     }
     setValidationError('');
-
     setIsScanning(true);
+
     try {
-      const data = await scanUrl(url.trim(), token);
+      // No token param needed anymore — the shared axios instance's
+      // interceptor attaches it automatically.
+      const data = await scanUrl(url.trim());
       setResult(data);
     } catch (err) {
-      // Covers backend validation errors (bad URL, SSRF block), rate
-      // limiting (429), and site-unreachable errors (502/408) — all of
-      // which come back with a "message" field from our consistent
-      // error response shape.
-      setApiError(err.response?.data?.message || 'Scan failed. Please try again.');
+      // Different failure types all land here, all using the backend's
+      // consistent { success: false, message } error shape:
+      //   - 400: bad/invalid URL, SSRF-blocked target
+      //   - 408: target site took too long to respond
+      //   - 429: rate limit hit (max 10 scans / 15 min)
+      //   - 502: target site unreachable (DNS failure, connection refused, etc.)
+      //   - 500: unexpected server error
+      const status = err.response?.status;
+      const backendMessage = err.response?.data?.message;
+
+      if (status === 429) {
+        setApiError(backendMessage || 'Too many scans. Please wait a few minutes and try again.');
+      } else if (!err.response) {
+        // No response at all usually means a network issue reaching our
+        // OWN backend (server down, CORS block, no internet) — distinct
+        // from the backend successfully responding that the TARGET site
+        // was unreachable.
+        setApiError('Could not connect to the server. Please check your connection and try again.');
+      } else {
+        setApiError(backendMessage || 'Scan failed. Please try again.');
+      }
     } finally {
       setIsScanning(false);
     }
@@ -80,9 +80,7 @@ function Dashboard() {
     <main style={styles.page}>
       <div style={styles.card}>
         <div style={styles.header}>
-          <h1 style={styles.title}>
-            Welcome{user ? `, ${user.name}` : ''}
-          </h1>
+          <h1 style={styles.title}>Welcome{user ? `, ${user.name}` : ''}</h1>
           <button style={styles.logoutButton} onClick={handleLogout}>
             Logout
           </button>
@@ -98,6 +96,7 @@ function Dashboard() {
             placeholder="https://example.com"
             value={url}
             onChange={(e) => setUrl(e.target.value)}
+            disabled={isScanning} // lock the input while a scan is running
             style={styles.input}
           />
 
@@ -105,21 +104,24 @@ function Dashboard() {
           {apiError && <p style={styles.error}>{apiError}</p>}
 
           <button type="submit" style={styles.button} disabled={isScanning}>
-            {isScanning ? 'Scanning...' : 'Scan'}
+            {isScanning ? (
+              <span style={styles.loadingContent}>
+                <span style={styles.spinner} />
+                Scanning... this can take a few seconds
+              </span>
+            ) : (
+              'Scan'
+            )}
           </button>
         </form>
 
-        {/* Minimal result display for now — real dashboard styling comes
-            on Day 10/11. Just proving the flow works end to end. */}
         {result && (
           <div style={styles.resultBox}>
             <h2 style={styles.resultTitle}>
               Grade: {result.grade} ({result.score}/100)
             </h2>
             <p style={styles.text}>Scanned: {result.finalUrl || result.url}</p>
-            <p style={styles.text}>
-              Findings: {result.findings?.length ?? 0}
-            </p>
+            <p style={styles.text}>Findings: {result.findings?.length ?? 0}</p>
           </div>
         )}
       </div>
@@ -150,10 +152,7 @@ const styles = {
     alignItems: 'center',
     marginBottom: '1.5rem',
   },
-  title: {
-    color: '#f8fafc',
-    fontSize: '1.5rem',
-  },
+  title: { color: '#f8fafc', fontSize: '1.5rem' },
   logoutButton: {
     padding: '0.5rem 1rem',
     backgroundColor: '#dc2626',
@@ -163,15 +162,8 @@ const styles = {
     cursor: 'pointer',
     fontSize: '0.875rem',
   },
-  form: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '0.5rem',
-  },
-  label: {
-    color: '#e2e8f0',
-    fontSize: '0.9rem',
-  },
+  form: { display: 'flex', flexDirection: 'column', gap: '0.5rem' },
+  label: { color: '#e2e8f0', fontSize: '0.9rem' },
   input: {
     padding: '0.7rem',
     borderRadius: '6px',
@@ -190,16 +182,25 @@ const styles = {
     cursor: 'pointer',
     fontSize: '1rem',
     fontWeight: 500,
+    display: 'flex',
+    justifyContent: 'center',
   },
-  error: {
-    color: '#f87171',
-    fontSize: '0.875rem',
-    margin: 0,
+  loadingContent: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.5rem',
   },
-  text: {
-    color: '#e2e8f0',
-    fontSize: '0.95rem',
+  // Simple CSS spinner using a border trick — no extra library needed.
+  spinner: {
+    width: '14px',
+    height: '14px',
+    border: '2px solid rgba(255,255,255,0.4)',
+    borderTopColor: '#fff',
+    borderRadius: '50%',
+    animation: 'spin 0.7s linear infinite',
   },
+  error: { color: '#f87171', fontSize: '0.875rem', margin: 0 },
+  text: { color: '#e2e8f0', fontSize: '0.95rem' },
   resultBox: {
     marginTop: '1.5rem',
     padding: '1rem',
@@ -207,11 +208,7 @@ const styles = {
     borderRadius: '8px',
     border: '1px solid #334155',
   },
-  resultTitle: {
-    color: '#f8fafc',
-    fontSize: '1.25rem',
-    marginBottom: '0.5rem',
-  },
+  resultTitle: { color: '#f8fafc', fontSize: '1.25rem', marginBottom: '0.5rem' },
 };
 
 export default Dashboard;

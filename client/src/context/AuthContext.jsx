@@ -23,33 +23,31 @@ export function AuthProvider({ children }) {
   // it's still valid by calling /api/auth/me rather than blindly trusting it —
   // the token could be expired, or the backend's JWT_SECRET could have
   // changed since it was issued.
-  useEffect(() => {
-    const verifyStoredToken = async () => {
-      const storedToken = localStorage.getItem('token');
+useEffect(() => {
+  const verifyStoredToken = async () => {
+    const storedToken = localStorage.getItem('token');
 
-      if (!storedToken) {
-        setIsLoading(false);
-        return;
-      }
+    if (!storedToken) {
+      setIsLoading(false);
+      return;
+    }
 
-      try {
-        const data = await getCurrentUser(storedToken);
-        // Token is valid — restore full auth state.
-        setUser(data.user);
-        setToken(storedToken);
-      } catch (err) {
-        // Token expired/invalid/backend rejected it — clear the stale data
-        // rather than leaving the user in a broken half-logged-in state.
-        console.error('Stored token invalid, logging out:', err.message);
-        localStorage.removeItem('token');
-        localStorage.removeItem('user');
-      } finally {
-        setIsLoading(false);
-      }
-    };
+    try {
+      // Interceptor attaches the token automatically now — no need to pass it.
+      const data = await getCurrentUser();
+      setUser(data.user);
+      setToken(storedToken);
+    } catch (err) {
+      console.error('Stored token invalid, logging out:', err.message);
+      localStorage.removeItem('token');
+      localStorage.removeItem('user');
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    verifyStoredToken();
-  }, []);
+  verifyStoredToken();
+}, []);
 
   // Called by Login.jsx after a successful login API call.
   // Centralizes the "what happens when we log in" logic here instead of
