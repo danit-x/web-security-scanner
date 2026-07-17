@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 // context/AuthContext.jsx
 // Global auth state — holds the current user + token, and exposes
 // login/logout functions so any component can read or change auth state
