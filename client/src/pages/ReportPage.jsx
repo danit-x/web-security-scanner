@@ -14,6 +14,22 @@ import FindingCard from '../components/FindingCard';
 // middling, red for bad ones. Centralized here so both the big grade
 // badge and any future small grade indicators (e.g. history list) can
 // reuse the same mapping consistently.
+
+
+
+
+// Fallback grouping helper — mirrors groupFindingsByCategory() in
+// scanController.js, only used if the backend-computed grouping wasn't
+// available (i.e. the "unsaved scan" edge case from Dashboard.jsx).
+const groupByCategory = (findings) => {
+  const grouped = {};
+  for (const finding of findings) {
+    const key = finding.category || 'Other';
+    if (!grouped[key]) grouped[key] = [];
+    grouped[key].push(finding);
+  }
+  return grouped;
+};
 const getGradeColor = (grade) => {
   if (grade === 'A' || grade === 'B') return '#22c55e'; // green
   if (grade === 'C') return '#eab308'; // yellow
@@ -99,9 +115,46 @@ function ReportPage() {
 
               {/* --- Raw findings dump for now — replaced with a proper
                   grouped/styled findings list later in Day 10 --- */}
-              <pre style={styles.rawJson}>
-                {JSON.stringify(scan.findings, null, 2)}
-              </pre>
+              {/* --- Findings grouped by category --- */}
+<div style={styles.findingsSection}>
+  <h2 style={styles.sectionTitle}>Findings</h2>
+
+  {scan.findingsByCategory &&
+    Object.entries(scan.findingsByCategory).map(([category, categoryFindings]) => (
+      <div key={category} style={styles.categoryGroup}>
+        <h3 style={styles.categoryTitle}>
+          {category}{' '}
+          <span style={styles.categoryCount}>({categoryFindings.length})</span>
+        </h3>
+
+        {categoryFindings.map((finding, index) => (
+          // findings don't have their own _id in the schema, so index is
+          // an acceptable key here — the list is static per render, not
+          // reordered or filtered dynamically.
+          <FindingCard key={index} finding={finding} />
+        ))}
+      </div>
+    ))}
+
+  {/* Fallback for the "unsaved" edge case, where findingsByCategory might
+      not exist if the scan was passed via router state instead of fetched
+      from the DB. Groups on the fly using the same logic as the backend. */}
+  {!scan.findingsByCategory && scan.findings && (
+    <>
+      {Object.entries(groupByCategory(scan.findings)).map(([category, categoryFindings]) => (
+        <div key={category} style={styles.categoryGroup}>
+          <h3 style={styles.categoryTitle}>
+            {category}{' '}
+            <span style={styles.categoryCount}>({categoryFindings.length})</span>
+          </h3>
+          {categoryFindings.map((finding, index) => (
+            <FindingCard key={index} finding={finding} />
+          ))}
+        </div>
+      ))}
+    </>
+  )}
+</div>
             </>
           )}
         </div>
@@ -203,6 +256,31 @@ const styles = {
     fontSize: '0.8rem',
     border: '1px solid #334155',
   },
+
+  findingsSection: {
+  marginTop: '0.5rem',
+},
+sectionTitle: {
+  color: '#f8fafc',
+  fontSize: '1.1rem',
+  marginBottom: '1rem',
+},
+categoryGroup: {
+  marginBottom: '1.5rem',
+},
+categoryTitle: {
+  color: '#cbd5e1',
+  fontSize: '0.95rem',
+  fontWeight: 700,
+  marginBottom: '0.6rem',
+  textTransform: 'uppercase',
+  letterSpacing: '0.03em',
+},
+categoryCount: {
+  color: '#64748b',
+  fontWeight: 400,
+  textTransform: 'none',
+},
 };
 
 export default ReportPage;
