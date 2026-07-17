@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getScanHistory } from '../services/scanService';
 import Navbar from '../components/Navbar';
+import Spinner from '../components/Spinner';
 
 // Same grade-color mapping used in ReportPage — kept in sync so a grade
 // looks the same color wherever it appears in the app.
@@ -48,7 +49,7 @@ function HistoryPage() {
         <div style={styles.container}>
           <h1 style={styles.title}>Scan History</h1>
 
-          {isLoading && <p style={styles.text}>Loading history...</p>}
+          {isLoading && <Spinner label="Loading history..." />}
           {error && <p style={styles.error}>{error}</p>}
 
           {/* Empty state — no scans yet for this user */}

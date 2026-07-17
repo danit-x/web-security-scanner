@@ -1,26 +1,16 @@
-// pages/ReportPage.jsx
-// Fetches and displays a single scan result by ID from the URL param.
-// Shows a color-coded grade header and a severity summary row before
-// the detailed findings (findings list styling itself is Day 10's
-// remaining task — this covers the header + summary row specifically).
-
 import { useEffect, useState } from 'react';
-import { useParams, useLocation } from 'react-router-dom';
+import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
 import { getScanById } from '../services/scanService';
 import Navbar from '../components/Navbar';
 import FindingCard from '../components/FindingCard';
+import Spinner from '../components/Spinner';
 
-// Maps a letter grade to a color — green for good grades, yellow for
-// middling, red for bad ones. Centralized here so both the big grade
-// badge and any future small grade indicators (e.g. history list) can
-// reuse the same mapping consistently.
+const getGradeColor = (grade) => {
+  if (grade === 'A' || grade === 'B') return '#22c55e';
+  if (grade === 'C') return '#eab308';
+  return '#ef4444';
+};
 
-
-
-
-// Fallback grouping helper — mirrors groupFindingsByCategory() in
-// scanController.js, only used if the backend-computed grouping wasn't
-// available (i.e. the "unsaved scan" edge case from Dashboard.jsx).
 const groupByCategory = (findings) => {
   const grouped = {};
   for (const finding of findings) {
@@ -30,23 +20,24 @@ const groupByCategory = (findings) => {
   }
   return grouped;
 };
-const getGradeColor = (grade) => {
-  if (grade === 'A' || grade === 'B') return '#22c55e'; // green
-  if (grade === 'C') return '#eab308'; // yellow
-  return '#ef4444'; // red — D, E, F
-};
 
 function ReportPage() {
   const { id } = useParams();
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [scan, setScan] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Edge case from Dashboard.jsx: unsaved scan (DB save failed) passed
-    // via router state instead of a real ID.
+    // Reset state on every id change — otherwise navigating from one
+    // report directly to another (e.g. via browser back/forward) could
+    // briefly show stale data from the previous scan while the new one loads.
+    setScan(null);
+    setError('');
+    setIsLoading(true);
+
     if (id === 'unsaved' && location.state?.result) {
       setScan(location.state.result);
       setIsLoading(false);
@@ -58,7 +49,15 @@ function ReportPage() {
         const data = await getScanById(id);
         setScan(data.scan);
       } catch (err) {
-        setError(err.response?.data?.message || 'Could not load this scan result.');
+        // Covers: malformed ID (400 from backend's ObjectId check),
+        // not found or belongs to another user (404 — same message for
+        // both, per Day 8's "don't leak existence" decision).
+        const status = err.response?.status;
+        if (status === 400 || status === 404) {
+          setError('Scan not found. It may have been deleted, or the link is invalid.');
+        } else {
+          setError(err.response?.data?.message || 'Could not load this scan result.');
+        }
       } finally {
         setIsLoading(false);
       }
@@ -72,40 +71,42 @@ function ReportPage() {
       <Navbar />
       <main style={styles.page}>
         <div style={styles.card}>
-          {isLoading && <p style={styles.text}>Loading report...</p>}
-          {error && <p style={styles.error}>{error}</p>}
+          {/* Back link — always visible, even during loading/error, so
+              the user is never stuck on a broken/loading page */}
+          <Link to="/history" style={styles.backLink}>
+            ← Back to History
+          </Link>
 
-          {scan && (
+          {isLoading && <Spinner label="Loading report..." />}
+
+          {error && (
+            <div style={styles.errorBox}>
+              <p style={styles.error}>{error}</p>
+              <button style={styles.errorButton} onClick={() => navigate('/dashboard')}>
+                Start a new scan
+              </button>
+            </div>
+          )}
+
+          {!isLoading && !error && scan && (
             <>
-              {/* --- Header: URL, timestamp, grade --- */}
               <div style={styles.header}>
                 <div style={styles.headerInfo}>
                   <h1 style={styles.url}>{scan.finalUrl || scan.url}</h1>
                   <p style={styles.timestamp}>
                     Scanned{' '}
-                    {scan.scannedAt
-                      ? new Date(scan.scannedAt).toLocaleString()
-                      : 'just now'}
+                    {scan.scannedAt ? new Date(scan.scannedAt).toLocaleString() : 'just now'}
                   </p>
                 </div>
 
-                {/* Color-coded grade badge — color comes from getGradeColor,
-                    so A/B = green, C = yellow, D/E/F = red */}
                 <div
-                  style={{
-                    ...styles.gradeBadge,
-                    backgroundColor: getGradeColor(scan.grade),
-                  }}
+                  style={{ ...styles.gradeBadge, backgroundColor: getGradeColor(scan.grade) }}
                 >
                   <span style={styles.gradeLetter}>{scan.grade}</span>
                   <span style={styles.gradeScore}>{scan.score}/100</span>
                 </div>
               </div>
 
-              {/* --- Severity summary row --- */}
-              {/* scan.summary comes straight from the backend schema:
-                  { critical, high, medium, low } — always all four keys
-                  present even if 0, per the ScanResult model. */}
               <div style={styles.summaryRow}>
                 <SummaryPill label="Critical" count={scan.summary?.critical ?? 0} color="#991b1b" />
                 <SummaryPill label="High" count={scan.summary?.high ?? 0} color="#ef4444" />
@@ -113,48 +114,32 @@ function ReportPage() {
                 <SummaryPill label="Low" count={scan.summary?.low ?? 0} color="#3b82f6" />
               </div>
 
-              {/* --- Raw findings dump for now — replaced with a proper
-                  grouped/styled findings list later in Day 10 --- */}
-              {/* --- Findings grouped by category --- */}
-<div style={styles.findingsSection}>
-  <h2 style={styles.sectionTitle}>Findings</h2>
+              <div style={styles.findingsSection}>
+                <h2 style={styles.sectionTitle}>Findings</h2>
 
-  {scan.findingsByCategory &&
-    Object.entries(scan.findingsByCategory).map(([category, categoryFindings]) => (
-      <div key={category} style={styles.categoryGroup}>
-        <h3 style={styles.categoryTitle}>
-          {category}{' '}
-          <span style={styles.categoryCount}>({categoryFindings.length})</span>
-        </h3>
+                {Object.entries(
+                  scan.findingsByCategory || groupByCategory(scan.findings || [])
+                ).map(([category, categoryFindings]) => (
+                  <div key={category} style={styles.categoryGroup}>
+                    <h3 style={styles.categoryTitle}>
+                      {category} <span style={styles.categoryCount}>({categoryFindings.length})</span>
+                    </h3>
+                    {categoryFindings.map((finding, index) => (
+                      <FindingCard key={index} finding={finding} />
+                    ))}
+                  </div>
+                ))}
+              </div>
 
-        {categoryFindings.map((finding, index) => (
-          // findings don't have their own _id in the schema, so index is
-          // an acceptable key here — the list is static per render, not
-          // reordered or filtered dynamically.
-          <FindingCard key={index} finding={finding} />
-        ))}
-      </div>
-    ))}
-
-  {/* Fallback for the "unsaved" edge case, where findingsByCategory might
-      not exist if the scan was passed via router state instead of fetched
-      from the DB. Groups on the fly using the same logic as the backend. */}
-  {!scan.findingsByCategory && scan.findings && (
-    <>
-      {Object.entries(groupByCategory(scan.findings)).map(([category, categoryFindings]) => (
-        <div key={category} style={styles.categoryGroup}>
-          <h3 style={styles.categoryTitle}>
-            {category}{' '}
-            <span style={styles.categoryCount}>({categoryFindings.length})</span>
-          </h3>
-          {categoryFindings.map((finding, index) => (
-            <FindingCard key={index} finding={finding} />
-          ))}
-        </div>
-      ))}
-    </>
-  )}
-</div>
+              {/* Bottom nav — quick actions once you've read the report */}
+              <div style={styles.bottomActions}>
+                <button style={styles.secondaryButton} onClick={() => navigate('/history')}>
+                  View All History
+                </button>
+                <button style={styles.primaryButton} onClick={() => navigate('/dashboard')}>
+                  Scan Another URL
+                </button>
+              </div>
             </>
           )}
         </div>
@@ -163,17 +148,28 @@ function ReportPage() {
   );
 }
 
-// Small reusable pill for the severity summary row. Kept in the same file
-// since it's only used here — pull into its own component file if it ends
-// up reused elsewhere (e.g. a dashboard widget later).
 function SummaryPill({ label, count, color }) {
   return (
-    <div style={{ ...styles.pill, borderColor: color }}>
-      <span style={{ ...styles.pillCount, color }}>{count}</span>
-      <span style={styles.pillLabel}>{label}</span>
+    <div style={{ ...pillStyles.pill, borderColor: color }}>
+      <span style={{ ...pillStyles.pillCount, color }}>{count}</span>
+      <span style={pillStyles.pillLabel}>{label}</span>
     </div>
   );
 }
+
+const pillStyles = {
+  pill: {
+    display: 'flex',
+    alignItems: 'center',
+    gap: '0.4rem',
+    padding: '0.5rem 0.9rem',
+    borderRadius: '999px',
+    border: '1.5px solid',
+    backgroundColor: '#0f172a',
+  },
+  pillCount: { fontSize: '1rem', fontWeight: 700 },
+  pillLabel: { color: '#e2e8f0', fontSize: '0.85rem' },
+};
 
 const styles = {
   page: {
@@ -190,10 +186,13 @@ const styles = {
     width: '100%',
     maxWidth: '700px',
   },
-  text: { color: '#e2e8f0', fontSize: '0.95rem' },
-  error: { color: '#f87171', fontSize: '0.95rem' },
-
-  // Header
+  backLink: {
+    display: 'inline-block',
+    color: '#94a3b8',
+    fontSize: '0.85rem',
+    textDecoration: 'none',
+    marginBottom: '1.5rem',
+  },
   header: {
     display: 'flex',
     justifyContent: 'space-between',
@@ -205,15 +204,8 @@ const styles = {
     flexWrap: 'wrap',
   },
   headerInfo: { flex: 1, minWidth: '200px' },
-  url: {
-    color: '#f8fafc',
-    fontSize: '1.25rem',
-    wordBreak: 'break-all',
-    marginBottom: '0.25rem',
-  },
+  url: { color: '#f8fafc', fontSize: '1.25rem', wordBreak: 'break-all', marginBottom: '0.25rem' },
   timestamp: { color: '#94a3b8', fontSize: '0.85rem' },
-
-  // Grade badge
   gradeBadge: {
     display: 'flex',
     flexDirection: 'column',
@@ -222,65 +214,68 @@ const styles = {
     borderRadius: '12px',
     padding: '0.75rem 1.5rem',
     minWidth: '100px',
-    color: '#0f172a', // dark text reads better on the bright badge colors
+    color: '#0f172a',
   },
   gradeLetter: { fontSize: '2.25rem', fontWeight: 700, lineHeight: 1 },
   gradeScore: { fontSize: '0.8rem', fontWeight: 600, marginTop: '0.25rem' },
+  summaryRow: { display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap' },
+  findingsSection: { marginTop: '0.5rem' },
+  sectionTitle: { color: '#f8fafc', fontSize: '1.1rem', marginBottom: '1rem' },
+  categoryGroup: { marginBottom: '1.5rem' },
+  categoryTitle: {
+    color: '#cbd5e1',
+    fontSize: '0.95rem',
+    fontWeight: 700,
+    marginBottom: '0.6rem',
+    textTransform: 'uppercase',
+    letterSpacing: '0.03em',
+  },
+  categoryCount: { color: '#64748b', fontWeight: 400, textTransform: 'none' },
 
-  // Severity summary row
-  summaryRow: {
+  errorBox: { textAlign: 'center', padding: '2rem 1rem' },
+  error: { color: '#f87171', fontSize: '0.95rem', marginBottom: '1rem' },
+  errorButton: {
+    padding: '0.6rem 1.4rem',
+    backgroundColor: '#2563eb',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontSize: '0.9rem',
+  },
+
+  bottomActions: {
     display: 'flex',
     gap: '0.75rem',
-    marginBottom: '1.5rem',
+    marginTop: '2rem',
+    paddingTop: '1.5rem',
+    borderTop: '1px solid #334155',
     flexWrap: 'wrap',
   },
-  pill: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.4rem',
-    padding: '0.5rem 0.9rem',
-    borderRadius: '999px',
-    border: '1.5px solid',
-    backgroundColor: '#0f172a',
+  primaryButton: {
+    flex: 1,
+    padding: '0.7rem',
+    backgroundColor: '#2563eb',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontSize: '0.9rem',
+    fontWeight: 500,
+    minWidth: '150px',
   },
-  pillCount: { fontSize: '1rem', fontWeight: 700 },
-  pillLabel: { color: '#e2e8f0', fontSize: '0.85rem' },
-
-  // Raw JSON (temporary, Day 10 replaces this)
-  rawJson: {
-    backgroundColor: '#0f172a',
-    color: '#94a3b8',
-    padding: '1rem',
-    borderRadius: '8px',
-    overflowX: 'auto',
-    fontSize: '0.8rem',
+  secondaryButton: {
+    flex: 1,
+    padding: '0.7rem',
+    backgroundColor: 'transparent',
+    color: '#e2e8f0',
     border: '1px solid #334155',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontSize: '0.9rem',
+    fontWeight: 500,
+    minWidth: '150px',
   },
-
-  findingsSection: {
-  marginTop: '0.5rem',
-},
-sectionTitle: {
-  color: '#f8fafc',
-  fontSize: '1.1rem',
-  marginBottom: '1rem',
-},
-categoryGroup: {
-  marginBottom: '1.5rem',
-},
-categoryTitle: {
-  color: '#cbd5e1',
-  fontSize: '0.95rem',
-  fontWeight: 700,
-  marginBottom: '0.6rem',
-  textTransform: 'uppercase',
-  letterSpacing: '0.03em',
-},
-categoryCount: {
-  color: '#64748b',
-  fontWeight: 400,
-  textTransform: 'none',
-},
 };
 
 export default ReportPage;
