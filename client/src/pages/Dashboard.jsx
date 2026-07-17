@@ -1,6 +1,17 @@
+// Dashboard.jsx
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../context/AuthContext';
+
 function Dashboard() {
-  const storedUser = localStorage.getItem('user');
-  const user = storedUser ? JSON.parse(storedUser) : null;
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
+
+  // Clears token/user from context + localStorage (handled inside
+  // AuthContext), then sends the user back to the login page.
+  const handleLogout = () => {
+    logout();
+    navigate('/login');
+  };
 
   return (
     <main style={styles.page}>
@@ -12,41 +23,60 @@ function Dashboard() {
         <p style={styles.note}>
           This is a placeholder page for authenticated users.
         </p>
+
+        <button style={styles.button} onClick={handleLogout}>
+          Logout
+        </button>
       </div>
     </main>
   );
 }
 
+// Kept in the same file for now, matching the pattern used in
+// Login.jsx / Register.jsx. Move to a shared styles file later if
+// duplication across pages starts getting annoying.
 const styles = {
   page: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'center',
     minHeight: '100vh',
-    display: 'grid',
-    placeItems: 'center',
-    padding: '24px',
-    background: '#eef2f1',
+    backgroundColor: '#0f172a',
+    padding: '1rem',
   },
   card: {
+    backgroundColor: '#1e293b',
+    padding: '2.5rem',
+    borderRadius: '12px',
     width: '100%',
-    maxWidth: '560px',
-    padding: '32px',
-    borderRadius: '10px',
-    background: '#ffffff',
-    boxShadow: '0 14px 34px rgba(0, 0, 0, 0.08)',
+    maxWidth: '420px',
     textAlign: 'center',
+    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
   },
   title: {
-    marginBottom: '16px',
-    fontSize: '32px',
-    color: '#173c35',
+    color: '#f8fafc',
+    fontSize: '1.75rem',
+    marginBottom: '1rem',
   },
   text: {
-    marginBottom: '12px',
-    fontSize: '18px',
-    color: '#2f4a44',
+    color: '#e2e8f0',
+    fontSize: '1rem',
+    marginBottom: '0.5rem',
   },
   note: {
-    fontSize: '14px',
-    color: '#5f6e6a',
+    color: '#94a3b8',
+    fontSize: '0.875rem',
+    marginBottom: '1.5rem',
+  },
+  button: {
+    padding: '0.6rem 1.4rem',
+    backgroundColor: '#dc2626',
+    color: '#fff',
+    border: 'none',
+    borderRadius: '6px',
+    cursor: 'pointer',
+    fontSize: '1rem',
+    fontWeight: 500,
   },
 };
 
