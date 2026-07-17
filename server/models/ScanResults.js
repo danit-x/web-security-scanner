@@ -64,6 +64,19 @@ const scanResultSchema = new mongoose.Schema(
       low: { type: Number, default: 0 },
     },
     findings: [findingSchema],
+
+    // Add this field to the scanResultSchema, alongside url/grade/score/etc.
+    ownershipConfirmed: {
+      type: Boolean,
+      required: [true, "Ownership/permission confirmation is required"],
+      // Mongoose validator: reject the document if this is ever false — a
+      // user should never be able to reach this point without confirming,
+      // but this is a defense-in-depth check at the data layer too.
+      validate: {
+        validator: (value) => value === true,
+        message: "Scans cannot be saved without ownership confirmation",
+      },
+    },
   },
   {
     timestamps: true,
