@@ -1,7 +1,8 @@
 // controllers/scanController.js
 // Handles the logic for POST /api/scan.
-// Hour 3: distinguishes between different failure types (DNS, connection
-// refused, timeout) and captures the final URL after redirects.
+// Fetches the target URL, runs all security checks, scores the results,
+// saves the report to MongoDB, and returns it to the client.
+
 const checkSecurityHeaders = require("../utils/checks/checkSecurityHeaders");
 const checkSsl = require("../utils/checks/sslCheck");
 const checkFileExposure = require("../utils/checks/fileExposureCheck");
@@ -12,6 +13,8 @@ const {
   checkVulnerableLibraries,
 } = require("../utils/checks/vulnerableLibraryCheck");
 const { calculateGrade } = require("../utils/scoring");
+
+const ScanResult = require("../models/ScanResult");
 
 const axios = require("axios");
 
@@ -55,7 +58,7 @@ const runScan = async (req, res) => {
   try {
     const { url } = req.body;
 
-    // --- Basic validation (from earlier steps) ---
+    // --- Basic validation ---
     if (!url || typeof url !== "string" || url.trim() === "") {
       return res.status(400).json({ message: "Please provide a url to scan" });
     }
@@ -177,7 +180,11 @@ const runScan = async (req, res) => {
     // more useful than refusing outright. We just flag it clearly for the user.
     const isSuccess = response.status >= 200 && response.status < 300;
 
-    // --- Run the security headers check ---
+    // Whether the target redirected us somewhere other than what was requested.
+    // Defined once here so both the response payload and any future logging
+    // can reuse it — this was previously used below without being declared.
+    const redirected = finalUrl !== trimmedUrl;
+
     // --- Run the security headers check ---
     let headerFindings = [];
     try {
@@ -196,9 +203,9 @@ const runScan = async (req, res) => {
       ];
     }
 
+    // --- Run the SSL/TLS check ---
     // Separate from the axios fetch above — this opens its own raw TLS
-    // --- Run the SSL/TLS check ---
-    // --- Run the SSL/TLS check ---
+    // connection so it can inspect the certificate directly.
     // Wrapped in its own try/catch as a safety net: checkSsl() already
     // handles its own connection failures internally and returns a finding
     // for them, but this guards against any unexpected/unhandled error
@@ -285,6 +292,7 @@ const runScan = async (req, res) => {
       ];
     }
 
+    // --- Run the outdated/vulnerable library check ---
     let libraryFindings = [];
     try {
       const detectedLibraries = extractLibraryVersions(response.data);
@@ -303,6 +311,7 @@ const runScan = async (req, res) => {
       ];
     }
 
+    // --- Combine all findings and score the report ---
     const findings = [
       ...headerFindings,
       ...sslFindings,
@@ -316,28 +325,59 @@ const runScan = async (req, res) => {
     const findingsByCategory = groupFindingsByCategory(findings);
     const summary = summarizeSeverity(findings);
 
-    return res.status(200).json({
-      message: isSuccess
-        ? "Target page fetched successfully."
-        : `Target responded with status ${response.status} — partial scan only.`,
-      requestedUrl: trimmedUrl,
-      finalUrl,
-      redirected: finalUrl !== trimmedUrl,
-      requestedBy: req.userId,
-      statusCode: response.status,
-      grade,
-      score,
-      isSuccess,
-      scannedAt: new Date().toISOString(),
-      headersReceived: Object.keys(response.headers),
-      htmlLength: response.data ? response.data.length : 0,
-      findings, // NEW
-      findingsCount: findings.length, // NEW
-      cookiesObserved, // NEW: true/false — informational, separate from findings
-      findingsByCategory, // same findings grouped by category — handy for a categorized UI
-      summary, // { critical, high, medium, low } counts for a dashboard widget
-    });
+    // --- Persist the scan to MongoDB ---
+    // Only fields that exist on the ScanResult schema get saved here
+    // (userId, url, grade, score, summary, findings). Transient/derived
+    // data like finalUrl, redirected, statusCode is merged into the
+    // response only, further down — it's not worth persisting.
+    let savedScan;
+    try {
+      savedScan = await ScanResult.create({
+        userId: req.userId, // set by authMiddleware from the JWT
+        url: trimmedUrl, // save what was actually scanned, not the raw input
+        grade,
+        score,
+        summary,
+        findings,
+      });
+    } catch (dbErr) {
+      // The scan itself succeeded even if the save fails (e.g. Mongo
+      // briefly down, or a validation mismatch). Log it and still
+      // return the report so the user isn't blocked by a DB hiccup.
+      console.error("Failed to save scan result:", dbErr.message);
+    }
+
+    // Build the final response. If the save succeeded, start from the saved
+    // document (so the client gets _id, createdAt, and the scannedAt virtual)
+    // and merge in the extra fields that only exist in memory. If the save
+    // failed, fall back to a plain object built from memory and flag it
+    // as unsaved so the frontend can warn the user if needed.
+    const responseBody = savedScan
+      ? {
+          ...savedScan.toJSON(),
+          finalUrl,
+          redirected,
+          statusCode: response.status,
+          isSuccess,
+          cookiesObserved,
+          findingsByCategory,
+        }
+      : {
+          url: trimmedUrl,
+          finalUrl,
+          redirected,
+          grade,
+          score,
+          summary,
+          findings,
+          findingsByCategory,
+          saved: false,
+        };
+
+    return res.status(200).json(responseBody);
   } catch (error) {
+    // Catch-all for anything unexpected outside the per-check try/catches
+    // above (e.g. a bug in the orchestration logic itself).
     console.error("Scan error:", error.message);
     return res.status(500).json({ message: "Server error" });
   }
