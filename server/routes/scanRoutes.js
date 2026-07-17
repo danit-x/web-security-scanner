@@ -24,6 +24,8 @@ const ScanResult = require("../models/ScanResult");
 
 const { scanLimiter } = require("../middleware/rateLimiter");
 
+const asyncHandler = require("../utils/asyncHandler");
+
 // Order matters: auth first (so we know req.userId for the rate limit key),
 // then rate limit, then input validation, then the actual controller.
 // @route   POST /api/scan
@@ -42,65 +44,48 @@ router.post(
 // @desc    Get all scan results belonging to the logged-in user,
 //          most recent first
 // @access  Private
-router.get("/history", authMiddleware, async (req, res) => {
-  try {
-    // Only fetch scans that belong to the requesting user.
-    // req.userId comes from the decoded JWT in authMiddleware — never trust
-    // a userId passed in the request body/query for this kind of lookup.
-    const scans = await ScanResult.find({ userId: req.userId })
-      // Sort by createdAt descending (scannedAt is just a virtual alias
-      // for createdAt, so we sort on the real field).
-      .sort({ createdAt: -1 });
 
-    return res.status(200).json({
-      count: scans.length,
-      scans,
+// @route   GET /api/history
+router.get(
+  "/history",
+  authMiddleware,
+  asyncHandler(async (req, res) => {
+    const scans = await ScanResult.find({ userId: req.userId }).sort({
+      createdAt: -1,
     });
-  } catch (error) {
-    console.error("Get history error:", error.message);
-    return res
-      .status(500)
-      .json({ message: "Server error while fetching scan history" });
-  }
-});
+    res.status(200).json({ success: true, count: scans.length, scans });
+  }),
+);
 
 // @route   GET /api/history/:id
-// @desc    Get a single scan result by ID — only if it belongs to the
-//          requesting user
-// @access  Private
-router.get("/history/:id", authMiddleware, async (req, res) => {
-  const { id } = req.params;
+router.get(
+  "/history/:id",
+  authMiddleware,
+  asyncHandler(async (req, res) => {
+    const { id } = req.params;
 
-  // Validate that the ID is even a well-formed Mongo ObjectId before
-  // querying. Without this, an invalid ID string throws a CastError
-  // which we'd otherwise have to handle separately below.
-  if (!mongoose.Types.ObjectId.isValid(id)) {
-    return res.status(400).json({ message: "Invalid scan ID" });
-  }
+    if (!mongoose.Types.ObjectId.isValid(id)) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Invalid scan ID" });
+    }
 
-  try {
     const scan = await ScanResult.findById(id);
 
-    // Case 1: no scan exists at all with this ID.
     if (!scan) {
-      return res.status(404).json({ message: "Scan result not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Scan result not found" });
     }
 
-    // Case 2: a scan exists, but it belongs to a different user.
-    // IMPORTANT: return 404 here instead of 403. Returning 403 would
-    // confirm to an attacker that a scan with this ID exists at all
-    // (just not theirs) — 404 leaks no information either way.
     if (scan.userId.toString() !== req.userId) {
-      return res.status(404).json({ message: "Scan result not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Scan result not found" });
     }
 
-    return res.status(200).json({ scan });
-  } catch (error) {
-    console.error("Get single scan error:", error.message);
-    return res
-      .status(500)
-      .json({ message: "Server error while fetching scan result" });
-  }
-});
+    res.status(200).json({ success: true, scan });
+  }),
+);
 
 module.exports = router;

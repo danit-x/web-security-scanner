@@ -13,12 +13,13 @@ const { generalLimiter } = require("./middleware/rateLimiter");
 const app = express();
 const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
+const { notFound, errorHandler } = require("./middleware/errorHandler");
 
 // --- Security middleware (should run before routes) ---
 
 // Helmet sets a batch of sensible security headers by default:
 // X-Content-Type-Options, X-Frame-Options, Strict-Transport-Security,
-// hides X-Powered-By, etc. Nice touch since this is itself a security project.
+// hides X-Powered-By, etc. Nice touch since this is itself a security project.gitcd
 app.use(helmet());
 
 // CORS: restrict to the actual frontend origin instead of allowing all
@@ -61,6 +62,12 @@ app.get("/api/health", (req, res) => {
 
 app.use("/api/auth", authRoutes);
 app.use("/api", scanRoutes); // mounts POST /api/scan, GET /api/history, GET /api/history/:id
+
+app.use(notFound); // 404 handler — catches requests to routes that don't exist
+
+// Global error handler — must be LAST. Catches everything forwarded
+// via next(error), including from asyncHandler-wrapped controllers.
+app.use(errorHandler);
 
 const startServer = async () => {
   try {
