@@ -149,11 +149,11 @@ const styles = {
     alignItems: 'flex-start',
     minHeight: 'calc(100vh - 65px)', // accounts for navbar height
     backgroundColor: '#0f172a',
-    padding: '2rem 1rem',
+    padding: '1rem 1rem 2rem',
   },
   card: {
     backgroundColor: '#1e293b',
-    padding: '2.5rem',
+    padding: '1.25rem 1.25rem 1.5rem',
     borderRadius: '12px',
     width: '100%',
     maxWidth: '560px',

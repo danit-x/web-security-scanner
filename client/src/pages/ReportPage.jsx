@@ -79,8 +79,8 @@ function ReportPage() {
   return (
     <>
       <Navbar />
-      <main className="flex justify-center min-h-[calc(100vh-65px)] bg-bg p-8">
-        <div className="bg-surface rounded-xl p-8 w-full max-w-2xl">
+      <main className="flex justify-center min-h-[calc(100vh-65px)] bg-bg p-4 sm:p-8">
+        <div className="bg-surface rounded-xl p-5 sm:p-8 w-full max-w-2xl">
           {/* Back link — always visible, even during loading/error, so
               the user is never stuck on a broken/loading page */}
           <Link to="/history" style={styles.backLink}>

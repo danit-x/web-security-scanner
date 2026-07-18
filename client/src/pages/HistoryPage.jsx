@@ -38,9 +38,9 @@ function HistoryPage() {
   return (
     <>
       <Navbar />
-      <main className="flex justify-center min-h-[calc(100vh-65px)] bg-bg p-8">
+      <main className="flex justify-center min-h-[calc(100vh-65px)] bg-bg p-4 sm:p-8">
         <div className="w-full max-w-2xl">
-          <h1 className="text-text-primary text-2xl mb-6">Scan History</h1>
+          <h1 className="text-text-primary text-xl sm:text-2xl mb-4 sm:mb-6">Scan History</h1>
 
           {isLoading && <Spinner label="Loading history..." />}
           {error && <p style={styles.error}>{error}</p>}
@@ -62,7 +62,7 @@ function HistoryPage() {
               <div
                 key={scan._id}
                 onClick={() => navigate(`/report/${scan._id}`)}
-                className="flex justify-between items-center gap-4 bg-surface border border-border rounded-lg p-5 mb-3 cursor-pointer hover:border-primary transition-colors"
+                className="flex justify-between items-center gap-3 sm:gap-4 bg-surface border border-border rounded-lg p-4 sm:p-5 mb-3 cursor-pointer hover:border-primary transition-colors"
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && navigate(`/report/${scan._id}`)}

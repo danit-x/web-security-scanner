@@ -43,8 +43,8 @@ function Login() {
   };
 
   return (
-    <main className="min-h-screen grid place-items-center bg-bg px-6 py-8">
-      <Card className="w-full max-w-md">
+    <main className="min-h-screen grid place-items-center bg-bg px-4 py-6 sm:px-6 sm:py-8">
+      <Card className="w-full max-w-md p-6 sm:p-10">
         <form className="space-y-4" onSubmit={handleSubmit}>
           <div className="space-y-2">
             <h1 className="text-2xl font-semibold text-text-primary">Login</h1>

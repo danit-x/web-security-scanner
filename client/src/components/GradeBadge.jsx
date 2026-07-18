@@ -11,8 +11,8 @@ const getGradeColor = (grade) => {
 
 function GradeBadge({ grade, score, size = 'large' }) {
   const sizeClasses = size === 'large'
-    ? 'w-28 h-28 text-5xl'
-    : 'w-16 h-16 text-2xl';
+    ? 'w-20 h-20 text-3xl sm:w-28 sm:h-28 sm:text-5xl'
+    : 'w-14 h-14 text-xl sm:w-16 sm:h-16 sm:text-2xl';
 
   const scoreTextSize = size === 'large' ? 'text-sm' : 'text-[10px]';
 
