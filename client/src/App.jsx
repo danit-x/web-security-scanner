@@ -5,6 +5,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ReportPage from './pages/ReportPage'; // NEW
+import AboutPage from './pages/AboutPage';
 
 function App() {
   return (
@@ -40,6 +41,7 @@ function App() {
           />
           <Route path="*" element={<Navigate replace to="/" />} />
         </Routes>
+        <Route path="/about" element={<AboutPage />} />
       </BrowserRouter>
     </AuthProvider>
   );

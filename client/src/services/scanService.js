@@ -1,8 +1,7 @@
 // services/scanService.js
 import api from "./authService";
 
-// Now takes an object instead of just a url string, since we need to
-// send ownershipConfirmed alongside it.
+// Sends the URL and ownership confirmation together in one payload.
 export const scanUrl = async (url, ownershipConfirmed) => {
   const response = await api.post("/api/scan", { url, ownershipConfirmed });
   return response.data;

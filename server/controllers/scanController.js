@@ -49,7 +49,7 @@ const summarizeSeverity = (findings) => {
 // expected failure mode), it's forwarded to the global error handler
 // instead of crashing the server or hanging the request.
 const runScan = asyncHandler(async (req, res) => {
-  const { url } = req.body;
+  const { url, ownershipConfirmed } = req.body;
 
   // --- Basic validation ---
   if (!url || typeof url !== "string" || url.trim() === "") {
@@ -57,14 +57,9 @@ const runScan = asyncHandler(async (req, res) => {
       .status(400)
       .json({ success: false, message: "Please provide a url to scan" });
   }
-  // In the basic validation section, add this check right after the URL checks:
-  const { url, ownershipConfirmed } = req.body; // was: const { url } = req.body;
 
-  // ...(existing url validation stays the same)...
+  const trimmedUrl = url.trim();
 
-  // NEW: reject the scan entirely if ownership wasn't confirmed. This is
-  // the real enforcement point — the frontend checkbox is a UX nudge, but
-  // the backend is what actually stops an unconfirmed scan from running.
   if (ownershipConfirmed !== true) {
     return res.status(400).json({
       success: false,
@@ -72,7 +67,6 @@ const runScan = asyncHandler(async (req, res) => {
         "You must confirm you own this website or have permission to scan it.",
     });
   }
-  const trimmedUrl = url.trim();
 
   if (!/^https?:\/\//i.test(trimmedUrl)) {
     return res.status(400).json({
@@ -305,7 +299,7 @@ const runScan = asyncHandler(async (req, res) => {
       score,
       summary,
       findings,
-      ownershipConfirmed: true,
+      ownershipConfirmed: true, // guaranteed true here since we rejected earlier otherwise
     });
   } catch (dbErr) {
     // Scan still succeeded even if saving failed — log it, don't block

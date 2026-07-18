@@ -1,6 +1,6 @@
 // Dashboard.jsx
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { scanUrl } from '../services/scanService';
 import Navbar from '../components/Navbar';
@@ -10,6 +10,7 @@ function Dashboard() {
   const navigate = useNavigate();
 
   const [url, setUrl] = useState('');
+  const [ownershipConfirmed, setOwnershipConfirmed] = useState(false);
   const [validationError, setValidationError] = useState('');
   const [apiError, setApiError] = useState('');
   const [isScanning, setIsScanning] = useState(false);
@@ -36,10 +37,16 @@ function Dashboard() {
       return;
     }
     setValidationError('');
+
+    if (!ownershipConfirmed) {
+      setApiError('Please confirm you own or have permission to scan this site.');
+      return;
+    }
+
     setIsScanning(true);
 
     try {
-      const data = await scanUrl(url.trim());
+      const data = await scanUrl(url.trim(), ownershipConfirmed);
 
       // The backend saves the scan and returns the full document, which
       // includes _id (from savedScan.toJSON() in scanController.js).
@@ -91,10 +98,34 @@ function Dashboard() {
               style={styles.input}
             />
 
+            <label style={styles.checkboxLabel}>
+              <input
+                type="checkbox"
+                checked={ownershipConfirmed}
+                onChange={(e) => setOwnershipConfirmed(e.target.checked)}
+                disabled={isScanning}
+                style={styles.checkbox}
+              />
+              <span>
+                I confirm I own this website or have explicit permission to scan it.{' '}
+                <Link to="/about" style={styles.aboutLink}>
+                  Why does this matter?
+                </Link>
+              </span>
+            </label>
+
             {validationError && <p style={styles.error}>{validationError}</p>}
             {apiError && <p style={styles.error}>{apiError}</p>}
 
-            <button type="submit" style={styles.button} disabled={isScanning}>
+            <button
+              type="submit"
+              style={{
+                ...styles.button,
+                opacity: ownershipConfirmed ? 1 : 0.5,
+                cursor: ownershipConfirmed ? 'pointer' : 'not-allowed',
+              }}
+              disabled={isScanning || !ownershipConfirmed}
+            >
               {isScanning ? (
                 <span style={styles.loadingContent}>
                   <span style={styles.spinner} />
@@ -151,6 +182,25 @@ const styles = {
     fontWeight: 500,
     display: 'flex',
     justifyContent: 'center',
+  },
+  checkboxLabel: {
+    display: 'flex',
+    alignItems: 'flex-start',
+    gap: '0.6rem',
+    color: '#94a3b8',
+    fontSize: '0.85rem',
+    lineHeight: 1.4,
+    marginTop: '0.25rem',
+    cursor: 'pointer',
+  },
+  checkbox: {
+    marginTop: '0.15rem',
+    cursor: 'pointer',
+    flexShrink: 0,
+  },
+  aboutLink: {
+    color: '#60a5fa',
+    textDecoration: 'underline',
   },
   loadingContent: { display: 'flex', alignItems: 'center', gap: '0.5rem' },
   spinner: {
