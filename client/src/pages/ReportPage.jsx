@@ -4,6 +4,9 @@ import { getScanById } from '../services/scanService';
 import Navbar from '../components/Navbar';
 import FindingCard from '../components/FindingCard';
 import Spinner from '../components/Spinner';
+import GradeBadge from '../components/GradeBadge';
+
+
 
 const getGradeColor = (grade) => {
   if (grade === 'A' || grade === 'B') return '#22c55e';
@@ -19,6 +22,13 @@ const groupByCategory = (findings) => {
     grouped[key].push(finding);
   }
   return grouped;
+};
+
+const SUMMARY_COLORS = {
+  Critical: 'border-critical text-critical',
+  High: 'border-high text-high',
+  Medium: 'border-medium text-medium',
+  Low: 'border-low text-low',
 };
 
 function ReportPage() {
@@ -69,8 +79,8 @@ function ReportPage() {
   return (
     <>
       <Navbar />
-      <main style={styles.page}>
-        <div style={styles.card}>
+      <main className="flex justify-center min-h-[calc(100vh-65px)] bg-bg p-8">
+        <div className="bg-surface rounded-xl p-8 w-full max-w-2xl">
           {/* Back link — always visible, even during loading/error, so
               the user is never stuck on a broken/loading page */}
           <Link to="/history" style={styles.backLink}>
@@ -90,28 +100,24 @@ function ReportPage() {
 
           {!isLoading && !error && scan && (
             <>
-              <div style={styles.header}>
-                <div style={styles.headerInfo}>
-                  <h1 style={styles.url}>{scan.finalUrl || scan.url}</h1>
-                  <p style={styles.timestamp}>
-                    Scanned{' '}
-                    {scan.scannedAt ? new Date(scan.scannedAt).toLocaleString() : 'just now'}
+              <div className="flex justify-between items-start gap-4 mb-6 pb-6 border-b border-border flex-wrap">
+                <div className="flex-1 min-w-[200px]">
+                  <h1 className="text-text-primary text-xl break-all mb-1">
+                    {scan.finalUrl || scan.url}
+                  </h1>
+                  <p className="text-text-secondary text-sm">
+                    Scanned {scan.scannedAt ? new Date(scan.scannedAt).toLocaleString() : 'just now'}
                   </p>
                 </div>
 
-                <div
-                  style={{ ...styles.gradeBadge, backgroundColor: getGradeColor(scan.grade) }}
-                >
-                  <span style={styles.gradeLetter}>{scan.grade}</span>
-                  <span style={styles.gradeScore}>{scan.score}/100</span>
-                </div>
+                <GradeBadge grade={scan.grade} score={scan.score} size="large" />
               </div>
 
-              <div style={styles.summaryRow}>
-                <SummaryPill label="Critical" count={scan.summary?.critical ?? 0} color="#991b1b" />
-                <SummaryPill label="High" count={scan.summary?.high ?? 0} color="#ef4444" />
-                <SummaryPill label="Medium" count={scan.summary?.medium ?? 0} color="#eab308" />
-                <SummaryPill label="Low" count={scan.summary?.low ?? 0} color="#3b82f6" />
+              <div className="flex gap-3 mb-6 flex-wrap">
+                <SummaryPill label="Critical" count={scan.summary?.critical ?? 0} />
+                <SummaryPill label="High" count={scan.summary?.high ?? 0} />
+                <SummaryPill label="Medium" count={scan.summary?.medium ?? 0} />
+                <SummaryPill label="Low" count={scan.summary?.low ?? 0} />
               </div>
 
               <div style={styles.findingsSection}>
@@ -148,28 +154,14 @@ function ReportPage() {
   );
 }
 
-function SummaryPill({ label, count, color }) {
+function SummaryPill({ label, count }) {
   return (
-    <div style={{ ...pillStyles.pill, borderColor: color }}>
-      <span style={{ ...pillStyles.pillCount, color }}>{count}</span>
-      <span style={pillStyles.pillLabel}>{label}</span>
+    <div className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full border-[1.5px] bg-bg ${SUMMARY_COLORS[label]}`}>
+      <span className="text-base font-bold">{count}</span>
+      <span className="text-text-primary text-sm">{label}</span>
     </div>
   );
 }
-
-const pillStyles = {
-  pill: {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '0.4rem',
-    padding: '0.5rem 0.9rem',
-    borderRadius: '999px',
-    border: '1.5px solid',
-    backgroundColor: '#0f172a',
-  },
-  pillCount: { fontSize: '1rem', fontWeight: 700 },
-  pillLabel: { color: '#e2e8f0', fontSize: '0.85rem' },
-};
 
 const styles = {
   page: {

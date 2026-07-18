@@ -1,10 +1,6 @@
-// components/Navbar.jsx
-// Simple nav bar shown on authenticated pages — links to Dashboard,
-// History, and a Logout button. Kept as a separate component so it can
-// be dropped into any protected page without duplicating the JSX.
-
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
+import Button from './ui/Button';
 
 function Navbar() {
   const { user, logout } = useAuth();
@@ -16,51 +12,26 @@ function Navbar() {
   };
 
   return (
-    <nav style={styles.nav}>
-      <div style={styles.left}>
-        <Link to="/dashboard" style={styles.link}>
+    <nav className="flex justify-between items-center px-8 py-4 bg-surface border-b border-border">
+      <div className="flex gap-6">
+        <Link to="/dashboard" className="text-text-primary text-sm hover:text-primary transition-colors">
           Dashboard
         </Link>
-        <Link to="/history" style={styles.link}>
+        <Link to="/history" className="text-text-primary text-sm hover:text-primary transition-colors">
           History
         </Link>
+        <Link to="/about" className="text-text-primary text-sm hover:text-primary transition-colors">
+          About
+        </Link>
       </div>
-      <div style={styles.right}>
-        {user && <span style={styles.userName}>{user.name}</span>}
-        <button onClick={handleLogout} style={styles.logoutButton}>
+      <div className="flex items-center gap-4">
+        {user && <span className="text-text-secondary text-sm">{user.name}</span>}
+        <Button variant="danger" onClick={handleLogout}>
           Logout
-        </button>
+        </Button>
       </div>
     </nav>
   );
 }
-
-const styles = {
-  nav: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: '1rem 2rem',
-    backgroundColor: '#1e293b',
-    borderBottom: '1px solid #334155',
-  },
-  left: { display: 'flex', gap: '1.5rem' },
-  right: { display: 'flex', alignItems: 'center', gap: '1rem' },
-  link: {
-    color: '#e2e8f0',
-    textDecoration: 'none',
-    fontSize: '0.95rem',
-  },
-  userName: { color: '#94a3b8', fontSize: '0.875rem' },
-  logoutButton: {
-    padding: '0.4rem 0.9rem',
-    backgroundColor: '#dc2626',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '0.875rem',
-  },
-};
 
 export default Navbar;
