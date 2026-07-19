@@ -6,6 +6,7 @@ import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import ReportPage from './pages/ReportPage'; // NEW
 import AboutPage from './pages/AboutPage';
+import HistoryPage from './pages/HistoryPage';
 
 
 function ReportPageWrapper() {
@@ -33,6 +34,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <Dashboard />
+              </ProtectedRoute>
+            }
+          />
+                    <Route
+            path="/history"
+            element={
+              <ProtectedRoute>
+                <HistoryPage />
               </ProtectedRoute>
             }
           />
