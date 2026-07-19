@@ -15,6 +15,15 @@ const router = express.Router();
 // Mounted at /api/auth in server.js
 // Validation rules run first, then handleValidationErrors checks the result,
 // then (only if valid) the actual controller runs.
+
+router.post(
+  "/register",
+  // registerLimiter,         Optional: rate limiter if you have one
+  // registerValidationRules,  Optional: validation middleware
+  // handleValidationErrors,  Optional: validation error handler
+  register,
+);
+
 router.post(
   "/login",
   loginLimiter,
@@ -23,7 +32,6 @@ router.post(
   login,
 );
 
-router.post("/login", loginValidationRules, handleValidationErrors, login);
 router.get("/me", authMiddleware, getMe);
 
 module.exports = router;
