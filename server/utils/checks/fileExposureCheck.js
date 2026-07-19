@@ -177,7 +177,7 @@ const probePath = async (baseUrl, rule) => {
       description: `${rule.path} — ${rule.description}`,
       recommendation: rule.recommendation,
     };
-  } catch (err) {
+  } catch (_err) {
     // Network error probing this one path (timeout, DNS, refused, etc.)
     // This is NOT a finding — it just means we couldn't check this path,
     // so we silently skip it rather than reporting a false "exposed".

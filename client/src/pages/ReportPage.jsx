@@ -6,14 +6,6 @@ import FindingCard from '../components/FindingCard';
 import Spinner from '../components/Spinner';
 import GradeBadge from '../components/GradeBadge';
 
-
-
-const getGradeColor = (grade) => {
-  if (grade === 'A' || grade === 'B') return '#22c55e';
-  if (grade === 'C') return '#eab308';
-  return '#ef4444';
-};
-
 const groupByCategory = (findings) => {
   const grouped = {};
   for (const finding of findings) {
@@ -36,32 +28,34 @@ function ReportPage() {
   const location = useLocation();
   const navigate = useNavigate();
 
-  const [scan, setScan] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
+  // 1. Initialize state instantly if data already exists in route state
+  const [scan, setScan] = useState(() => {
+    if (id === 'unsaved' && location.state?.result) {
+      return location.state.result;
+    }
+    return null;
+  });
+
+  const [isLoading, setIsLoading] = useState(() => {
+    if (id === 'unsaved' && location.state?.result) {
+      return false;
+    }
+    return true;
+  });
+
   const [error, setError] = useState('');
 
   useEffect(() => {
-    // Reset state on every id change — otherwise navigating from one
-    // report directly to another (e.g. via browser back/forward) could
-    // briefly show stale data from the previous scan while the new one loads.
-    setScan(null);
-    setError('');
-    setIsLoading(true);
-
-    if (id === 'unsaved' && location.state?.result) {
-      setScan(location.state.result);
-      setIsLoading(false);
-      return;
-    }
+    // 2. If it's 'unsaved', the state initializer handled it. Stop right here.
+    if (id === 'unsaved') return;
 
     const fetchScan = async () => {
+      setIsLoading(true);
+      setError('');
       try {
         const data = await getScanById(id);
         setScan(data.scan);
       } catch (err) {
-        // Covers: malformed ID (400 from backend's ObjectId check),
-        // not found or belongs to another user (404 — same message for
-        // both, per Day 8's "don't leak existence" decision).
         const status = err.response?.status;
         if (status === 400 || status === 404) {
           setError('Scan not found. It may have been deleted, or the link is invalid.');
@@ -74,15 +68,13 @@ function ReportPage() {
     };
 
     fetchScan();
-  }, [id, location.state]);
+  }, [id]); // Removed location.state from dependencies since we only fetch when id changes
 
   return (
     <>
       <Navbar />
       <main className="flex justify-center min-h-[calc(100vh-65px)] bg-bg p-4 sm:p-8">
         <div className="bg-surface rounded-xl p-5 sm:p-8 w-full max-w-2xl">
-          {/* Back link — always visible, even during loading/error, so
-              the user is never stuck on a broken/loading page */}
           <Link to="/history" style={styles.backLink}>
             ← Back to History
           </Link>
@@ -137,7 +129,6 @@ function ReportPage() {
                 ))}
               </div>
 
-              {/* Bottom nav — quick actions once you've read the report */}
               <div style={styles.bottomActions}>
                 <button style={styles.secondaryButton} onClick={() => navigate('/history')}>
                   View All History

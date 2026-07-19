@@ -69,7 +69,7 @@ const checkSsl = async (finalUrl) => {
   let parsed;
   try {
     parsed = new URL(finalUrl);
-  } catch (err) {
+  } catch (_err) {
     // Shouldn't happen (finalUrl already came from a successful fetch),
     // but guard defensively rather than crashing the whole scan.
     return findings;

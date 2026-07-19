@@ -15,7 +15,7 @@ const notFound = (req, res, next) => {
   next(new Error(`Route not found: ${req.originalUrl}`));
 };
 
-const errorHandler = (err, req, res, next) => {
+const errorHandler = (err, req, res, _next) => {
   // If a status code was already set earlier (e.g. via res.status(400)
   // before throwing), use it. Otherwise default to 500.
   let statusCode =
