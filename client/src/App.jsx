@@ -40,8 +40,9 @@ function App() {
             }
           />
           <Route path="*" element={<Navigate replace to="/" />} />
+          <Route path="/about" element={<AboutPage />} />
         </Routes>
-        <Route path="/about" element={<AboutPage />} />
+        
       </BrowserRouter>
     </AuthProvider>
   );
