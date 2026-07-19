@@ -14,7 +14,7 @@ const {
 } = require("../utils/checks/vulnerableLibraryCheck");
 const { calculateGrade } = require("../utils/scoring");
 
-const ScanResult = require("../models/ScanResult");
+const ScanResult = require("../models/ScanResults");
 const asyncHandler = require("../utils/asyncHandler");
 
 const axios = require("axios");

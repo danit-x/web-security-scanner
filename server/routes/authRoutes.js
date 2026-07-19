@@ -19,8 +19,8 @@ const router = express.Router();
 router.post(
   "/register",
   // registerLimiter,         Optional: rate limiter if you have one
-  // registerValidationRules,  Optional: validation middleware
-  // handleValidationErrors,  Optional: validation error handler
+  registerValidationRules, //Optional: validation middleware
+  handleValidationErrors, // Optional: validation error handler
   register,
 );
 

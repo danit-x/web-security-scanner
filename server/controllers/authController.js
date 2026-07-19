@@ -1,7 +1,7 @@
 // authController.js
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
-const User = require("../models/User");
+const User = require("../models/user");
 
 const generateToken = (id) => {
   if (!process.env.JWT_SECRET) {

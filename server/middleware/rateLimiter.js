@@ -3,6 +3,7 @@
 // route, which is the most expensive/abusable endpoint (it makes outbound
 // HTTP requests to arbitrary target sites on our server's behalf).
 
+const { ipKeyGenerator } = require("express-rate-limit");
 const rateLimit = require("express-rate-limit");
 
 // Limits scan requests to 10 per 15 minutes.
@@ -15,7 +16,7 @@ const scanLimiter = rateLimit({
   max: 10, // 10 requests per window per key
   standardHeaders: true, // return RateLimit-* headers so clients can see remaining quota
   legacyHeaders: false, // disable deprecated X-RateLimit-* headers
-  keyGenerator: (req) => req.userId || req.ip,
+  keyGenerator: (req) => req.userId || ipKeyGenerator(req.ip),
   // Consistent error shape matching the rest of the API
   handler: (req, res) => {
     res.status(429).json({
@@ -48,7 +49,7 @@ const loginLimiter = rateLimit({
   max: 5,
   standardHeaders: true,
   legacyHeaders: false,
-  keyGenerator: (req) => req.ip, // no req.userId yet at login time, so IP only
+  keyGenerator: (req) => ipKeyGenerator(req.ip), // no req.userId yet at login time, so IP only
   handler: (req, res) => {
     res.status(429).json({
       success: false,

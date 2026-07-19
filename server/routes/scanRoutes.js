@@ -20,7 +20,7 @@ const { runScan } = require("../controllers/scanController");
 // ScanResult model — needed directly here since history is a simple
 // read operation with no extra business logic worth putting in a controller.
 // (If this grows more complex later, move it into scanController.js.)
-const ScanResult = require("../models/ScanResult");
+const ScanResult = require("../models/ScanResults");
 
 const { scanLimiter } = require("../middleware/rateLimiter");
 
