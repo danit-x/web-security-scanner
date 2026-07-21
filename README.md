@@ -94,8 +94,8 @@ The scanner performs **inspection only** — it does not attempt to exploit vuln
 Clone the repository:
 
 ```bash
-git clone https://github.com/<your-username>/<your-repo>.git
-cd <your-repo>
+git clone https://github.com/danit-x/web-security-scanner.git
+cd web-security-scanner
 ```
 
 Install backend dependencies:
