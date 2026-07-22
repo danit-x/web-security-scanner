@@ -131,20 +131,48 @@ function Dashboard() {
             )}
 
             {/* Action Button */}
-            <button
-              type="submit"
-              disabled={isScanning || !ownershipConfirmed}
-              className="w-full bg-red-950/30 hover:bg-red-900/50 text-white font-metal text-lg uppercase tracking-widest py-4 border border-red-950 backdrop-blur-md rounded-none transition-all shadow-[inset_0_0_15px_rgba(50,0,0,0.5)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex justify-center items-center"
-            >
-              {isScanning ? (
-                <span className="flex items-center gap-3 text-sm tracking-widest uppercase">
-                  <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
-                  Scanning... Please Wait
-                </span>
-              ) : (
-                'Execute Scan'
-              )}
-            </button>
+<button
+  type="submit"
+  disabled={isScanning || !ownershipConfirmed}
+  className="relative group w-full bg-red-950/30 hover:bg-red-800/50 text-white font-metal text-lg uppercase tracking-widest py-4 border border-red-950 backdrop-blur-md rounded-none transition-all shadow-[inset_0_0_15px_rgba(50,0,0,0.5)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex justify-center items-center overflow-hidden outline-offset-4 focus:outline focus:outline-2 focus:outline-red-600"
+>
+  {/* Inner Text / Spinner Content */}
+  <span className="relative z-20">
+    {isScanning ? (
+      <span className="flex items-center gap-3 text-sm tracking-widest uppercase">
+        <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+        Scanning... Please Wait
+      </span>
+    ) : (
+      'Execute Scan'
+    )}
+  </span>
+
+  {/* Light Streak / Sheen Effect */}
+  <span
+    className="absolute left-[-75%] top-0 h-full w-[50%] bg-red-500/20 rotate-12 z-10 blur-lg group-hover:left-[125%] transition-all duration-1000 ease-in-out pointer-events-none"
+  ></span>
+
+  {/* Top-Left Corner Frame */}
+  <span
+    className="w-1/2 transition-all duration-300 block border-red-500/60 absolute h-[20%] border-l-2 border-t-2 top-0 left-0 pointer-events-none"
+  ></span>
+
+  {/* Top-Right Corner Frame (Expands down on hover) */}
+  <span
+    className="w-1/2 transition-all duration-300 block border-red-500/60 absolute group-hover:h-[90%] h-[60%] border-r-2 border-t-2 top-0 right-0 pointer-events-none"
+  ></span>
+
+  {/* Bottom-Left Corner Frame (Expands up on hover) */}
+  <span
+    className="w-1/2 transition-all duration-300 block border-red-500/60 absolute h-[60%] group-hover:h-[90%] border-l-2 border-b-2 left-0 bottom-0 pointer-events-none"
+  ></span>
+
+  {/* Bottom-Right Corner Frame */}
+  <span
+    className="w-1/2 transition-all duration-300 block border-red-500/60 absolute h-[20%] border-r-2 border-b-2 right-0 bottom-0 pointer-events-none"
+  ></span>
+</button>
           </form>
         </div>
       </main>
