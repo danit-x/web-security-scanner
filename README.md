@@ -45,11 +45,12 @@ The scanner performs **inspection only** — it does not attempt to exploit vuln
 
 ## Screenshots
 
-> _Screenshots to be added._
-
 **Login / Register**
 
-`[ screenshot placeholder ]`
+<img width="1622" height="887" alt="image" src="https://github.com/user-attachments/assets/d4063549-a734-49a3-bff9-844d2083502e" />
+<img width="1650" height="827" alt="image" src="https://github.com/user-attachments/assets/957412d4-dfd6-45a9-957a-88ed11d675e5" />
+
+
 
 **Dashboard — URL Scan Input**
 
