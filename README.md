@@ -50,19 +50,17 @@ The scanner performs **inspection only** — it does not attempt to exploit vuln
 <img width="1622" height="887" alt="image" src="https://github.com/user-attachments/assets/d4063549-a734-49a3-bff9-844d2083502e" />
 <img width="1650" height="827" alt="image" src="https://github.com/user-attachments/assets/957412d4-dfd6-45a9-957a-88ed11d675e5" />
 
-
-
 **Dashboard — URL Scan Input**
 
-`[ screenshot placeholder ]`
+<img width="1262" height="692" alt="image" src="https://github.com/user-attachments/assets/e9c2e2a8-ffeb-47b7-80b2-87ceae87fd24" />
 
 **Scan Report — Grade & Findings**
 
-`[ screenshot placeholder ]`
+<img width="1140" height="861" alt="image" src="https://github.com/user-attachments/assets/da92e194-9f4c-4663-8d07-39043b4a02fc" />
 
 **Scan History**
 
-`[ screenshot placeholder ]`
+<img width="932" height="470" alt="image" src="https://github.com/user-attachments/assets/0c660e0d-5328-46b1-be34-34d2701d31ff" />
 
 ## Tech Stack
 
