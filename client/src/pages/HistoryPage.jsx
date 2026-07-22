@@ -113,7 +113,7 @@ function HistoryPage() {
                       <span className="text-emerald-700 font-semibold">No issues found</span>}
                   </p>
                 </div>
-                <div className="flex-shrink-0 pl-2">
+                <div className="shrink-0 pl-2">
                   <GradeBadge grade={scan.grade} score={scan.score} size="small" />
                 </div>
               </div>

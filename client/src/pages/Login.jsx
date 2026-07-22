@@ -54,7 +54,7 @@ function Login() {
       </div>
 
       {/* Dark Glass Filter Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-zinc-950/70 backdrop-blur-[4px] z-0 pointer-events-none" />
+      <div className="absolute inset-0 bg-linear-to-br from-black/70 via-black/50 to-zinc-950/70 backdrop-blur-xs z-0 pointer-events-none" />
 
       {/* Main Card */}
       <Card className="w-full max-w-md p-8 sm:p-12 bg-[#050000]/60 backdrop-blur-xl border border-red-950/80 shadow-[0_10px_30px_rgba(0,0,0,0.8)] rounded-none relative z-10">

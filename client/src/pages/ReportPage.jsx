@@ -106,7 +106,7 @@ function ReportPage() {
             <>
               {/* Header Section */}
               <div className="flex justify-between items-start gap-4 mb-6 pb-6 border-b border-[#8f706b]/20 flex-wrap">
-                <div className="flex-1 min-w-[200px] space-y-1">
+                <div className="flex-1 min-w-50 space-y-1">
                   <h1 className="text-white font-mono text-lg sm:text-xl break-all tracking-wider">
                     {scan.finalUrl || scan.url}
                   </h1>
@@ -115,7 +115,7 @@ function ReportPage() {
                   </p>
                 </div>
 
-                <div className="flex-shrink-0">
+                <div className="shrink-0">
                   <GradeBadge grade={scan.grade} score={scan.score} size="large" />
                 </div>
               </div>

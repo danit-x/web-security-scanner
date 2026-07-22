@@ -134,7 +134,7 @@ function Dashboard() {
 <button
   type="submit"
   disabled={isScanning || !ownershipConfirmed}
-  className="relative group w-full bg-red-950/30 hover:bg-red-800/50 text-white font-metal text-lg uppercase tracking-widest py-4 border border-red-950 backdrop-blur-md rounded-none transition-all shadow-[inset_0_0_15px_rgba(50,0,0,0.5)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex justify-center items-center overflow-hidden outline-offset-4 focus:outline focus:outline-2 focus:outline-red-600"
+  className="relative group w-full bg-red-950/30 hover:bg-red-800/50 text-white font-metal text-lg uppercase tracking-widest py-4 border border-red-950 backdrop-blur-md rounded-none transition-all shadow-[inset_0_0_15px_rgba(50,0,0,0.5)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex justify-center items-center overflow-hidden outline-offset-4 focus:outline-2 focus:outline-red-600"
 >
   {/* Inner Text / Spinner Content */}
   <span className="relative z-20">
