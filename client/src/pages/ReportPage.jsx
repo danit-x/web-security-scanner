@@ -17,10 +17,10 @@ const groupByCategory = (findings) => {
 };
 
 const SUMMARY_COLORS = {
-  Critical: 'border-critical text-critical',
-  High: 'border-high text-high',
-  Medium: 'border-medium text-medium',
-  Low: 'border-low text-low',
+  Critical: 'border-red-900 bg-red-950/30 text-red-500',
+  High: 'border-red-950 bg-red-950/20 text-red-600',
+  Medium: 'border-amber-900/60 bg-amber-950/20 text-amber-500',
+  Low: 'border-[#8f706b]/40 bg-black/40 text-[#8f706b]',
 };
 
 function ReportPage() {
@@ -68,23 +68,35 @@ function ReportPage() {
     };
 
     fetchScan();
-  }, [id]); // Removed location.state from dependencies since we only fetch when id changes
+  }, [id]);
 
   return (
     <>
       <Navbar />
-      <main className="flex justify-center min-h-[calc(100vh-65px)] bg-bg p-4 sm:p-8">
-        <div className="bg-surface rounded-xl p-5 sm:p-8 w-full max-w-2xl">
-          <Link to="/history" style={styles.backLink}>
-            ← Back to History
+      <main className="min-h-[calc(100vh-65px)] bg-[#050000] flex justify-center items-start p-4 sm:p-8">
+        <div className="bg-[#050000]/60 backdrop-blur-xl border border-red-950/80 shadow-[0_10px_30px_rgba(0,0,0,0.8)] rounded-none p-6 sm:p-10 w-full max-w-3xl relative z-10">
+          <Link
+            to="/history"
+            className="inline-flex items-center text-xs uppercase tracking-widest font-metal text-[#8f706b] hover:text-white transition-colors mb-6 gap-2"
+          >
+            <span>←</span> Back to History
           </Link>
 
-          {isLoading && <Spinner label="Loading report..." />}
+          {isLoading && (
+            <div className="py-12 flex justify-center text-[#8f706b]">
+              <Spinner label="Loading report..." />
+            </div>
+          )}
 
           {error && (
-            <div style={styles.errorBox}>
-              <p style={styles.error}>{error}</p>
-              <button style={styles.errorButton} onClick={() => navigate('/dashboard')}>
+            <div className="text-center py-8 space-y-6">
+              <div className="p-4 bg-red-950/20 border-l-4 border-red-900 text-[#8f706b] text-xs font-bold uppercase tracking-widest backdrop-blur-sm shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]">
+                <span className="text-red-700 mr-2 font-metal text-sm">X</span> {error}
+              </div>
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="bg-red-950/30 hover:bg-red-900/50 text-white font-metal text-xs uppercase tracking-widest px-6 py-3 border border-red-950 backdrop-blur-md rounded-none transition-all shadow-[inset_0_0_15px_rgba(50,0,0,0.5)] cursor-pointer"
+              >
                 Start a new scan
               </button>
             </div>
@@ -92,48 +104,64 @@ function ReportPage() {
 
           {!isLoading && !error && scan && (
             <>
-              <div className="flex justify-between items-start gap-4 mb-6 pb-6 border-b border-border flex-wrap">
-                <div className="flex-1 min-w-[200px]">
-                  <h1 className="text-text-primary text-xl break-all mb-1">
+              {/* Header Section */}
+              <div className="flex justify-between items-start gap-4 mb-6 pb-6 border-b border-[#8f706b]/20 flex-wrap">
+                <div className="flex-1 min-w-[200px] space-y-1">
+                  <h1 className="text-white font-mono text-lg sm:text-xl break-all tracking-wider">
                     {scan.finalUrl || scan.url}
                   </h1>
-                  <p className="text-text-secondary text-sm">
+                  <p className="text-[10px] uppercase tracking-[0.15em] text-[#8f706b]">
                     Scanned {scan.scannedAt ? new Date(scan.scannedAt).toLocaleString() : 'just now'}
                   </p>
                 </div>
 
-                <GradeBadge grade={scan.grade} score={scan.score} size="large" />
+                <div className="flex-shrink-0">
+                  <GradeBadge grade={scan.grade} score={scan.score} size="large" />
+                </div>
               </div>
 
-              <div className="flex gap-3 mb-6 flex-wrap">
+              {/* Summary Metrics */}
+              <div className="flex gap-3 mb-8 flex-wrap">
                 <SummaryPill label="Critical" count={scan.summary?.critical ?? 0} />
                 <SummaryPill label="High" count={scan.summary?.high ?? 0} />
                 <SummaryPill label="Medium" count={scan.summary?.medium ?? 0} />
                 <SummaryPill label="Low" count={scan.summary?.low ?? 0} />
               </div>
 
-              <div style={styles.findingsSection}>
-                <h2 style={styles.sectionTitle}>Findings</h2>
+              {/* Findings Section */}
+              <div className="space-y-6">
+                <h2 className="text-xl text-white font-metal tracking-widest uppercase border-b border-[#8f706b]/20 pb-2">
+                  Findings
+                </h2>
 
                 {Object.entries(
                   scan.findingsByCategory || groupByCategory(scan.findings || [])
                 ).map(([category, categoryFindings]) => (
-                  <div key={category} style={styles.categoryGroup}>
-                    <h3 style={styles.categoryTitle}>
-                      {category} <span style={styles.categoryCount}>({categoryFindings.length})</span>
+                  <div key={category} className="space-y-3">
+                    <h3 className="text-xs uppercase tracking-[0.2em] font-metal text-white border-l-2 border-red-900 pl-3">
+                      {category} <span className="text-[#8f706b] font-normal">({categoryFindings.length})</span>
                     </h3>
-                    {categoryFindings.map((finding, index) => (
-                      <FindingCard key={index} finding={finding} />
-                    ))}
+                    <div className="space-y-3">
+                      {categoryFindings.map((finding, index) => (
+                        <FindingCard key={index} finding={finding} />
+                      ))}
+                    </div>
                   </div>
                 ))}
               </div>
 
-              <div style={styles.bottomActions}>
-                <button style={styles.secondaryButton} onClick={() => navigate('/history')}>
+              {/* Bottom Actions */}
+              <div className="flex flex-col sm:flex-row gap-4 mt-10 pt-6 border-t border-[#8f706b]/20">
+                <button
+                  onClick={() => navigate('/history')}
+                  className="flex-1 bg-black/40 hover:bg-black/70 text-[#8f706b] hover:text-white font-metal text-xs uppercase tracking-widest py-3 px-4 border border-[#8f706b]/30 rounded-none transition-all cursor-pointer"
+                >
                   View All History
                 </button>
-                <button style={styles.primaryButton} onClick={() => navigate('/dashboard')}>
+                <button
+                  onClick={() => navigate('/dashboard')}
+                  className="flex-1 bg-red-950/30 hover:bg-red-900/50 text-white font-metal text-xs uppercase tracking-widest py-3 px-4 border border-red-950 backdrop-blur-md rounded-none transition-all shadow-[inset_0_0_15px_rgba(50,0,0,0.5)] cursor-pointer"
+                >
                   Scan Another URL
                 </button>
               </div>
@@ -147,118 +175,13 @@ function ReportPage() {
 
 function SummaryPill({ label, count }) {
   return (
-    <div className={`flex items-center gap-1.5 px-3.5 py-2 rounded-full border-[1.5px] bg-bg ${SUMMARY_COLORS[label]}`}>
-      <span className="text-base font-bold">{count}</span>
-      <span className="text-text-primary text-sm">{label}</span>
+    <div
+      className={`flex items-center gap-2 px-4 py-1.5 rounded-none border text-xs font-mono tracking-widest uppercase backdrop-blur-sm ${SUMMARY_COLORS[label]}`}
+    >
+      <span className="font-bold text-sm">{count}</span>
+      <span className="opacity-80">{label}</span>
     </div>
   );
 }
-
-const styles = {
-  page: {
-    display: 'flex',
-    justifyContent: 'center',
-    minHeight: 'calc(100vh - 65px)',
-    backgroundColor: '#0f172a',
-    padding: '2rem 1rem',
-  },
-  card: {
-    backgroundColor: '#1e293b',
-    padding: '2rem',
-    borderRadius: '12px',
-    width: '100%',
-    maxWidth: '700px',
-  },
-  backLink: {
-    display: 'inline-block',
-    color: '#94a3b8',
-    fontSize: '0.85rem',
-    textDecoration: 'none',
-    marginBottom: '1.5rem',
-  },
-  header: {
-    display: 'flex',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    gap: '1rem',
-    marginBottom: '1.5rem',
-    paddingBottom: '1.5rem',
-    borderBottom: '1px solid #334155',
-    flexWrap: 'wrap',
-  },
-  headerInfo: { flex: 1, minWidth: '200px' },
-  url: { color: '#f8fafc', fontSize: '1.25rem', wordBreak: 'break-all', marginBottom: '0.25rem' },
-  timestamp: { color: '#94a3b8', fontSize: '0.85rem' },
-  gradeBadge: {
-    display: 'flex',
-    flexDirection: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRadius: '12px',
-    padding: '0.75rem 1.5rem',
-    minWidth: '100px',
-    color: '#0f172a',
-  },
-  gradeLetter: { fontSize: '2.25rem', fontWeight: 700, lineHeight: 1 },
-  gradeScore: { fontSize: '0.8rem', fontWeight: 600, marginTop: '0.25rem' },
-  summaryRow: { display: 'flex', gap: '0.75rem', marginBottom: '1.5rem', flexWrap: 'wrap' },
-  findingsSection: { marginTop: '0.5rem' },
-  sectionTitle: { color: '#f8fafc', fontSize: '1.1rem', marginBottom: '1rem' },
-  categoryGroup: { marginBottom: '1.5rem' },
-  categoryTitle: {
-    color: '#cbd5e1',
-    fontSize: '0.95rem',
-    fontWeight: 700,
-    marginBottom: '0.6rem',
-    textTransform: 'uppercase',
-    letterSpacing: '0.03em',
-  },
-  categoryCount: { color: '#64748b', fontWeight: 400, textTransform: 'none' },
-
-  errorBox: { textAlign: 'center', padding: '2rem 1rem' },
-  error: { color: '#f87171', fontSize: '0.95rem', marginBottom: '1rem' },
-  errorButton: {
-    padding: '0.6rem 1.4rem',
-    backgroundColor: '#2563eb',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '0.9rem',
-  },
-
-  bottomActions: {
-    display: 'flex',
-    gap: '0.75rem',
-    marginTop: '2rem',
-    paddingTop: '1.5rem',
-    borderTop: '1px solid #334155',
-    flexWrap: 'wrap',
-  },
-  primaryButton: {
-    flex: 1,
-    padding: '0.7rem',
-    backgroundColor: '#2563eb',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '0.9rem',
-    fontWeight: 500,
-    minWidth: '150px',
-  },
-  secondaryButton: {
-    flex: 1,
-    padding: '0.7rem',
-    backgroundColor: 'transparent',
-    color: '#e2e8f0',
-    border: '1px solid #334155',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '0.9rem',
-    fontWeight: 500,
-    minWidth: '150px',
-  },
-};
 
 export default ReportPage;

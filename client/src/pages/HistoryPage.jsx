@@ -21,9 +21,6 @@ function HistoryPage() {
     const fetchHistory = async () => {
       try {
         const data = await getScanHistory();
-        // Backend already sorts by createdAt descending (confirmed in
-        // scanRoutes.js: .sort({ createdAt: -1 })), so no need to re-sort
-        // here. Keeping data.scans as-is trusts that ordering.
         setScans(data.scans);
       } catch (err) {
         setError(err.response?.data?.message || 'Could not load scan history.');
@@ -38,51 +35,87 @@ function HistoryPage() {
   return (
     <>
       <Navbar />
-      <main className="flex justify-center min-h-[calc(100vh-65px)] bg-bg p-4 sm:p-8">
+      <main className="min-h-[calc(100vh-65px)] bg-[#050000] flex justify-center items-start p-4 sm:p-8">
         <div className="w-full max-w-2xl">
-          <h1 className="text-text-primary text-xl sm:text-2xl mb-4 sm:mb-6">Scan History</h1>
+          {/* Header Section */}
+          <div className="space-y-2 text-center border-b border-[#8f706b]/20 pb-6 mb-8">
+            <h1 className="text-3xl sm:text-4xl text-white tracking-widest font-metal drop-shadow-[0_2px_4px_rgba(0,0,0,1)] uppercase">
+              Scan History
+            </h1>
+            <p className="text-xs uppercase tracking-[0.2em] text-[#8f706b] font-bold">
+              Prior Diagnostics Log
+            </p>
+          </div>
 
-          {isLoading && <Spinner label="Loading history..." />}
-          {error && <p style={styles.error}>{error}</p>}
+          {/* Loading Indicator */}
+          {isLoading && (
+            <div className="py-12 flex justify-center text-[#8f706b]">
+              <Spinner label="Loading history..." />
+            </div>
+          )}
 
-          {/* Empty state — no scans yet for this user */}
+          {/* Error Banner */}
+          {error && (
+            <div className="p-4 bg-red-950/20 border-l-4 border-red-900 text-[#8f706b] text-xs font-bold uppercase tracking-widest backdrop-blur-sm shadow-[inset_0_0_10px_rgba(0,0,0,0.5)] mb-6">
+              <span className="text-red-700 mr-2 font-metal text-sm">X</span> {error}
+            </div>
+          )}
+
+          {/* Empty State */}
           {!isLoading && !error && scans.length === 0 && (
-            <div style={styles.emptyState}>
-              <p style={styles.emptyText}>No scans yet — try scanning a URL!</p>
-              <button style={styles.emptyButton} onClick={() => navigate('/dashboard')}>
-                Go to Dashboard
+            <div className="text-center py-12 px-6 bg-[#050000]/60 backdrop-blur-xl border border-red-950/80 shadow-[0_10px_30px_rgba(0,0,0,0.8)] rounded-none space-y-6">
+              <p className="text-xs sm:text-sm text-[#8f706b] uppercase tracking-widest font-bold">
+                No prior scan records located within the archive.
+              </p>
+              <button
+                onClick={() => navigate('/dashboard')}
+                className="bg-red-950/30 hover:bg-red-900/50 text-white font-metal text-sm uppercase tracking-widest px-6 py-3 border border-red-950 backdrop-blur-md rounded-none transition-all shadow-[inset_0_0_15px_rgba(50,0,0,0.5)] cursor-pointer inline-block"
+              >
+                Execute New Scan
               </button>
             </div>
           )}
 
-          {/* Scan list */}
+          {/* Scan Cards List */}
           {!isLoading &&
             !error &&
             scans.map((scan) => (
               <div
                 key={scan._id}
                 onClick={() => navigate(`/report/${scan._id}`)}
-                className="flex justify-between items-center gap-3 sm:gap-4 bg-surface border border-border rounded-lg p-4 sm:p-5 mb-3 cursor-pointer hover:border-primary transition-colors"
+                className="group flex justify-between items-center gap-4 bg-[#050000]/60 backdrop-blur-xl border border-[#8f706b]/30 hover:border-red-900/80 p-5 mb-4 cursor-pointer rounded-none transition-all duration-200 shadow-[0_4px_20px_rgba(0,0,0,0.5)] hover:shadow-[0_0_15px_rgba(153,27,27,0.3)] relative"
                 role="button"
                 tabIndex={0}
                 onKeyDown={(e) => e.key === 'Enter' && navigate(`/report/${scan._id}`)}
               >
-                <div className="flex-1 min-w-0">
-                  <p className="text-text-primary font-semibold truncate">{scan.url}</p>
-                  <p className="text-text-muted text-xs mb-1">
+                <div className="flex-1 min-w-0 space-y-1">
+                  <p className="text-white font-mono text-sm tracking-wider truncate group-hover:text-red-400 transition-colors">
+                    {scan.url}
+                  </p>
+                  <p className="text-[10px] uppercase tracking-[0.15em] text-[#8f706b]">
                     {scan.scannedAt ? new Date(scan.scannedAt).toLocaleString() : 'Unknown date'}
                   </p>
-                  <p className="text-text-secondary text-sm">
-                    {scan.summary?.critical > 0 && `${scan.summary.critical} Critical, `}
-                    {scan.summary?.high > 0 && `${scan.summary.high} High, `}
-                    {scan.summary?.medium > 0 && `${scan.summary.medium} Medium, `}
-                    {scan.summary?.low > 0 && `${scan.summary.low} Low`}
+                  <p className="text-xs text-[#8f706b]/80 tracking-wide pt-1">
+                    {scan.summary?.critical > 0 && (
+                      <span className="text-red-600 font-bold mr-2">{scan.summary.critical} Critical</span>
+                    )}
+                    {scan.summary?.high > 0 && (
+                      <span className="text-red-500 font-semibold mr-2">{scan.summary.high} High</span>
+                    )}
+                    {scan.summary?.medium > 0 && (
+                      <span className="text-amber-600 mr-2">{scan.summary.medium} Medium</span>
+                    )}
+                    {scan.summary?.low > 0 && (
+                      <span className="text-amber-800 mr-2">{scan.summary.low} Low</span>
+                    )}
                     {scan.summary &&
                       Object.values(scan.summary).every((count) => count === 0) &&
-                      'No issues found'}
+                      <span className="text-emerald-700 font-semibold">No issues found</span>}
                   </p>
                 </div>
-                <GradeBadge grade={scan.grade} score={scan.score} size="small" />
+                <div className="flex-shrink-0 pl-2">
+                  <GradeBadge grade={scan.grade} score={scan.score} size="small" />
+                </div>
               </div>
             ))}
         </div>
@@ -90,27 +123,5 @@ function HistoryPage() {
     </>
   );
 }
-
-const styles = {
-  error: { color: '#f87171', fontSize: '0.95rem' },
-
-  emptyState: {
-    textAlign: 'center',
-    padding: '3rem 1rem',
-    backgroundColor: '#1e293b',
-    borderRadius: '12px',
-  },
-  emptyText: { color: '#94a3b8', fontSize: '1rem', marginBottom: '1rem' },
-  emptyButton: {
-    padding: '0.6rem 1.4rem',
-    backgroundColor: '#2563eb',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '0.9rem',
-    fontWeight: 500,
-  },
-};
 
 export default HistoryPage;

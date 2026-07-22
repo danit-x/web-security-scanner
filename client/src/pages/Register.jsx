@@ -67,18 +67,16 @@ function Register() {
   return (
     <main className="relative min-h-screen grid place-items-center bg-black px-4 py-6 sm:px-6 sm:py-8 overflow-hidden">
       
-      {/* Background Graphic: WEB SECURITY SCANNER */}
-      <div className="absolute inset-0 flex flex-col items-center justify-center pointer-events-none select-none z-0 opacity-30">
-        <h1 className="text-[12vw] leading-none font-black text-red-950 uppercase tracking-tighter whitespace-nowrap transform -rotate-6">
-          Web Security
-        </h1>
-        <h1 className="text-[12vw] leading-none font-black text-red-950 uppercase tracking-tighter whitespace-nowrap transform -rotate-6">
+{/* Background Graphic: WEB SECURITY SCANNER (Bloody & Glowing) */}
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none select-none z-0 overflow-hidden">
+        <h1 className="font-bloody text-[12vw] leading-[0.85] font-normal text-red-600/50 uppercase tracking-widest text-center transform -rotate-6 animate-pulse drop-shadow-[0_0_35px_rgba(220,38,38,0.6)]">
+          Web Security<br />
           Scanner
         </h1>
       </div>
 
       {/* Dark Glass Filter Overlay */}
-      <div className="absolute inset-0 bg-black/40 backdrop-blur-[3px] z-0 pointer-events-none"></div>
+      <div className="absolute inset-0 bg-gradient-to-br from-black/70 via-black/50 to-zinc-950/70 backdrop-blur-[4px] z-0 pointer-events-none" />
 
       {/* Main Card */}
       <Card className="w-full max-w-md p-8 sm:p-12 bg-[#050000]/60 backdrop-blur-xl border border-red-950/80 shadow-[0_10px_30px_rgba(0,0,0,0.8)] rounded-none relative z-10">

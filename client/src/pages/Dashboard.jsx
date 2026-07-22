@@ -48,17 +48,9 @@ function Dashboard() {
     try {
       const data = await scanUrl(url.trim(), ownershipConfirmed);
 
-      // The backend saves the scan and returns the full document, which
-      // includes _id (from savedScan.toJSON() in scanController.js).
-      // If for some reason the save failed (data.saved === false, no _id),
-      // fall back to passing the result directly via router state instead
-      // of navigating to a route that would fail to fetch it.
       if (data._id) {
         navigate(`/report/${data._id}`);
       } else {
-        // Rare edge case: scan succeeded but DB save failed. Pass the
-        // in-memory result via navigation state so the user still sees
-        // something, rather than losing the scan entirely.
         navigate('/report/unsaved', { state: { result: data } });
       }
     } catch (err) {
@@ -80,59 +72,77 @@ function Dashboard() {
   return (
     <>
       <Navbar />
-      <main style={styles.page}>
-        <div style={styles.card}>
-          <h1 style={styles.title}>Welcome{user ? `, ${user.name}` : ''}</h1>
+      <main className="min-h-[calc(100vh-65px)] bg-[#050000] flex justify-center items-start p-4 sm:p-8">
+        {/* Main Card */}
+        <div className="w-full max-w-lg p-8 sm:p-12 bg-[#050000]/60 backdrop-blur-xl border border-red-950/80 shadow-[0_10px_30px_rgba(0,0,0,0.8)] rounded-none relative z-10">
+          <div className="space-y-2 text-center border-b border-[#8f706b]/20 pb-6 mb-8">
+            <h1 className="text-3xl sm:text-4xl text-white tracking-widest font-metal drop-shadow-[0_2px_4px_rgba(0,0,0,1)] uppercase">
+              Welcome{user ? `, ${user.name}` : ''}
+            </h1>
+            <p className="text-xs uppercase tracking-[0.2em] text-[#8f706b] font-bold">
+              Target Diagnostic System
+            </p>
+          </div>
 
-          <form onSubmit={handleSubmit} style={styles.form}>
-            <label style={styles.label} htmlFor="scan-url">
-              Website URL to scan
+          <form onSubmit={handleSubmit} className="space-y-6">
+            {/* Input with floating badge style */}
+            <label className="block relative group" htmlFor="scan-url">
+              <span className="absolute -top-2.5 left-3 bg-[#050000] px-2 text-[10px] uppercase tracking-widest font-bold text-[#8f706b] z-10 border border-[#8f706b]/20 border-b-0">
+                Website URL to scan
+              </span>
+              <input
+                id="scan-url"
+                type="text"
+                placeholder="https://example.com"
+                value={url}
+                onChange={(e) => setUrl(e.target.value)}
+                disabled={isScanning}
+                className="w-full bg-black/40 border border-[#8f706b]/40 text-white placeholder:text-[#8f706b]/50 focus:border-red-900 focus:bg-black/60 focus:outline-none focus:ring-0 transition-all p-4 pt-5 rounded-none text-sm tracking-wider relative z-0 backdrop-blur-sm disabled:opacity-50"
+              />
             </label>
-            <input
-              id="scan-url"
-              type="text"
-              placeholder="https://example.com"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              disabled={isScanning}
-              style={styles.input}
-            />
 
-            <label style={styles.checkboxLabel}>
+            {/* Checkbox with custom style */}
+            <label className="flex items-start gap-3 cursor-pointer group text-xs text-[#8f706b] tracking-wider uppercase leading-relaxed">
               <input
                 type="checkbox"
                 checked={ownershipConfirmed}
                 onChange={(e) => setOwnershipConfirmed(e.target.checked)}
                 disabled={isScanning}
-                style={styles.checkbox}
+                className="mt-0.5 accent-red-900 cursor-pointer h-4 w-4 bg-black/60 border border-[#8f706b]/40 rounded-none focus:ring-0 disabled:cursor-not-allowed"
               />
               <span>
                 I confirm I own this website or have explicit permission to scan it.{' '}
-                <Link to="/about" style={styles.aboutLink}>
+                <Link to="/about" className="font-bold text-white underline hover:text-red-700 transition-colors inline-block ml-1">
                   Why does this matter?
                 </Link>
               </span>
             </label>
 
-            {validationError && <p style={styles.error}>{validationError}</p>}
-            {apiError && <p style={styles.error}>{apiError}</p>}
+            {/* Error notifications */}
+            {validationError && (
+              <div className="p-4 bg-red-950/20 border-l-4 border-red-900 text-[#8f706b] text-xs font-bold uppercase tracking-widest backdrop-blur-sm shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]">
+                <span className="text-red-700 mr-2 font-metal text-sm">X</span> {validationError}
+              </div>
+            )}
+            {apiError && (
+              <div className="p-4 bg-red-950/20 border-l-4 border-red-900 text-[#8f706b] text-xs font-bold uppercase tracking-widest backdrop-blur-sm shadow-[inset_0_0_10px_rgba(0,0,0,0.5)]">
+                <span className="text-red-700 mr-2 font-metal text-sm">X</span> {apiError}
+              </div>
+            )}
 
+            {/* Action Button */}
             <button
               type="submit"
-              style={{
-                ...styles.button,
-                opacity: ownershipConfirmed ? 1 : 0.5,
-                cursor: ownershipConfirmed ? 'pointer' : 'not-allowed',
-              }}
               disabled={isScanning || !ownershipConfirmed}
+              className="w-full bg-red-950/30 hover:bg-red-900/50 text-white font-metal text-lg uppercase tracking-widest py-4 border border-red-950 backdrop-blur-md rounded-none transition-all shadow-[inset_0_0_15px_rgba(50,0,0,0.5)] disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex justify-center items-center"
             >
               {isScanning ? (
-                <span style={styles.loadingContent}>
-                  <span style={styles.spinner} />
-                  Scanning... this can take a few seconds
+                <span className="flex items-center gap-3 text-sm tracking-widest uppercase">
+                  <span className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                  Scanning... Please Wait
                 </span>
               ) : (
-                'Scan'
+                'Execute Scan'
               )}
             </button>
           </form>
@@ -141,77 +151,5 @@ function Dashboard() {
     </>
   );
 }
-
-const styles = {
-  page: {
-    display: 'flex',
-    justifyContent: 'center',
-    alignItems: 'flex-start',
-    minHeight: 'calc(100vh - 65px)', // accounts for navbar height
-    backgroundColor: '#0f172a',
-    padding: '1rem 1rem 2rem',
-  },
-  card: {
-    backgroundColor: '#1e293b',
-    padding: '1.25rem 1.25rem 1.5rem',
-    borderRadius: '12px',
-    width: '100%',
-    maxWidth: '560px',
-    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.3)',
-  },
-  title: { color: '#f8fafc', fontSize: '1.5rem', marginBottom: '1.5rem' },
-  form: { display: 'flex', flexDirection: 'column', gap: '0.5rem' },
-  label: { color: '#e2e8f0', fontSize: '0.9rem' },
-  input: {
-    padding: '0.7rem',
-    borderRadius: '6px',
-    border: '1px solid #334155',
-    backgroundColor: '#0f172a',
-    color: '#f8fafc',
-    fontSize: '1rem',
-  },
-  button: {
-    marginTop: '0.5rem',
-    padding: '0.7rem',
-    backgroundColor: '#2563eb',
-    color: '#fff',
-    border: 'none',
-    borderRadius: '6px',
-    cursor: 'pointer',
-    fontSize: '1rem',
-    fontWeight: 500,
-    display: 'flex',
-    justifyContent: 'center',
-  },
-  checkboxLabel: {
-    display: 'flex',
-    alignItems: 'flex-start',
-    gap: '0.6rem',
-    color: '#94a3b8',
-    fontSize: '0.85rem',
-    lineHeight: 1.4,
-    marginTop: '0.25rem',
-    cursor: 'pointer',
-  },
-  checkbox: {
-    marginTop: '0.15rem',
-    cursor: 'pointer',
-    flexShrink: 0,
-  },
-  aboutLink: {
-    color: '#60a5fa',
-    textDecoration: 'underline',
-  },
-  loadingContent: { display: 'flex', alignItems: 'center', gap: '0.5rem' },
-  spinner: {
-    width: '14px',
-    height: '14px',
-    border: '2px solid rgba(255,255,255,0.4)',
-    borderTopColor: '#fff',
-    borderRadius: '50%',
-    animation: 'spin 0.7s linear infinite',
-  },
-  error: { color: '#f87171', fontSize: '0.875rem', margin: 0 },
-};
 
 export default Dashboard;

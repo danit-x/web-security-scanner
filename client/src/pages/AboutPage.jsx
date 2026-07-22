@@ -10,80 +10,74 @@ function AboutPage() {
   return (
     <>
       <Navbar />
-      <main style={styles.page}>
-        <div style={styles.card}>
-          <h1 style={styles.title}>About This Scanner</h1>
-
-          <section style={styles.section}>
-            <h2 style={styles.heading}>What it does</h2>
-            <p style={styles.text}>
-              This tool runs a set of passive security checks against a URL you
-              provide: HTTP security headers, SSL/TLS certificate validity,
-              exposed sensitive files (like <code>.env</code> or{' '}
-              <code>.git/config</code>), cookie security flags, mixed content,
-              outdated JavaScript libraries, and basic CORS configuration.
-              Results are graded A–F with specific recommendations for each
-              issue found.
+      <main className="min-h-[calc(100vh-65px)] bg-[#050000] flex justify-center items-start p-4 sm:p-8">
+        {/* Main Card */}
+        <div className="w-full max-w-2xl p-8 sm:p-12 bg-[#050000]/60 backdrop-blur-xl border border-red-950/80 shadow-[0_10px_30px_rgba(0,0,0,0.8)] rounded-none relative z-10">
+          
+          <div className="space-y-2 text-center border-b border-[#8f706b]/20 pb-6 mb-8">
+            <h1 className="text-3xl sm:text-4xl text-white tracking-widest font-metal drop-shadow-[0_2px_4px_rgba(0,0,0,1)] uppercase">
+              About This Scanner
+            </h1>
+            <p className="text-xs uppercase tracking-[0.2em] text-[#8f706b] font-bold">
+              System Specifications & Directives
             </p>
-          </section>
+          </div>
 
-          <section style={styles.section}>
-            <h2 style={styles.heading}>What it doesn't do</h2>
-            <p style={styles.text}>
-              This is a passive scanner only. It does not attempt to exploit
-              any vulnerability, brute-force credentials, inject payloads, or
-              perform any active attack. It simply requests the page like a
-              normal browser would and inspects the response.
-            </p>
-          </section>
+          <div className="space-y-8">
+            <section className="space-y-2">
+              <h2 className="text-sm uppercase tracking-widest font-metal text-white border-l-2 border-red-900 pl-3">
+                What it does
+              </h2>
+              <p className="text-xs sm:text-sm text-[#8f706b] leading-relaxed tracking-wider">
+                This tool runs a set of passive security checks against a URL you
+                provide: HTTP security headers, SSL/TLS certificate validity,
+                exposed sensitive files (like <code className="bg-black/60 border border-[#8f706b]/30 text-white px-1.5 py-0.5 rounded-none font-mono text-xs">.env</code> or{' '}
+                <code className="bg-black/60 border border-[#8f706b]/30 text-white px-1.5 py-0.5 rounded-none font-mono text-xs">.git/config</code>), cookie security flags, mixed content,
+                outdated JavaScript libraries, and basic CORS configuration.
+                Results are graded A–F with specific recommendations for each
+                issue found.
+              </p>
+            </section>
 
-          <section style={styles.section}>
-            <h2 style={styles.heading}>Why permission matters</h2>
-            <p style={styles.text}>
-              Scanning a website you don't own or have permission to test —
-              even with passive, non-destructive checks — can violate a
-              site's terms of service or, depending on jurisdiction, computer
-              misuse laws. Always confirm you have explicit authorization
-              before scanning a target, and only use this tool on sites you
-              own or are contractually permitted to assess.
-            </p>
-          </section>
+            <section className="space-y-2">
+              <h2 className="text-sm uppercase tracking-widest font-metal text-white border-l-2 border-red-900 pl-3">
+                What it doesn't do
+              </h2>
+              <p className="text-xs sm:text-sm text-[#8f706b] leading-relaxed tracking-wider">
+                This is a passive scanner only. It does not attempt to exploit
+                any vulnerability, brute-force credentials, inject payloads, or
+                perform any active attack. It simply requests the page like a
+                normal browser would and inspects the response.
+              </p>
+            </section>
 
-          <Link to="/dashboard" style={styles.backLink}>
-            ← Back to Dashboard
-          </Link>
+            <section className="space-y-2">
+              <h2 className="text-sm uppercase tracking-widest font-metal text-white border-l-2 border-red-900 pl-3">
+                Why permission matters
+              </h2>
+              <p className="text-xs sm:text-sm text-[#8f706b] leading-relaxed tracking-wider">
+                Scanning a website you don't own or have permission to test —
+                even with passive, non-destructive checks — can violate a
+                site's terms of service or, depending on jurisdiction, computer
+                misuse laws. Always confirm you have explicit authorization
+                before scanning a target, and only use this tool on sites you
+                own or are contractually permitted to assess.
+              </p>
+            </section>
+
+            <div className="pt-4 border-t border-[#8f706b]/20">
+              <Link 
+                to="/dashboard" 
+                className="inline-flex items-center text-xs uppercase tracking-widest font-metal text-white hover:text-red-700 transition-colors gap-2"
+              >
+                <span>←</span> Return To Dashboard
+              </Link>
+            </div>
+          </div>
         </div>
       </main>
     </>
   );
 }
-
-const styles = {
-  page: {
-    display: 'flex',
-    justifyContent: 'center',
-    minHeight: 'calc(100vh - 65px)',
-    backgroundColor: '#0f172a',
-    padding: '1rem 1rem 2rem',
-  },
-  card: {
-    backgroundColor: '#1e293b',
-    padding: '1.25rem 1.25rem 1.5rem',
-    borderRadius: '12px',
-    width: '100%',
-    maxWidth: '650px',
-  },
-  title: { color: '#f8fafc', fontSize: '1.5rem', marginBottom: '1.5rem' },
-  section: { marginBottom: '1.5rem' },
-  heading: { color: '#f8fafc', fontSize: '1.05rem', marginBottom: '0.5rem' },
-  text: { color: '#cbd5e1', fontSize: '0.9rem', lineHeight: 1.6 },
-  backLink: {
-    display: 'inline-block',
-    color: '#60a5fa',
-    fontSize: '0.9rem',
-    textDecoration: 'none',
-    marginTop: '1rem',
-  },
-};
 
 export default AboutPage;
