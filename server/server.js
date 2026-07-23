@@ -15,6 +15,13 @@ const PORT = process.env.PORT || 5000;
 const MONGO_URI = process.env.MONGO_URI;
 const { notFound, errorHandler } = require("./middleware/errorHandler");
 
+// Trust the first proxy hop (Render, Vercel, etc. sit in front of us).
+// Without this, req.ip returns the proxy's internal IP for every request,
+// which breaks IP-based rate limiting (loginLimiter, and scanLimiter's
+// fallback) since every user would look identical. Must be set before
+// any middleware that reads req.ip.
+app.set("trust proxy", 1);
+
 // --- Security middleware (should run before routes) ---
 
 // Helmet sets a batch of sensible security headers by default:
