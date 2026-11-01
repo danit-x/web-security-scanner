@@ -96,6 +96,20 @@ const scanValidationRules = [
     .custom(blockPrivateTargets),
 ];
 
+// Validation chain for PATCH /api/history/:id
+const noteValidationRules = [
+  body("note")
+    .exists()
+    .withMessage("A note is required")
+    .bail()
+    .isString()
+    .withMessage("A note must be text")
+    .bail()
+    .trim()
+    .isLength({ max: 500 })
+    .withMessage("A note cannot be longer than 500 characters"),
+];
+
 const handleValidationErrors = (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -108,4 +122,8 @@ const handleValidationErrors = (req, res, next) => {
   next();
 };
 
-module.exports = { scanValidationRules, handleValidationErrors };
+module.exports = {
+  scanValidationRules,
+  noteValidationRules,
+  handleValidationErrors,
+};

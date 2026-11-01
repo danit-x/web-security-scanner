@@ -11,11 +11,16 @@ const authMiddleware = require("../middleware/authMiddleware");
 
 const {
   scanValidationRules,
+  noteValidationRules,
   handleValidationErrors,
 } = require("../validators/scanValidators");
 
 // Controller for running scans (Day 3+).
-const { runScan } = require("../controllers/scanController");
+const {
+  runScan,
+  updateScanNote,
+  deleteScan,
+} = require("../controllers/scanController");
 
 // ScanResult model — needed directly here since history is a simple
 // read operation with no extra business logic worth putting in a controller.
@@ -87,5 +92,21 @@ router.get(
     res.status(200).json({ success: true, scan });
   }),
 );
+
+// @route   PATCH /api/history/:id
+// @desc    Add or edit the note on one of the user's saved scans
+// @access  Private
+router.patch(
+  "/history/:id",
+  authMiddleware,
+  noteValidationRules,
+  handleValidationErrors,
+  updateScanNote,
+);
+
+// @route   DELETE /api/history/:id
+// @desc    Permanently delete one of the user's saved scans
+// @access  Private
+router.delete("/history/:id", authMiddleware, deleteScan);
 
 module.exports = router;

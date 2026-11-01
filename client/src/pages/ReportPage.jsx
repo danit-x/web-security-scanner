@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useLocation, useNavigate, Link } from 'react-router-dom';
-import { getScanById } from '../services/scanService';
+import { getScanById, updateScanNote } from '../services/scanService';
 import Navbar from '../components/Navbar';
 import FindingCard from '../components/FindingCard';
 import Spinner from '../components/Spinner';
@@ -128,6 +128,9 @@ function ReportPage() {
                 <SummaryPill label="Low" count={scan.summary?.low ?? 0} />
               </div>
 
+              {/* Note Section (saved scans only) */}
+              {id !== 'unsaved' && <ScanNote key={scan._id} scan={scan} onSaved={setScan} />}
+
               {/* Findings Section */}
               <div className="space-y-6">
                 <h2 className="text-xl text-white font-metal tracking-widest uppercase border-b border-[#8f706b]/20 pb-2">
@@ -170,6 +173,57 @@ function ReportPage() {
         </div>
       </main>
     </>
+  );
+}
+
+function ScanNote({ scan, onSaved }) {
+  const [note, setNote] = useState(scan.note || '');
+  const [isSaving, setIsSaving] = useState(false);
+  const [status, setStatus] = useState('');
+
+  const handleSave = async () => {
+    setIsSaving(true);
+    setStatus('');
+    try {
+      const data = await updateScanNote(scan._id, note);
+      onSaved(data.scan);
+      setStatus('Note saved.');
+    } catch (err) {
+      setStatus(err.response?.data?.message || 'Could not save this note.');
+    } finally {
+      setIsSaving(false);
+    }
+  };
+
+  return (
+    <div className="space-y-3 mb-8">
+      <label
+        htmlFor="scan-note"
+        className="block text-xs uppercase tracking-[0.2em] font-metal text-white border-l-2 border-red-900 pl-3"
+      >
+        Notes
+      </label>
+      <textarea
+        id="scan-note"
+        rows={3}
+        maxLength={500}
+        value={note}
+        onChange={(e) => setNote(e.target.value)}
+        placeholder="Add a note, such as what you plan to fix first."
+        className="w-full bg-black/40 border border-[#8f706b]/30 focus:border-red-900 outline-none p-3 text-sm text-white placeholder:text-[#8f706b]/60 rounded-none"
+      />
+      <div className="flex items-center gap-4 flex-wrap">
+        <button
+          type="button"
+          onClick={handleSave}
+          disabled={isSaving}
+          className="bg-red-950/30 hover:bg-red-900/50 disabled:opacity-50 text-white font-metal text-xs uppercase tracking-widest px-6 py-2 border border-red-950 rounded-none transition-all cursor-pointer"
+        >
+          {isSaving ? 'Saving...' : 'Save Note'}
+        </button>
+        {status && <p className="text-xs text-[#8f706b] tracking-wide">{status}</p>}
+      </div>
+    </div>
   );
 }
 

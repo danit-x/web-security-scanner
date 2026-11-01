@@ -5,7 +5,7 @@
 
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getScanHistory } from '../services/scanService';
+import { deleteScan, getScanHistory } from '../services/scanService';
 import Navbar from '../components/Navbar';
 import Spinner from '../components/Spinner';
 import GradeBadge from '../components/GradeBadge';
@@ -31,6 +31,20 @@ function HistoryPage() {
 
     fetchHistory();
   }, []);
+
+  const handleDelete = async (scan) => {
+    if (!window.confirm(`Delete the scan of ${scan.url}? This cannot be undone.`)) {
+      return;
+    }
+
+    setError('');
+    try {
+      await deleteScan(scan._id);
+      setScans((current) => current.filter((item) => item._id !== scan._id));
+    } catch (err) {
+      setError(err.response?.data?.message || 'Could not delete this scan.');
+    }
+  };
 
   return (
     <>
@@ -78,7 +92,6 @@ function HistoryPage() {
 
           {/* Scan Cards List */}
           {!isLoading &&
-            !error &&
             scans.map((scan) => (
               <div
                 key={scan._id}
@@ -113,8 +126,19 @@ function HistoryPage() {
                       <span className="text-emerald-700 font-semibold">No issues found</span>}
                   </p>
                 </div>
-                <div className="shrink-0 pl-2">
+                <div className="shrink-0 pl-2 flex flex-col items-center gap-3">
                   <GradeBadge grade={scan.grade} score={scan.score} size="small" />
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDelete(scan);
+                    }}
+                    onKeyDown={(e) => e.stopPropagation()}
+                    className="text-[10px] uppercase tracking-widest font-metal text-[#8f706b] hover:text-red-500 transition-colors cursor-pointer"
+                  >
+                    Delete
+                  </button>
                 </div>
               </div>
             ))}

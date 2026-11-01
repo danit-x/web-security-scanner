@@ -65,6 +65,14 @@ const scanResultSchema = new mongoose.Schema(
     },
     findings: [findingSchema],
 
+    // Free-text note the owner can add or edit after the scan has been saved.
+    note: {
+      type: String,
+      trim: true,
+      maxlength: [500, "A note cannot be longer than 500 characters"],
+      default: "",
+    },
+
     // Add this field to the scanResultSchema, alongside url/grade/score/etc.
     ownershipConfirmed: {
       type: Boolean,

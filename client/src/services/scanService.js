@@ -21,3 +21,15 @@ export const getScanHistory = async () => {
   const response = await api.get("/api/history");
   return response.data;
 };
+
+// Adds or edits the note on a saved scan.
+export const updateScanNote = async (id, note) => {
+  const response = await api.patch(`/api/history/${id}`, { note });
+  return response.data;
+};
+
+// Permanently deletes a saved scan.
+export const deleteScan = async (id) => {
+  const response = await api.delete(`/api/history/${id}`);
+  return response.data;
+};

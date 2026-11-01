@@ -76,7 +76,8 @@ The scanner performs **inspection only** — it does not attempt to exploit vuln
 - User authentication (register/login) with hashed passwords and JWT sessions
 - Passive security scan across six categories (see below)
 - Automated A–F grading with a transparent, documented scoring model
-- Full scan history per user account
+- Full scan history per user account, with editable notes and scan deletion
+- Automated unit tests (`npm test` in `server/`)
 - Rate limiting and SSRF protection on the scan endpoint
 - Responsive UI, usable on desktop and mobile
 
@@ -120,13 +121,14 @@ Create a `.env` file inside `server/` with the following:
 | `PORT` | Port the backend runs on | `5000` |
 | `MONGO_URI` | MongoDB connection string | `mongodb+srv://...` |
 | `JWT_SECRET` | Secret key used to sign JWTs | `your_secret_key` |
-| `JWT_EXPIRES_IN` | Token expiry duration | `7d` |
+| `NODE_ENV` | `production` turns on SSRF protection and hides stack traces | `development` |
+| `CLIENT_URL` | Frontend origin allowed by CORS | `http://localhost:5173` |
 
 Create a `.env` file inside `client/` with the following:
 
 | Variable | Description | Example |
 |---|---|---|
-| `VITE_API_URL` | Base URL of the backend API | `http://localhost:5000/api` |
+| `VITE_API_URL` | Base URL of the backend (optional, without `/api`) | `http://localhost:5000` |
 
 > ⚠️ Never commit `.env` files. Both are already excluded via `.gitignore`.
 
@@ -183,6 +185,7 @@ Every scan starts at a baseline of **100 points**. Points are deducted per findi
 
 | Severity | Points Deducted | Rationale |
 |---|---|---|
+| Critical | -25 | Immediate, severe failure (e.g. an expired SSL certificate) |
 | High | -15 | Directly exploitable or high-impact risk (e.g. exposed `.env`, no HTTPS) |
 | Medium | -8 | Meaningful weakness that raises risk but isn't immediately exploitable alone |
 | Low | -3 | Best-practice gap with limited direct impact |

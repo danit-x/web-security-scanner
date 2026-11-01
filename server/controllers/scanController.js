@@ -18,6 +18,7 @@ const ScanResult = require("../models/ScanResults");
 const asyncHandler = require("../utils/asyncHandler");
 
 const axios = require("axios");
+const mongoose = require("mongoose");
 
 const groupFindingsByCategory = (findings) => {
   const grouped = {};
@@ -337,4 +338,61 @@ const runScan = asyncHandler(async (req, res) => {
   // the global error handler in middleware/errorHandler.js.
 });
 
-module.exports = { runScan };
+// Loads a scan and confirms it belongs to the logged-in user. Another user's
+// scan is treated exactly like a missing one, so its existence isn't revealed.
+const findOwnedScan = async (id, userId) => {
+  const scan = await ScanResult.findById(id);
+  if (!scan || scan.userId.toString() !== userId) {
+    return null;
+  }
+  return scan;
+};
+
+// @desc    Add or edit the note on a saved scan
+// @route   PATCH /api/history/:id
+// @access  Private (owner only)
+const updateScanNote = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: "Invalid scan ID" });
+  }
+
+  const scan = await findOwnedScan(id, req.userId);
+
+  if (!scan) {
+    return res
+      .status(404)
+      .json({ success: false, message: "Scan result not found" });
+  }
+
+  scan.note = req.body.note;
+  await scan.save();
+
+  return res.status(200).json({ success: true, scan });
+});
+
+// @desc    Permanently delete a saved scan
+// @route   DELETE /api/history/:id
+// @access  Private (owner only)
+const deleteScan = asyncHandler(async (req, res) => {
+  const { id } = req.params;
+
+  if (!mongoose.Types.ObjectId.isValid(id)) {
+    return res.status(400).json({ success: false, message: "Invalid scan ID" });
+  }
+
+  const scan = await findOwnedScan(id, req.userId);
+
+  if (!scan) {
+    return res
+      .status(404)
+      .json({ success: false, message: "Scan result not found" });
+  }
+
+  await scan.deleteOne();
+
+  return res.status(200).json({ success: true, message: "Scan deleted" });
+});
+
+module.exports = { runScan, updateScanNote, deleteScan };
