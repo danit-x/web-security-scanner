@@ -5,7 +5,7 @@
 | Document ID | QA-DM-10 |
 | Data | 10 defects (DEF-001 to DEF-010) and 8 observations (OBS-01 to OBS-08) from [defect-log.md](defect-log.md) |
 | Rule | Metrics count **defects only** unless a row says otherwise. Observations are design notes or recommendations, so mixing them in would inflate the numbers. |
-| Code base measured | build `ba8a9ba` (the version handed to QA): 1,812 lines of server JavaScript and 3,085 lines in total with the React client (non-blank, non-comment lines, tests and data files excluded) |
+| Code base measured | build `ba8a9ba` (the version handed to QA): 1,656 lines of server JavaScript and 2,894 lines in total with the React client (counting rule in §6) |
 
 ## 1. Defects by severity and priority
 
@@ -125,10 +125,15 @@ Notes:
 
 | Scope | Defects | Size (KLOC) | Density |
 |---|---|---|---|
-| Server (API) | 9 (all except DEF-010) | 1.812 | **≈ 5.0 defects / KLOC** |
-| Whole app (server + client) | 10 | 3.085 | **≈ 3.2 defects / KLOC** |
+| Server (API) | 9 (all except DEF-010) | 1.656 | **≈ 5.4 defects / KLOC** |
+| Whole app (server + client) | 10 | 2.894 | **≈ 3.5 defects / KLOC** |
 
-Lines are non-blank, non-comment lines of `.js`/`.jsx` at build `ba8a9ba`, excluding tests and data files. DEF-010 is counted in the client because it lives in the client's hosting config. For comparison, McConnell (*Code Complete*) quotes an industry average of roughly 1–25 defects/KLOC in delivered code, so the result is in a normal range for a student-built app before QA. With only 10 defects, density is a rough indicator, not a precise one.
+**Counting rule** (build `ba8a9ba`):
+- **Counted:** every `.js` file under `server/` (including `config/` and `scripts/`) and every `.js`/`.jsx` file under `client/src/`.
+- **Excluded:** tests, `node_modules`, data files, client build config (`vite.config.js`, `eslint.config.js`), blank lines, `//` comment lines, and lines inside `/* */` or JSX `{/* */}` comment blocks.
+- **Sensitivity:** leaving out `server/config/` and `server/scripts/` (117 lines) gives 1,539 server lines and ≈ 5.8 defects/KLOC. An earlier count that kept block-comment lines gave 1,812 / 3,085 lines (≈ 5.0 / 3.2). The conclusion is the same under each rule: roughly 5–6 defects/KLOC on the server.
+
+DEF-010 is counted in the client because it lives in the client's hosting config. For comparison, McConnell (*Code Complete*) quotes an industry average of roughly 1–25 defects/KLOC in delivered code, so the result is in a normal range for a student-built app before QA. With only 10 defects, density is a rough indicator, not a precise one.
 
 ## 7. Defects by root cause category
 
@@ -154,4 +159,4 @@ Two categories explain 80% of the defects (a Pareto pattern), and the first one 
 | Phase 2 leakage | 60% |
 | Closed | 10 / 10, all test-first, 0 reopened |
 | First-time retest pass rate | 90% |
-| Defect density | ≈ 5.0 / KLOC server, ≈ 3.2 / KLOC whole app |
+| Defect density | ≈ 5.4 / KLOC server, ≈ 3.5 / KLOC whole app |
