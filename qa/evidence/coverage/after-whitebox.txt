@@ -1,0 +1,120 @@
+﻿✔ CS-P1 findings is not an array -> early return 100 (1.1748ms)
+✔ CS-P2 empty array -> early return 100 (0.161ms)
+✔ CS-P3 one known severity -> loop once, lookup hit (0.1255ms)
+✔ CS-P4 unknown severity -> lookup miss, `|| 0` branch (0.0934ms)
+✔ CS-P5 loop iterates several times and the floor applies (0.0757ms)
+✔ SG-P1 condition true on the first threshold -> A (0.1325ms)
+✔ SG-P2 condition false, loop continues, later true -> D (0.0837ms)
+✔ SG-P3 loop exhausted -> fallback return (the 'unreachable' line 64) (0.0656ms)
+✔ AM-P1 header missing -> 401 required (1.284ms)
+✔ AM-P2 header present but not 'Bearer ' (second operand of ||) -> 401 (0.2126ms)
+✔ AM-P3 'Bearer ' with empty token -> second guard (line 12) -> 401 (0.1833ms)
+✔ AM-P4 valid token -> next() and req.userId set (4.4992ms)
+✔ AM-P5 JWT_SECRET missing -> thrown Error -> generic 500 branch (0.2966ms)
+✔ AM-P6 expired token -> TokenExpiredError branch -> 401 expired (1.7615ms)
+✔ AM-P7 bad signature -> JsonWebTokenError branch -> 401 invalid (0.655ms)
+✖ AM-P8 token not active yet (nbf in the future) -> should be 401, not 500 (1.9039ms)
+✔ BP-P1 development -> guard returns true immediately (even for 10.0.0.5) (4.8273ms)
+✔ BP-P3 production, ftp scheme (passes isURL) -> protocol branch (3.8672ms)
+✔ BP-P4 production, blocked hostname 0.0.0.0 -> BLOCKED_HOSTNAMES branch (0.7393ms)
+✔ BP-P4b 'localhost' never reaches the guard: isURL rejects it first (1.191ms)
+✔ BP-P5 production, private literal IPv4 -> literal-IP branch (0.5551ms)
+✔ BP-P6 production, domain resolving to a private IP -> DNS branch, rethrown (1.1639ms)
+✔ BP-P7 production, domain resolving to a public IP -> allowed (0.588ms)
+✔ BP-P8 production, DNS lookup fails -> 'Could not resolve' (0.846ms)
+✔ BP-X1 IPv6 loopback literal is NOT caught by the literal-IP branch (19.055ms)
+✔ a valid token passes and sets req.userId (4.897ms)
+✔ a missing token returns 401 (0.2496ms)
+✔ a token signed with another secret returns 401 (1.1086ms)
+✔ an expired token returns 401 (2.1723ms)
+✔ no cookies produces no findings (1.6918ms)
+✔ a fully protected cookie produces no findings (0.3714ms)
+✔ an unprotected cookie on HTTPS is missing all three protections (0.3087ms)
+✔ the Secure flag is not required on a plain HTTP site (1.2357ms)
+✔ SameSite=None is reported as low severity (0.3377ms)
+✔ the owner can update a scan's note (1.653ms)
+✔ another user cannot update the note and gets 404 (0.2237ms)
+✔ the owner can delete a scan (0.2294ms)
+✔ another user cannot delete a scan and gets 404 (0.2113ms)
+✔ a missing scan returns 404 (0.1682ms)
+✔ an invalid scan ID returns 400 (0.1188ms)
+✔ production blocks the internal target http://localhost:3000 (6.3153ms)
+✔ production blocks the internal target http://127.0.0.1 (1.2215ms)
+✔ production blocks the internal target http://10.0.0.5 (0.5145ms)
+✔ production blocks the internal target http://172.16.0.1 (0.4869ms)
+✔ production blocks the internal target http://192.168.1.1 (0.4302ms)
+✔ production blocks the internal target http://169.254.169.254/latest/meta-data (0.4501ms)
+✔ a URL without http or https is rejected (1.2226ms)
+✔ a missing URL is rejected (0.5221ms)
+✔ a note of up to 500 characters is accepted (0.5772ms)
+✔ an empty note is accepted so a note can be cleared (0.2908ms)
+✔ a note over 500 characters is rejected (0.2667ms)
+✔ a note that is not text is rejected (0.2775ms)
+✔ a scan with no findings scores 100 and grade A (1.7139ms)
+✔ each severity deducts its documented points (0.2688ms)
+✔ the score never goes below 0 (0.184ms)
+✔ an unrecognised severity deducts nothing (1.117ms)
+✔ grade boundaries match the scoring model (0.1519ms)
+ℹ tests 57
+ℹ suites 0
+ℹ pass 56
+ℹ fail 1
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 880.27
+ℹ start of coverage report
+ℹ ----------------------------------------------------------------------------------------
+ℹ file                         | line % | branch % | funcs % | uncovered lines
+ℹ ----------------------------------------------------------------------------------------
+ℹ server                       |        |          |         | 
+ℹ  config                      |        |          |         | 
+ℹ   securityHeaders.js         | 100.00 |   100.00 |  100.00 | 
+ℹ  controllers                 |        |          |         | 
+ℹ   scanController.js          |  23.87 |    92.31 |   50.00 | 24-30 34-41 53-338 358-359
+ℹ  middleware                  |        |          |         | 
+ℹ   authMiddleware.js          | 100.00 |   100.00 |  100.00 | 
+ℹ  models                      |        |          |         | 
+ℹ   ScanResults.js             |  99.03 |   100.00 |    0.00 | 95
+ℹ  utils                       |        |          |         | 
+ℹ   asyncHandler.js            | 100.00 |   100.00 |  100.00 | 
+ℹ   checks                     |        |          |         | 
+ℹ    checkSecurityHeaders.js   |  38.24 |   100.00 |    0.00 | 24-65
+ℹ    cookieCheck.js            | 100.00 |   100.00 |  100.00 | 
+ℹ    fileExposureCheck.js      |  66.99 |   100.00 |    0.00 | 117-133 144-185 195-203
+ℹ    libraryCheck.js           |  65.50 |   100.00 |    0.00 | 97-105 119-168
+ℹ    mixedContentCheck.js      |  48.21 |   100.00 |    0.00 | 41-47 59-109
+ℹ    sslCheck.js               |  17.22 |   100.00 |    0.00 | 25-57 67-206
+ℹ    vulnerableLibraryCheck.js |  41.38 |   100.00 |    0.00 | 23-29 41-84
+ℹ   scoring.js                 | 100.00 |   100.00 |  100.00 | 
+ℹ  validators                  |        |          |         | 
+ℹ   scanValidators.js          |  91.47 |    95.00 |   75.00 | 46-47 114-122
+ℹ ----------------------------------------------------------------------------------------
+ℹ all files                    |  58.05 |    97.83 |   50.00 | 
+ℹ ----------------------------------------------------------------------------------------
+ℹ end of coverage report
+
+✖ failing tests:
+
+test at qa\04-white-box\tests\basis-paths.test.js:119:1
+✖ AM-P8 token not active yet (nbf in the future) -> should be 401, not 500 (1.9039ms)
+  AssertionError [ERR_ASSERTION]: got 500 Server error
+  
+  500 !== 401
+  
+      at C:\dev\mernStack\qa\04-white-box\tests\basis-paths.test.js:128:14
+      at withSecret (C:\dev\mernStack\qa\04-white-box\tests\basis-paths.test.js:75:16)
+      at TestContext.<anonymous> (C:\dev\mernStack\qa\04-white-box\tests\basis-paths.test.js:125:5)
+      at Test.runInAsyncScope (node:async_hooks:226:14)
+      at Test.run (node:internal/test_runner/test:1118:25)
+      at Test.processPendingSubtests (node:internal/test_runner/test:787:18)
+      at Test.postRun (node:internal/test_runner/test:1247:19)
+      at Test.run (node:internal/test_runner/test:1175:12)
+      at async Test.processPendingSubtests (node:internal/test_runner/test:787:7) {
+    generatedMessage: false,
+    code: 'ERR_ASSERTION',
+    actual: 500,
+    expected: 401,
+    operator: 'strictEqual',
+    diff: 'simple'
+  }

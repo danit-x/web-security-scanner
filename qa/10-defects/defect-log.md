@@ -12,6 +12,8 @@ Severity is the impact on the system. Priority is how urgently it must be fixed.
 | DEF-004 | `localhost` scan targets are rejected in development, contradicting the documented dev bypass | Run 1 cascade (TC-SCAN-01) | Low | P3 | New |
 | DEF-005 | Password sent as a JSON number crashes registration (500) | EP-PW-06 (Phase 3) | Medium | P2 | New |
 | DEF-006 | `calculateScore()` throws on a `null` finding, despite being documented as defensive | EP-SC-06 (Phase 3) | Low | P3 | New |
+| DEF-007 | Token with a future `nbf` (not-before) returns 500 instead of 401 | AM-P8 (Phase 4 basis path) | Low | P3 | New |
+| OBS-05 | SSRF guard checks that can never fire: the `localhost` entry (blocked earlier by `isURL`) and the IPv6 regexes (the hostname keeps its brackets) | Phase 4 coverage + BP-P4b/BP-X1 | (Observation) | P2 | New |
 | OBS-01 | Scan button is silently disabled. The ownership message in `handleSubmit` is unreachable (dead code). | TC-UI-05 | (Observation) | P4 | New |
 | OBS-02 | Name of 100 characters is accepted, but the message says "under 100 characters" | BVA-NM-04/05 | (Observation) | P4 | New |
 | OBS-03 | Scores 87/90/93/95/96/98/99 can never occur. The schema allows grade `E`, which the scorer never produces. | BVA-SC-15 | (Observation) | P4 | New |
@@ -111,3 +113,23 @@ At 100 characters the name is accepted (`isLength({max:100})`), but the error me
 
 ## OBS-04: Weak passwords accepted
 `12345678` satisfies the policy (at least 8 characters, at least one digit). It will be revisited under OWASP A07 (Identification and Authentication Failures) in Phase 9.
+
+## DEF-007: Token with a future `nbf` returns 500 instead of 401
+
+**Found by:** basis path AM-P8 (white-box, `authMiddleware` CFG node 12)
+**Steps:** send `Authorization: Bearer <token>`, where the token is signed with the server secret but has `nbf` (not before) one hour in the future (`jwt.sign({id}, secret, {notBefore: "1h"})`).
+**Expected:** 401 (the token is not valid yet).
+**Actual:** **500 "Server error"**.
+
+**Analysis:**
+- `jwt.verify` can throw `TokenExpiredError`, `JsonWebTokenError` or `NotBeforeError`.
+- The catch block compares `error.name` against only the first two names, so `NotBeforeError` falls through to the generic 500 branch.
+
+**Severity Low:** the server never issues `nbf` tokens, and a token can't be forged without the secret. But any future change that adds `nbf`, or clock skew between servers, would turn auth failures into server errors.
+
+## OBS-05: SSRF guard checks that can never fire
+
+1. The `"localhost"` entry in `BLOCKED_HOSTNAMES` can never be reached. `isURL()` (which requires a TLD) rejects `localhost` earlier in the chain. The existing unit test "production blocks `http://localhost:3000`" passes **for the wrong reason**: coverage shows lines 58–59 never execute.
+2. `new URL("http://[::1]/").hostname` returns `"[::1]"` with brackets, so the IPv6 regexes `/^::1$/`, `/^fc00:/` and `/^fe80:/` never match. IPv6 literals are rejected only because `dns.lookup("[::1]")` fails.
+
+The protection holds today, but only by accident. Follow-up in Phase 9 (OWASP A10).

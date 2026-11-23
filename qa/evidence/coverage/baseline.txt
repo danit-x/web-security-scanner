@@ -1,0 +1,69 @@
+﻿✔ a valid token passes and sets req.userId (6.9205ms)
+✔ a missing token returns 401 (0.2296ms)
+✔ a token signed with another secret returns 401 (0.6215ms)
+✔ an expired token returns 401 (1.4001ms)
+✔ no cookies produces no findings (1.6599ms)
+✔ a fully protected cookie produces no findings (0.4139ms)
+✔ an unprotected cookie on HTTPS is missing all three protections (0.2825ms)
+✔ the Secure flag is not required on a plain HTTP site (0.8837ms)
+✔ SameSite=None is reported as low severity (0.2068ms)
+✔ the owner can update a scan's note (1.6078ms)
+✔ another user cannot update the note and gets 404 (0.223ms)
+✔ the owner can delete a scan (0.228ms)
+✔ another user cannot delete a scan and gets 404 (0.1758ms)
+✔ a missing scan returns 404 (0.1612ms)
+✔ an invalid scan ID returns 400 (0.1561ms)
+✔ production blocks the internal target http://localhost:3000 (6.0037ms)
+✔ production blocks the internal target http://127.0.0.1 (1.1627ms)
+✔ production blocks the internal target http://10.0.0.5 (0.4651ms)
+✔ production blocks the internal target http://172.16.0.1 (0.4397ms)
+✔ production blocks the internal target http://192.168.1.1 (0.4493ms)
+✔ production blocks the internal target http://169.254.169.254/latest/meta-data (0.512ms)
+✔ a URL without http or https is rejected (1.3409ms)
+✔ a missing URL is rejected (0.5582ms)
+✔ a note of up to 500 characters is accepted (0.5892ms)
+✔ an empty note is accepted so a note can be cleared (0.4058ms)
+✔ a note over 500 characters is rejected (0.2965ms)
+✔ a note that is not text is rejected (0.2732ms)
+✔ a scan with no findings scores 100 and grade A (1.7559ms)
+✔ each severity deducts its documented points (0.1661ms)
+✔ the score never goes below 0 (0.1037ms)
+✔ an unrecognised severity deducts nothing (0.931ms)
+✔ grade boundaries match the scoring model (0.1319ms)
+ℹ tests 32
+ℹ suites 0
+ℹ pass 32
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 839.0307
+ℹ start of coverage report
+ℹ --------------------------------------------------------------------------------------------------------
+ℹ file                        | line % | branch % | funcs % | uncovered lines
+ℹ --------------------------------------------------------------------------------------------------------
+ℹ config                      |        |          |         | 
+ℹ  securityHeaders.js         | 100.00 |   100.00 |  100.00 | 
+ℹ controllers                 |        |          |         | 
+ℹ  scanController.js          |  23.87 |    92.31 |   50.00 | 24-30 34-41 53-338 358-359
+ℹ middleware                  |        |          |         | 
+ℹ  authMiddleware.js          |  79.49 |    75.00 |  100.00 | 13-14 18-19 33-36
+ℹ models                      |        |          |         | 
+ℹ  ScanResults.js             |  99.03 |   100.00 |    0.00 | 95
+ℹ utils                       |        |          |         | 
+ℹ  asyncHandler.js            | 100.00 |   100.00 |  100.00 | 
+ℹ  checks                     |        |          |         | 
+ℹ   checkSecurityHeaders.js   |  38.24 |   100.00 |    0.00 | 24-65
+ℹ   cookieCheck.js            | 100.00 |   100.00 |  100.00 | 
+ℹ   fileExposureCheck.js      |  66.99 |   100.00 |    0.00 | 117-133 144-185 195-203
+ℹ   libraryCheck.js           |  65.50 |   100.00 |    0.00 | 97-105 119-168
+ℹ   mixedContentCheck.js      |  48.21 |   100.00 |    0.00 | 41-47 59-109
+ℹ   sslCheck.js               |  17.22 |   100.00 |    0.00 | 25-57 67-206
+ℹ   vulnerableLibraryCheck.js |  41.38 |   100.00 |    0.00 | 23-29 41-84
+ℹ  scoring.js                 |  98.75 |    91.67 |  100.00 | 64
+ℹ validators                  |        |          |         | 
+ℹ  scanValidators.js          |  72.09 |    40.00 |   75.00 | 39-40 46-47 52-53 58-59 65-76 78-84 114-122
+ℹ --------------------------------------------------------------------------------------------------------
+ℹ all files                   |  56.19 |    85.71 |   50.00 | 
+ℹ --------------------------------------------------------------------------------------------------------
+ℹ end of coverage report

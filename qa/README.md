@@ -7,7 +7,7 @@ Testing the Website Security Scanner (MERN) on branch `qa/ec4206-testing`.
 | 1 | Test plan, ISO 25010, verification vs. validation | ✅ | [01-test-plan/test-plan.md](01-test-plan/test-plan.md) |
 | 2 | STLC, environment, test cases, execution | ✅ | [02-stlc/](02-stlc/) |
 | 3 | Black-box: EP, BVA, decision table | ✅ | [03-black-box/](03-black-box/) |
-| 4 | White-box: cyclomatic complexity, coverage | ⏳ | |
+| 4 | White-box: cyclomatic complexity, coverage | ✅ | [04-white-box/](04-white-box/) |
 | 5 | Unit tests (Jest) + TDD fixes | ⏳ | |
 | 6 | BDD (Cucumber) | ⏳ | |
 | 7 | Postman + Selenium | ⏳ | |
