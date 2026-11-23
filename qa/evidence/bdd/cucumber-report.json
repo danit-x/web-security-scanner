@@ -1,0 +1,4400 @@
+[
+  {
+    "description": "  As a registered user\n  I want to log in\n  So that I can see my scan history",
+    "elements": [
+      {
+        "description": "",
+        "id": "user-login;correct-credentials-give-a-working-token",
+        "keyword": "Scenario",
+        "line": 13,
+        "name": "Correct credentials give a working token",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 6916400
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 10,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 118780899
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 14,
+            "name": "I log in with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:23"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 83208999
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 15,
+            "name": "the response status should be 200",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 311500
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 16,
+            "name": "I should receive an authentication token",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:46"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 270999
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 17,
+            "name": "that token should let me view my profile as \"Alice\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:79"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 7969799
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 82699
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@auth",
+            "line": 1
+          },
+          {
+            "name": "@login",
+            "line": 1
+          },
+          {
+            "name": "@smoke",
+            "line": 12
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-login;email-address-is-not-case-sensitive-at-login",
+        "keyword": "Scenario",
+        "line": 19,
+        "name": "Email address is not case-sensitive at login",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 1294100
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 10,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 83746700
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 20,
+            "name": "I log in with email \"Alice@EXAMPLE.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:23"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 81717899
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 21,
+            "name": "the response status should be 200",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 75899
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 15499
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@auth",
+            "line": 1
+          },
+          {
+            "name": "@login",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-login;wrong-credentials-get-the-same-vague-error",
+        "keyword": "Scenario Outline",
+        "line": 33,
+        "name": "Wrong credentials get the same vague error",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 1220599
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 10,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 80932299
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 24,
+            "name": "I log in with email \"alice@example.com\" and password \"WrongPass1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:23"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 76217699
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 25,
+            "name": "the response status should be 401",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 66399
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 26,
+            "name": "the error message should be \"Invalid email or password\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 57399
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 27,
+            "name": "I should not receive an authentication token",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:52"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 31200
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 28099
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@auth",
+            "line": 1
+          },
+          {
+            "name": "@login",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-login;wrong-credentials-get-the-same-vague-error",
+        "keyword": "Scenario Outline",
+        "line": 34,
+        "name": "Wrong credentials get the same vague error",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 1683999
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 10,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 77933999
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 24,
+            "name": "I log in with email \"nobody@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:23"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 5090900
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 25,
+            "name": "the response status should be 401",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 48099
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 26,
+            "name": "the error message should be \"Invalid email or password\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 35600
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 27,
+            "name": "I should not receive an authentication token",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:52"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 13699
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 10999
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@auth",
+            "line": 1
+          },
+          {
+            "name": "@login",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-login;a-gmail-user-with-dots-and-a-+tag-can-log-back-in",
+        "keyword": "Scenario",
+        "line": 37,
+        "name": "A Gmail user with dots and a +tag can log back in",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 2731299
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 10,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 77812899
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 38,
+            "name": "a registered user \"Gina\" with email \"Gina.Smith+qa@gmail.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 81471599
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 39,
+            "name": "I log in with email \"Gina.Smith+qa@gmail.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:23"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 77461599
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 40,
+            "name": "the response status should be 200",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 61099
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 16399
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@auth",
+            "line": 1
+          },
+          {
+            "name": "@login",
+            "line": 1
+          },
+          {
+            "name": "@regression",
+            "line": 36
+          },
+          {
+            "name": "@DEF-001",
+            "line": 36
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-login;a-malformed-json-body-gets-a-clean-400,-not-a-stack-trace",
+        "keyword": "Scenario",
+        "line": 43,
+        "name": "A malformed JSON body gets a clean 400, not a stack trace",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 1137799
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 10,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 78593699
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 44,
+            "name": "I send a truncated JSON body to the login endpoint",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:27"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 4177499
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 45,
+            "name": "the response status should be 400",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 55600
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 46,
+            "name": "the response should not reveal a stack trace",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:21"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 135099
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 33699
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@auth",
+            "line": 1
+          },
+          {
+            "name": "@login",
+            "line": 1
+          },
+          {
+            "name": "@regression",
+            "line": 42
+          },
+          {
+            "name": "@DEF-002",
+            "line": 42
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-login;protected-pages-refuse-requests-without-a-valid-token",
+        "keyword": "Scenario",
+        "line": 49,
+        "name": "Protected pages refuse requests without a valid token",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 1907100
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 10,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 78942399
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 50,
+            "name": "I request my profile with the token \"not-a-real-token\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:33"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 3104499
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 51,
+            "name": "the response status should be 401",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 58800
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 52,
+            "name": "the error message should be \"Invalid authorization token\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 22199
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 7899
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@auth",
+            "line": 1
+          },
+          {
+            "name": "@login",
+            "line": 1
+          },
+          {
+            "name": "@security",
+            "line": 48
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-login;repeated-failed-logins-are-throttled",
+        "keyword": "Scenario",
+        "line": 55,
+        "name": "Repeated failed logins are throttled",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 2038700
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 10,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 78552800
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 56,
+            "name": "I fail to log in 5 times in a row",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:37"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 482406799
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 57,
+            "name": "I log in with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:23"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 7734300
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 58,
+            "name": "the response status should be 429",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 315299
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 59,
+            "name": "the error message should be \"Too many login attempts. Please try again in 15 minutes.\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 149499
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 18300
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@auth",
+            "line": 1
+          },
+          {
+            "name": "@login",
+            "line": 1
+          },
+          {
+            "name": "@security",
+            "line": 54
+          },
+          {
+            "name": "@rate-limit",
+            "line": 54
+          }
+        ],
+        "type": "scenario"
+      }
+    ],
+    "id": "user-login",
+    "line": 2,
+    "keyword": "Feature",
+    "name": "User login",
+    "tags": [
+      {
+        "name": "@auth",
+        "line": 1
+      },
+      {
+        "name": "@login",
+        "line": 1
+      }
+    ],
+    "uri": "..\\qa\\06-bdd\\features\\login.feature"
+  },
+  {
+    "description": "  As a website owner\n  I want to create an account\n  So that I can run security scans and keep my results",
+    "elements": [
+      {
+        "description": "",
+        "id": "user-registration;a-new-visitor-registers-successfully",
+        "keyword": "Scenario",
+        "line": 10,
+        "name": "A new visitor registers successfully",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 5325500
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 11,
+            "name": "I register as \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:9"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 253601700
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 12,
+            "name": "the response status should be 201",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 123299
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 13,
+            "name": "I should receive an authentication token",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:46"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 154499
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 14,
+            "name": "the returned user should have the name \"Alice\" and email \"alice@example.com\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:56"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 209199
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 15,
+            "name": "the response should not contain a password",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:61"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 193999
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 35100
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@auth",
+            "line": 1
+          },
+          {
+            "name": "@registration",
+            "line": 1
+          },
+          {
+            "name": "@smoke",
+            "line": 9
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-registration;the-stored-password-is-hashed,-never-plain-text",
+        "keyword": "Scenario",
+        "line": 17,
+        "name": "The stored password is hashed, never plain text",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 2456000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 18,
+            "name": "I register as \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:9"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 175513300
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 19,
+            "name": "the account for \"alice@example.com\" should store a bcrypt hash instead of \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:65"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 2340999
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 29799
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@auth",
+            "line": 1
+          },
+          {
+            "name": "@registration",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-registration;an-email-address-cannot-be-registered-twice,-in-any-letter-case",
+        "keyword": "Scenario",
+        "line": 21,
+        "name": "An email address cannot be registered twice, in any letter case",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 3312100
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 22,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 395679599
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 23,
+            "name": "I register as \"Imposter\" with email \"ALICE@Example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:9"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 47555200
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 24,
+            "name": "the response status should be 400",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 459800
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 25,
+            "name": "the error message should be \"User already exists\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 140699
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 38799
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@auth",
+            "line": 1
+          },
+          {
+            "name": "@registration",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-registration;invalid-registration-details-are-rejected-before-reaching-the-database",
+        "keyword": "Scenario Outline",
+        "line": 36,
+        "name": "Invalid registration details are rejected before reaching the database",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 5796199
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 29,
+            "name": "I register as \"Alice\" with email \"pw7@example.com\" and password \"Passw0r\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:9"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8414000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 30,
+            "name": "the response status should be 400",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 97600
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 31,
+            "name": "the error message should be \"Password must be at least 8 characters long\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 51799
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 32,
+            "name": "no account should exist for \"pw7@example.com\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:75"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 4712599
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 23000
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@auth",
+            "line": 1
+          },
+          {
+            "name": "@registration",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-registration;invalid-registration-details-are-rejected-before-reaching-the-database",
+        "keyword": "Scenario Outline",
+        "line": 37,
+        "name": "Invalid registration details are rejected before reaching the database",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 2767699
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 29,
+            "name": "I register as \"Alice\" with email \"pwnum@example.com\" and password \"Password\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:9"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 6471799
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 30,
+            "name": "the response status should be 400",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 96100
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 31,
+            "name": "the error message should be \"Password must contain at least one number\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 51099
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 32,
+            "name": "no account should exist for \"pwnum@example.com\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:75"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 2518599
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 22300
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@auth",
+            "line": 1
+          },
+          {
+            "name": "@registration",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-registration;invalid-registration-details-are-rejected-before-reaching-the-database",
+        "keyword": "Scenario Outline",
+        "line": 38,
+        "name": "Invalid registration details are rejected before reaching the database",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 2611800
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 29,
+            "name": "I register as \"Alice\" with email \"pwnil@example.com\" and password \"\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:9"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 18816400
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 30,
+            "name": "the response status should be 400",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 210000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 31,
+            "name": "the error message should be \"Password is required\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 129899
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 32,
+            "name": "no account should exist for \"pwnil@example.com\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:75"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 5195799
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 54999
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@auth",
+            "line": 1
+          },
+          {
+            "name": "@registration",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-registration;invalid-registration-details-are-rejected-before-reaching-the-database",
+        "keyword": "Scenario Outline",
+        "line": 42,
+        "name": "Invalid registration details are rejected before reaching the database",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 3576700
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 29,
+            "name": "I register as \"Alice\" with email \"not-an-email\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:9"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 15253499
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 30,
+            "name": "the response status should be 400",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 168700
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 31,
+            "name": "the error message should be \"Please provide a valid email address\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 233799
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 32,
+            "name": "no account should exist for \"not-an-email\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:75"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 5656700
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 50799
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@auth",
+            "line": 1
+          },
+          {
+            "name": "@registration",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-registration;invalid-registration-details-are-rejected-before-reaching-the-database",
+        "keyword": "Scenario Outline",
+        "line": 43,
+        "name": "Invalid registration details are rejected before reaching the database",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 3292500
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 29,
+            "name": "I register as \"Alice\" with email \"a@b\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:9"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 7640600
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 30,
+            "name": "the response status should be 400",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 87499
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 31,
+            "name": "the error message should be \"Please provide a valid email address\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 220100
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 32,
+            "name": "no account should exist for \"a@b\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:75"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 2694500
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 28400
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@auth",
+            "line": 1
+          },
+          {
+            "name": "@registration",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-registration;invalid-registration-details-are-rejected-before-reaching-the-database",
+        "keyword": "Scenario Outline",
+        "line": 44,
+        "name": "Invalid registration details are rejected before reaching the database",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 2731899
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 29,
+            "name": "I register as \"\" with email \"noname@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:9"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 9437299
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 30,
+            "name": "the response status should be 400",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 167400
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 31,
+            "name": "the error message should be \"Name is required\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 131099
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 32,
+            "name": "no account should exist for \"noname@example.com\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:75"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 4409999
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 46099
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@auth",
+            "line": 1
+          },
+          {
+            "name": "@registration",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-registration;the-shortest-allowed-password-(8-characters,-one-digit)-is-accepted",
+        "keyword": "Scenario",
+        "line": 46,
+        "name": "The shortest allowed password (8 characters, one digit) is accepted",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 3026700
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 47,
+            "name": "I register as \"Alice\" with email \"edge@example.com\" and password \"abcdefg1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:9"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 153852200
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 48,
+            "name": "the response status should be 201",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 83599
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 16900
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@auth",
+            "line": 1
+          },
+          {
+            "name": "@registration",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "user-registration;a-password-sent-as-a-number-is-rejected-cleanly",
+        "keyword": "Scenario",
+        "line": 51,
+        "name": "A password sent as a number is rejected cleanly",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 2372900
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 52,
+            "name": "I register with a JSON body where the password is the number 12345678",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\auth.steps.js:16"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 6963700
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 53,
+            "name": "the response status should be 400",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 72600
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 54,
+            "name": "the error message should be \"Password must be text\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 45399
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 19299
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@auth",
+            "line": 1
+          },
+          {
+            "name": "@registration",
+            "line": 1
+          },
+          {
+            "name": "@regression",
+            "line": 50
+          },
+          {
+            "name": "@DEF-005",
+            "line": 50
+          }
+        ],
+        "type": "scenario"
+      }
+    ],
+    "id": "user-registration",
+    "line": 2,
+    "keyword": "Feature",
+    "name": "User registration",
+    "tags": [
+      {
+        "name": "@auth",
+        "line": 1
+      },
+      {
+        "name": "@registration",
+        "line": 1
+      }
+    ],
+    "uri": "..\\qa\\06-bdd\\features\\registration.feature"
+  },
+  {
+    "description": "  As a logged-in user\n  I want to review, annotate and delete my past scans\n  So that I can track fixes over time, without anyone else seeing my results",
+    "elements": [
+      {
+        "description": "",
+        "id": "managing-my-scan-history;my-history-lists-only-my-own-scans,-newest-first",
+        "keyword": "Scenario",
+        "line": 16,
+        "name": "My history lists only my own scans, newest first",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 2785499
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 10,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 148453700
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 11,
+            "name": "a registered user \"Bob\" with email \"bob@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 140264299
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 12,
+            "name": "\"Alice\" has scanned the test website, saved as \"alice-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 132190400
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 13,
+            "name": "\"Bob\" has scanned the test website, saved as \"bob-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 160411599
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 17,
+            "name": "\"Alice\" has scanned the test website, saved as \"alice-scan-2\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 89393599
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 18,
+            "name": "\"Alice\" opens the scan history",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:47"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 10593000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 19,
+            "name": "the response status should be 200",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 170800
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 20,
+            "name": "the history should list exactly \"alice-scan-2, alice-scan\" in that order",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:97"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 1443800
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 60199
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@history",
+            "line": 1
+          },
+          {
+            "name": "@smoke",
+            "line": 15
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "managing-my-scan-history;i-can-add-a-note-to-my-scan",
+        "keyword": "Scenario",
+        "line": 22,
+        "name": "I can add a note to my scan",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 4431199
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 10,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 169309299
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 11,
+            "name": "a registered user \"Bob\" with email \"bob@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 114612500
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 12,
+            "name": "\"Alice\" has scanned the test website, saved as \"alice-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 28611599
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 13,
+            "name": "\"Bob\" has scanned the test website, saved as \"bob-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 29523900
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 23,
+            "name": "\"Alice\" adds the note \"Add a Content-Security-Policy header\" to \"alice-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:51"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 33305100
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 24,
+            "name": "the response status should be 200",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 168599
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 25,
+            "name": "\"alice-scan\" should have the note \"Add a Content-Security-Policy header\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:103"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 5653999
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 97899
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@history",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "managing-my-scan-history;note-length-limit-(boundary-value-analysis)",
+        "keyword": "Scenario Outline",
+        "line": 33,
+        "name": "Note length limit (boundary value analysis)",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 7117400
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 10,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 141225099
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 11,
+            "name": "a registered user \"Bob\" with email \"bob@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 132022500
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 12,
+            "name": "\"Alice\" has scanned the test website, saved as \"alice-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 58493899
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 13,
+            "name": "\"Bob\" has scanned the test website, saved as \"bob-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 46500399
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 28,
+            "name": "\"Alice\" adds a note of 0 characters to \"alice-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:55"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 12752900
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 29,
+            "name": "the response status should be 200",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 102499
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 18500
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@history",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "managing-my-scan-history;note-length-limit-(boundary-value-analysis)",
+        "keyword": "Scenario Outline",
+        "line": 34,
+        "name": "Note length limit (boundary value analysis)",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 2034799
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 10,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 116833000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 11,
+            "name": "a registered user \"Bob\" with email \"bob@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 222223800
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 12,
+            "name": "\"Alice\" has scanned the test website, saved as \"alice-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 80940299
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 13,
+            "name": "\"Bob\" has scanned the test website, saved as \"bob-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 106094000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 28,
+            "name": "\"Alice\" adds a note of 500 characters to \"alice-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:55"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 52782299
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 29,
+            "name": "the response status should be 200",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 442999
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 57899
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@history",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "managing-my-scan-history;note-length-limit-(boundary-value-analysis)",
+        "keyword": "Scenario Outline",
+        "line": 35,
+        "name": "Note length limit (boundary value analysis)",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 8777900
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 10,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 186318099
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 11,
+            "name": "a registered user \"Bob\" with email \"bob@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 157440700
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 12,
+            "name": "\"Alice\" has scanned the test website, saved as \"alice-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 26261899
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 13,
+            "name": "\"Bob\" has scanned the test website, saved as \"bob-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 24275499
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 28,
+            "name": "\"Alice\" adds a note of 501 characters to \"alice-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:55"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 5906299
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 29,
+            "name": "the response status should be 400",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 69900
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 14900
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@history",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "managing-my-scan-history;i-can-delete-my-scan-and-it-is-gone",
+        "keyword": "Scenario",
+        "line": 37,
+        "name": "I can delete my scan and it is gone",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 2856600
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 10,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 146485200
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 11,
+            "name": "a registered user \"Bob\" with email \"bob@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 141801000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 12,
+            "name": "\"Alice\" has scanned the test website, saved as \"alice-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 26682899
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 13,
+            "name": "\"Bob\" has scanned the test website, saved as \"bob-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 23255500
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 38,
+            "name": "\"Alice\" deletes \"alice-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:59"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 13210300
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 39,
+            "name": "the response status should be 200",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 79500
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 40,
+            "name": "\"alice-scan\" should no longer exist",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:107"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 3283300
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 29000
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@history",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "managing-my-scan-history;another-user's-scan-is-invisible-to-me",
+        "keyword": "Scenario Outline",
+        "line": 51,
+        "name": "Another user's scan is invisible to me",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 3043899
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 10,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 137754900
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 11,
+            "name": "a registered user \"Bob\" with email \"bob@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 117115300
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 12,
+            "name": "\"Alice\" has scanned the test website, saved as \"alice-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 26276100
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 13,
+            "name": "\"Bob\" has scanned the test website, saved as \"bob-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 29704600
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 44,
+            "name": "\"Alice\" tries to view \"bob-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:64"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 9867200
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 45,
+            "name": "the response status should be 404",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 386300
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 46,
+            "name": "the error message should be \"Scan result not found\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 435300
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 47,
+            "name": "\"bob-scan\" should still exist without a note",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:111"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 2624700
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 22899
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@history",
+            "line": 1
+          },
+          {
+            "name": "@security",
+            "line": 42
+          },
+          {
+            "name": "@idor",
+            "line": 42
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "managing-my-scan-history;another-user's-scan-is-invisible-to-me",
+        "keyword": "Scenario Outline",
+        "line": 52,
+        "name": "Another user's scan is invisible to me",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 2262899
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 10,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 128416100
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 11,
+            "name": "a registered user \"Bob\" with email \"bob@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 116608299
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 12,
+            "name": "\"Alice\" has scanned the test website, saved as \"alice-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 27101099
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 13,
+            "name": "\"Bob\" has scanned the test website, saved as \"bob-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 25733400
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 44,
+            "name": "\"Alice\" tries to add a note \"bob-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:64"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 9763299
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 45,
+            "name": "the response status should be 404",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 78900
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 46,
+            "name": "the error message should be \"Scan result not found\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 64800
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 47,
+            "name": "\"bob-scan\" should still exist without a note",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:111"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 5892299
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 24499
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@history",
+            "line": 1
+          },
+          {
+            "name": "@security",
+            "line": 42
+          },
+          {
+            "name": "@idor",
+            "line": 42
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "managing-my-scan-history;another-user's-scan-is-invisible-to-me",
+        "keyword": "Scenario Outline",
+        "line": 53,
+        "name": "Another user's scan is invisible to me",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 1782599
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 10,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 148727399
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 11,
+            "name": "a registered user \"Bob\" with email \"bob@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 155637399
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 12,
+            "name": "\"Alice\" has scanned the test website, saved as \"alice-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 48572699
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 13,
+            "name": "\"Bob\" has scanned the test website, saved as \"bob-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 102473300
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 44,
+            "name": "\"Alice\" tries to delete \"bob-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:64"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 36620699
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 45,
+            "name": "the response status should be 404",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 278899
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 46,
+            "name": "the error message should be \"Scan result not found\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 174199
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 47,
+            "name": "\"bob-scan\" should still exist without a note",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:111"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 9834699
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 79300
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@history",
+            "line": 1
+          },
+          {
+            "name": "@security",
+            "line": 42
+          },
+          {
+            "name": "@idor",
+            "line": 42
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "managing-my-scan-history;a-malformed-scan-id-is-rejected",
+        "keyword": "Scenario",
+        "line": 55,
+        "name": "A malformed scan ID is rejected",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 5273699
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 10,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 129425499
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 11,
+            "name": "a registered user \"Bob\" with email \"bob@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 107323599
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 12,
+            "name": "\"Alice\" has scanned the test website, saved as \"alice-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 28428199
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 13,
+            "name": "\"Bob\" has scanned the test website, saved as \"bob-scan\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 53397499
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 56,
+            "name": "\"Alice\" tries to view \"not-an-id\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:64"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 22742400
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 57,
+            "name": "the response status should be 400",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 224000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 58,
+            "name": "the error message should be \"Invalid scan ID\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 2991599
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 41600
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@history",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      }
+    ],
+    "id": "managing-my-scan-history",
+    "line": 2,
+    "keyword": "Feature",
+    "name": "Managing my scan history",
+    "tags": [
+      {
+        "name": "@history",
+        "line": 1
+      }
+    ],
+    "uri": "..\\qa\\06-bdd\\features\\scan-history.feature"
+  },
+  {
+    "description": "  As a logged-in website owner\n  I want to scan my website\n  So that I can find and fix security weaknesses",
+    "elements": [
+      {
+        "description": "",
+        "id": "running-a-security-scan;scanning-my-own-website-produces-a-graded-report",
+        "keyword": "Scenario",
+        "line": 15,
+        "name": "Scanning my own website produces a graded report",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 5964599
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 12,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 180438099
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 16,
+            "name": "\"Alice\" scans the test website with ownership confirmed",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:25"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 21168900
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 17,
+            "name": "the response status should be 200",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 152700
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 18,
+            "name": "the report should have a grade from A to F and a score from 0 to 100",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:73"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 216900
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 19,
+            "name": "the report should be saved in the history of \"Alice\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:79"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 5146099
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 25700
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@scan",
+            "line": 1
+          },
+          {
+            "name": "@smoke",
+            "line": 14
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "running-a-security-scan;the-scanner-detects-each-weakness-of-the-test-website",
+        "keyword": "Scenario Outline",
+        "line": 27,
+        "name": "The scanner detects each weakness of the test website",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 1413999
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 12,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 103588299
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 22,
+            "name": "\"Alice\" scans the test website with ownership confirmed",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:25"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 20815000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 23,
+            "name": "the report should include a \"Missing Security Header\" finding",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:85"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 237900
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 18000
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@scan",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "running-a-security-scan;the-scanner-detects-each-weakness-of-the-test-website",
+        "keyword": "Scenario Outline",
+        "line": 28,
+        "name": "The scanner detects each weakness of the test website",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 2642200
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 12,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 98836900
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 22,
+            "name": "\"Alice\" scans the test website with ownership confirmed",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:25"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 20145399
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 23,
+            "name": "the report should include a \"No HTTPS\" finding",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:85"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 102199
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 21099
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@scan",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "running-a-security-scan;the-scanner-detects-each-weakness-of-the-test-website",
+        "keyword": "Scenario Outline",
+        "line": 29,
+        "name": "The scanner detects each weakness of the test website",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 1897799
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 12,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 96291800
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 22,
+            "name": "\"Alice\" scans the test website with ownership confirmed",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:25"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 20831300
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 23,
+            "name": "the report should include a \"Cookie Missing HttpOnly Flag\" finding",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:85"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 99099
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 16200
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@scan",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "running-a-security-scan;the-scanner-detects-each-weakness-of-the-test-website",
+        "keyword": "Scenario Outline",
+        "line": 30,
+        "name": "The scanner detects each weakness of the test website",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 1817600
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 12,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 98343300
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 22,
+            "name": "\"Alice\" scans the test website with ownership confirmed",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:25"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 22099500
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 23,
+            "name": "the report should include a \"Outdated / Vulnerable Library\" finding",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:85"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 108500
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 17099
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@scan",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "running-a-security-scan;redirects-are-followed-and-the-final-address-is-reported",
+        "keyword": "Scenario",
+        "line": 32,
+        "name": "Redirects are followed and the final address is reported",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 2786299
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 12,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 114558699
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 33,
+            "name": "\"Alice\" scans the test website path \"/redirect\" with ownership confirmed",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:29"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 29975500
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 34,
+            "name": "the response status should be 200",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 142399
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 35,
+            "name": "the report should say it was redirected to the test website home page",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:90"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 155800
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 18399
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@scan",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "running-a-security-scan;a-scan-needs-the-owner's-permission",
+        "keyword": "Scenario",
+        "line": 37,
+        "name": "A scan needs the owner's permission",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 2930899
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 12,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 97451399
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 38,
+            "name": "\"Alice\" scans the test website without confirming ownership",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:33"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8734399
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 39,
+            "name": "the response status should be 400",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 86199
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 40,
+            "name": "the error message should be \"You must confirm you own this website or have permission to scan it.\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 51499
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 15099
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@scan",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "running-a-security-scan;invalid-target-addresses-are-refused",
+        "keyword": "Scenario Outline",
+        "line": 49,
+        "name": "Invalid target addresses are refused",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 2389699
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 12,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 97400900
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 43,
+            "name": "\"Alice\" scans the address \"example.com\" with ownership confirmed",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:37"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 5236100
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 44,
+            "name": "the response status should be 400",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 92599
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 45,
+            "name": "the error message should be \"Please provide a valid URL including http:// or https://\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 48899
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 14800
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@scan",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "running-a-security-scan;invalid-target-addresses-are-refused",
+        "keyword": "Scenario Outline",
+        "line": 50,
+        "name": "Invalid target addresses are refused",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 1723000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 12,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 95694199
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 43,
+            "name": "\"Alice\" scans the address \"ftp://127.0.0.1/file\" with ownership confirmed",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:37"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 7498099
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 44,
+            "name": "the response status should be 400",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 76500
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 45,
+            "name": "the error message should be \"URL must start with http:// or https://\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 56200
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 411500
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@scan",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "running-a-security-scan;scanning-requires-being-logged-in",
+        "keyword": "Scenario",
+        "line": 52,
+        "name": "Scanning requires being logged in",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 3093399
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 12,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 96800799
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 53,
+            "name": "an anonymous visitor scans the test website",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:41"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 4825600
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 54,
+            "name": "the response status should be 401",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 72700
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 13699
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@scan",
+            "line": 1
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "running-a-security-scan;in-production,-internal-network-targets-are-blocked-(ssrf)",
+        "keyword": "Scenario Outline",
+        "line": 64,
+        "name": "In production, internal network targets are blocked (SSRF)",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 2327500
+            }
+          },
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 121999
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 12,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 102027099
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 58,
+            "name": "\"Alice\" scans the address \"http://localhost:8080/\" with ownership confirmed",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:37"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8666200
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 59,
+            "name": "the response status should be 400",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 90000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 60,
+            "name": "the error message should be \"Scanning localhost or internal hostnames is not allowed\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 50799
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 13600
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 113799
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@scan",
+            "line": 1
+          },
+          {
+            "name": "@security",
+            "line": 56
+          },
+          {
+            "name": "@production",
+            "line": 56
+          },
+          {
+            "name": "@ssrf",
+            "line": 56
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "running-a-security-scan;in-production,-internal-network-targets-are-blocked-(ssrf)",
+        "keyword": "Scenario Outline",
+        "line": 65,
+        "name": "In production, internal network targets are blocked (SSRF)",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 1573200
+            }
+          },
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 49000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 12,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 112952000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 58,
+            "name": "\"Alice\" scans the address \"http://127.0.0.1/\" with ownership confirmed",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:37"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 8216700
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 59,
+            "name": "the response status should be 400",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 82899
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 60,
+            "name": "the error message should be \"Scanning private or internal IP addresses is not allowed\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 41699
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 12500
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 37899
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@scan",
+            "line": 1
+          },
+          {
+            "name": "@security",
+            "line": 56
+          },
+          {
+            "name": "@production",
+            "line": 56
+          },
+          {
+            "name": "@ssrf",
+            "line": 56
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "running-a-security-scan;in-production,-internal-network-targets-are-blocked-(ssrf)",
+        "keyword": "Scenario Outline",
+        "line": 66,
+        "name": "In production, internal network targets are blocked (SSRF)",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 2505599
+            }
+          },
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 67699
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 12,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 241797199
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 58,
+            "name": "\"Alice\" scans the address \"http://192.168.1.1/\" with ownership confirmed",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:37"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 5877300
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 59,
+            "name": "the response status should be 400",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 60099
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 60,
+            "name": "the error message should be \"Scanning private or internal IP addresses is not allowed\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 38499
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 12099
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 36299
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@scan",
+            "line": 1
+          },
+          {
+            "name": "@security",
+            "line": 56
+          },
+          {
+            "name": "@production",
+            "line": 56
+          },
+          {
+            "name": "@ssrf",
+            "line": 56
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "running-a-security-scan;in-production,-internal-network-targets-are-blocked-(ssrf)",
+        "keyword": "Scenario Outline",
+        "line": 67,
+        "name": "In production, internal network targets are blocked (SSRF)",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 2857399
+            }
+          },
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 54000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 12,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 116329900
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 58,
+            "name": "\"Alice\" scans the address \"http://169.254.169.254/latest/\" with ownership confirmed",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:37"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 4880699
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 59,
+            "name": "the response status should be 400",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 69199
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 60,
+            "name": "the error message should be \"Scanning private or internal IP addresses is not allowed\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 43999
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 14000
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 42199
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@scan",
+            "line": 1
+          },
+          {
+            "name": "@security",
+            "line": 56
+          },
+          {
+            "name": "@production",
+            "line": 56
+          },
+          {
+            "name": "@ssrf",
+            "line": 56
+          }
+        ],
+        "type": "scenario"
+      },
+      {
+        "description": "",
+        "id": "running-a-security-scan;in-production,-internal-network-targets-are-blocked-(ssrf)",
+        "keyword": "Scenario Outline",
+        "line": 68,
+        "name": "In production, internal network targets are blocked (SSRF)",
+        "steps": [
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 2260200
+            }
+          },
+          {
+            "keyword": "Before",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 46000
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Given ",
+            "line": 12,
+            "name": "a registered user \"Alice\" with email \"alice@example.com\" and password \"Passw0rd1\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:6"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 128551900
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "When ",
+            "line": 58,
+            "name": "\"Alice\" scans the address \"http://[::1]/\" with ownership confirmed",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\scan.steps.js:37"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 10425400
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "Then ",
+            "line": 59,
+            "name": "the response status should be 400",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:13"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 74399
+            }
+          },
+          {
+            "arguments": [],
+            "keyword": "And ",
+            "line": 60,
+            "name": "the error message should be \"Scanning private or internal IP addresses is not allowed\"",
+            "match": {
+              "location": "..\\qa\\06-bdd\\steps\\common.steps.js:17"
+            },
+            "result": {
+              "status": "passed",
+              "duration": 45400
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 14100
+            }
+          },
+          {
+            "keyword": "After",
+            "hidden": true,
+            "result": {
+              "status": "passed",
+              "duration": 42300
+            }
+          }
+        ],
+        "tags": [
+          {
+            "name": "@scan",
+            "line": 1
+          },
+          {
+            "name": "@security",
+            "line": 56
+          },
+          {
+            "name": "@production",
+            "line": 56
+          },
+          {
+            "name": "@ssrf",
+            "line": 56
+          }
+        ],
+        "type": "scenario"
+      }
+    ],
+    "id": "running-a-security-scan",
+    "line": 2,
+    "keyword": "Feature",
+    "name": "Running a security scan",
+    "tags": [
+      {
+        "name": "@scan",
+        "line": 1
+      }
+    ],
+    "uri": "..\\qa\\06-bdd\\features\\scan.feature"
+  }
+]
