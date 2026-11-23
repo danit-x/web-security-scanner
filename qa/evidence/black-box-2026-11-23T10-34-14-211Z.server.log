@@ -1,0 +1,41 @@
+
+--- EP + BVA inputs ---
+[qa] API starting on :5055 (NODE_ENV=development, local DB)
+◇ injected env (0) from server\.env // tip: ⌁ auth for agents [www.vestauth.com]
+MongoDB connected
+Server is running on http://localhost:5055
+Register error: data must be a string or Buffer and salt must either be a salt string or a number of rounds
+Scan requested by user 6b04169f7da55ff45cb1fbfe for url: http://127.0.0.1:5070/
+Scan requested by user 6b04169f7da55ff45cb1fbfe for url: https://127.0.0.1:5079/
+Scan requested by user 6b04169f7da55ff45cb1fbfe for url: http://127.0.0.1:5070/
+Scan requested by user 6b0416a07da55ff45cb1fc15 for url: http://127.0.0.1:5070/
+
+--- Decision tables ---
+[qa] API starting on :5055 (NODE_ENV=development, local DB)
+◇ injected env (0) from server\.env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+MongoDB connected
+Server is running on http://localhost:5055
+Scan requested by user 6b0416a17bcb329aa9de01f0 for url: http://127.0.0.1:5070/
+Scan requested by user 6b0416a17bcb329aa9de01ef for url: http://127.0.0.1:5070/
+Scan requested by user 6b0416a17bcb329aa9de01ef for url: http://127.0.0.1:5070/
+Scan requested by user 6b0416a17bcb329aa9de01ef for url: http://127.0.0.1:5070/
+Scan requested by user 6b0416a17bcb329aa9de0277 for url: http://127.0.0.1:5079/
+Scan requested by user 6b0416a17bcb329aa9de0277 for url: http://127.0.0.1:5070/
+
+--- Login limit ---
+[qa] API starting on :5055 (NODE_ENV=development, local DB)
+◇ injected env (0) from server\.env // tip: ⌘ override existing { override: true }
+MongoDB connected
+Server is running on http://localhost:5055
+
+--- Scan limit ---
+[qa] API starting on :5055 (NODE_ENV=development, local DB)
+◇ injected env (0) from server\.env // tip: ⌘ enable debugging { debug: true }
+MongoDB connected
+Server is running on http://localhost:5055
+
+--- General limit ---
+[qa] API starting on :5055 (NODE_ENV=development, local DB)
+◇ injected env (0) from server\.env // tip: ◈ secrets for agents [www.dotenvx.com]
+MongoDB connected
+Server is running on http://localhost:5055

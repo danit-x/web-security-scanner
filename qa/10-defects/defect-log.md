@@ -10,7 +10,12 @@ Severity is the impact on the system. Priority is how urgently it must be fixed.
 | DEF-002 | Malformed JSON body returns 500 with a stack trace instead of 400 | TC-API-05 | Medium | P2 | New |
 | DEF-003 | Disallowed CORS origin returns 500 with a stack trace | TC-API-04 | Low | P3 | New |
 | DEF-004 | `localhost` scan targets are rejected in development, contradicting the documented dev bypass | Run 1 cascade (TC-SCAN-01) | Low | P3 | New |
+| DEF-005 | Password sent as a JSON number crashes registration (500) | EP-PW-06 (Phase 3) | Medium | P2 | New |
+| DEF-006 | `calculateScore()` throws on a `null` finding, despite being documented as defensive | EP-SC-06 (Phase 3) | Low | P3 | New |
 | OBS-01 | Scan button is silently disabled. The ownership message in `handleSubmit` is unreachable (dead code). | TC-UI-05 | (Observation) | P4 | New |
+| OBS-02 | Name of 100 characters is accepted, but the message says "under 100 characters" | BVA-NM-04/05 | (Observation) | P4 | New |
+| OBS-03 | Scores 87/90/93/95/96/98/99 can never occur. The schema allows grade `E`, which the scorer never produces. | BVA-SC-15 | (Observation) | P4 | New |
+| OBS-04 | Weak passwords such as `12345678` are accepted (no letter required, no breached-password check) | EP-PW-07 | (Observation) | P3 | New |
 
 ---
 
@@ -73,3 +78,36 @@ Severity is the impact on the system. Priority is how urgently it must be fixed.
 `Dashboard.jsx` `handleSubmit` contains `if (!ownershipConfirmed) setApiError('Please confirm…')`, but that line is unreachable because a disabled submit button can't fire `onSubmit`.
 
 **Suggestion:** either remove the dead branch, or keep the button enabled and show the message. To be used in Phase 4 as a white-box example of unreachable code (code that 100% statement coverage can never reach).
+
+## DEF-005: Password sent as a JSON number crashes registration
+
+**Found by:** EP-PW-06 (EP, wrong-type invalid class)
+**Steps:** `POST /api/auth/register` with `{"name":"QA","email":"qa.x@example.com","password":12345678}`. The password is a number, not a string.
+**Expected:** 400 with a validation message.
+**Actual:** **500 "Server error"**. The server log shows: `Register error: data must be a string or Buffer and salt must either be a salt string or a number of rounds`.
+
+**Analysis:**
+- express-validator *converts* the value to a string in order to validate it (`"12345678"` has 8 characters and a digit, so it passes), but it does not change `req.body`.
+- The number therefore reaches `bcrypt.hash()`, which only accepts strings or Buffers.
+- The type is never asserted (`isString()` is missing).
+
+**ISO 25010:** reliability (fault tolerance).
+
+## DEF-006: `calculateScore()` throws on a `null` finding
+
+**Found by:** EP-SC-06
+**Steps:** `calculateScore([null])`
+**Expected:** 100. The comment says the function is "defensive against bad data from a check that somehow produced a malformed finding".
+**Actual:** `TypeError: Cannot read properties of null (reading 'severity')`.
+
+**Impact:** in `runScan`, `calculateGrade` runs outside the per-check try/catch blocks. A check that returned `null` in its findings array would turn the whole scan into a 500. Low severity, because no current check returns `null`.
+
+## OBS-02: Name length message is off by one
+At 100 characters the name is accepted (`isLength({max:100})`), but the error message for 101 says "Name must be **under** 100 characters". The message should say "at most 100" or "100 characters or fewer".
+
+## OBS-03: Score and grade reachability
+- **Scores:** deductions are 25, 15, 8 and 3, so the scores {87, 90, 93, 95, 96, 98, 99} can never be produced, and the A boundary (90) is never hit by a real scan.
+- **Grades:** `ScanResults.grade` allows `"E"`, but `scoreToGrade` never returns it. This is a spec/implementation mismatch, found during verification.
+
+## OBS-04: Weak passwords accepted
+`12345678` satisfies the policy (at least 8 characters, at least one digit). It will be revisited under OWASP A07 (Identification and Authentication Failures) in Phase 9.

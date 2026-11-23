@@ -9,98 +9,18 @@
 // (5 logins / 10 scans / 100 requests per 15 min) start from zero.
 // Output: qa/evidence/api-run-<timestamp>.json and qa/02-stlc/api-results.md
 
-import { spawn } from "node:child_process";
-import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
-import { createRequire } from "node:module";
+import {
+  repo, requireServer, QA_SECRET, API_PORT, FIXTURE_URL, DEAD_URL,
+  req, short, runGroups, createRecorder, writeEvidence, mdCell, loadJson,
+} from "./lib/harness.mjs";
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-const repo = path.resolve(here, "../..");
-const requireServer = createRequire(path.join(repo, "server/package.json"));
 const jwt = requireServer("jsonwebtoken");
-
-const QA_SECRET = "qa-only-jwt-secret-not-for-production";
-const API_PORT = 5055;
-const FIXTURE_PORT = 5070;
-const DEAD_PORT = 5079;
-const BASE = `http://localhost:${API_PORT}/api`;
 const ts = Date.now();
-const data = JSON.parse(
-  fs.readFileSync(path.join(repo, "qa/test-data/users.json"), "utf8"),
-);
+const data = loadJson("qa/test-data/users.json");
 const email = (u) => `${u.emailPrefix}.${ts}@${u.domain}`;
-
-const results = [];
-const record = (id, title, pass, expected, actual) => {
-  results.push({ id, title, status: pass ? "PASS" : "FAIL", expected, actual });
-  console.log(`${pass ? "PASS" : "FAIL"}  ${id}  ${title}${pass ? "" : `\n      expected: ${expected}\n      actual:   ${actual}`}`);
-};
-const short = (r) =>
-  `${r.status} ${JSON.stringify(r.body).slice(0, 160)}`;
-
-// ---------- HTTP helper ----------
-async function req(method, p, { token, body, headers = {}, raw } = {}) {
-  const h = { ...headers };
-  if (token !== undefined) h.Authorization = `Bearer ${token}`;
-  let payload;
-  if (raw !== undefined) {
-    payload = raw;
-    h["Content-Type"] = "application/json";
-  } else if (body !== undefined) {
-    payload = JSON.stringify(body);
-    h["Content-Type"] = "application/json";
-  }
-  const res = await fetch(BASE + p, { method, headers: h, body: payload });
-  const text = await res.text();
-  let parsed;
-  try { parsed = JSON.parse(text); } catch { parsed = text; }
-  return { status: res.status, body: parsed, headers: res.headers };
-}
-
-// ---------- fixture website (the only scan target) ----------
-// Deliberately weak: no security headers, insecure cookie, old jQuery.
-function startFixture() {
-  const server = http.createServer((rq, rs) => {
-    if (rq.url === "/" || rq.url === "/index.html") {
-      rs.writeHead(200, {
-        "Content-Type": "text/html",
-        "Set-Cookie": "session=abc123; Path=/",
-      });
-      rs.end(`<!doctype html><html><head><title>QA fixture</title>
-<script src="/js/jquery-1.12.4.min.js"></script></head>
-<body><h1>QA fixture site</h1></body></html>`);
-    } else {
-      rs.writeHead(404, { "Content-Type": "text/plain" });
-      rs.end("not found");
-    }
-  });
-  return new Promise((r) => server.listen(FIXTURE_PORT, () => r(server)));
-}
-
-// ---------- API lifecycle ----------
-async function startApi(extraEnv = {}) {
-  const child = spawn(process.execPath, [path.join(here, "start-test-api.js")], {
-    env: { ...process.env, PORT: String(API_PORT), ...extraEnv },
-    stdio: ["ignore", "pipe", "pipe"],
-  });
-  let log = "";
-  child.stdout.on("data", (d) => (log += d));
-  child.stderr.on("data", (d) => (log += d));
-  for (let i = 0; i < 60; i++) {
-    await new Promise((r) => setTimeout(r, 250));
-    if (child.exitCode !== null) throw new Error(`API exited early:\n${log}`);
-    try {
-      const r = await fetch(`${BASE}/health`);
-      if (r.ok) return { child, getLog: () => log };
-    } catch {}
-  }
-  child.kill();
-  throw new Error(`API did not become healthy:\n${log}`);
-}
-const stopApi = (api) =>
-  new Promise((r) => { api.child.once("exit", r); api.child.kill(); });
+const { results, record } = createRecorder();
 
 const register = (u, overrides = {}) =>
   req("POST", "/auth/register", {
@@ -205,7 +125,7 @@ async function group1() {
   record("TC-AUTH-05", "Empty bearer value", r.status === 401, "401", short(r));
 
   // ---- Scan ----
-  const target = `http://127.0.0.1:${FIXTURE_PORT}/`; // localhost is rejected by isURL (DEF-004)
+  const target = FIXTURE_URL;
   const s1 = await scan(tokenA, target);
   const f = s1.body.findings || [];
   const sum = { critical: 0, high: 0, medium: 0, low: 0 };
@@ -233,7 +153,7 @@ async function group1() {
   r = await scan(tokenA, "ftp://localhost/file");
   record("TC-SCAN-05", "Non-HTTP scheme", r.status === 400, "400", short(r));
 
-  r = await scan(tokenA, `http://127.0.0.1:${DEAD_PORT}/`);
+  r = await scan(tokenA, DEAD_URL);
   const alive = (await req("GET", "/health")).status === 200;
   record("TC-SCAN-06", "Unreachable host handled", r.status === 502 && r.body.message === "Site could not be reached." && alive,
     "502 Site could not be reached, server still up", `${short(r)}; serverAlive=${alive}`);
@@ -340,38 +260,21 @@ async function group3() {
 }
 
 // ---------- main ----------
-const fixture = await startFixture();
-const groups = [["Group 1", group1], ["Group 2", group2], ["Group 3", group3]];
-let apiLog = "";
-try {
-  for (const [name, fn] of groups) {
-    console.log(`\n=== ${name} (fresh API on :${API_PORT}) ===`);
-    const api = await startApi();
-    try { await fn(); } finally { apiLog += `\n--- ${name} ---\n${api.getLog()}`; await stopApi(api); }
-  }
-} finally {
-  fixture.close();
-}
+const apiLog = await runGroups([["Group 1", group1], ["Group 2", group2], ["Group 3", group3]]);
 
 const pass = results.filter((r) => r.status === "PASS").length;
 const fail = results.length - pass;
 console.log(`\nTotal ${results.length}  PASS ${pass}  FAIL ${fail}`);
-
-const stamp = new Date().toISOString().replace(/[:.]/g, "-");
-const evDir = path.join(repo, "qa/evidence");
-fs.mkdirSync(evDir, { recursive: true });
-fs.writeFileSync(path.join(evDir, `api-run-${stamp}.json`),
-  JSON.stringify({ runAt: new Date().toISOString(), node: process.version, pass, fail, results }, null, 2));
-fs.writeFileSync(path.join(evDir, `api-run-${stamp}.server.log`), apiLog);
+const evidence = writeEvidence("api-run", { pass, fail, results }, apiLog);
 
 const order = (id) => ["API", "REG", "LOG", "AUTH", "SCAN", "HIS", "NOTE", "DEL"].indexOf(id.split("-")[1]) * 100 + Number(id.split("-")[2]);
 const rows = [...results].sort((a, b) => order(a.id) - order(b.id))
-  .map((r) => `| ${r.id} | ${r.title} | ${r.expected} | ${String(r.actual).replace(/\|/g, "\\|").replace(/\n/g, " ")} | **${r.status}** |`);
+  .map((r) => `| ${r.id} | ${r.title} | ${r.expected} | ${mdCell(r.actual)} | **${r.status}** |`);
 fs.writeFileSync(path.join(repo, "qa/02-stlc/api-results.md"),
 `# API Test Execution Results (automated)
 
 Run: ${new Date().toISOString()} · Node ${process.version} · local MongoDB · runner \`qa/scripts/run-api-cases.mjs\`
-Raw evidence: \`qa/evidence/api-run-${stamp}.json\` and the matching \`.server.log\`
+Raw evidence: \`${evidence}\` and the matching \`.server.log\`
 
 **Total ${results.length} · PASS ${pass} · FAIL ${fail}**
 
