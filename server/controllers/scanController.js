@@ -18,6 +18,7 @@ const ScanResult = require("../models/ScanResults");
 const asyncHandler = require("../utils/asyncHandler");
 
 const axios = require("axios");
+const { safeAxiosOptions, isBlockedError, BLOCKED_MESSAGE } = require("../utils/ssrfGuard");
 const mongoose = require("mongoose");
 
 const groupFindingsByCategory = (findings) => {
@@ -98,8 +99,14 @@ const runScan = asyncHandler(async (req, res) => {
       },
       validateStatus: () => true,
       maxRedirects: 5,
+      // Re-checks the address on every connection and every redirect hop (DEF-009).
+      ...safeAxiosOptions,
     });
   } catch (fetchError) {
+    // A redirect or a DNS answer pointed at an internal address (DEF-009).
+    if (isBlockedError(fetchError)) {
+      return res.status(400).json({ success: false, message: BLOCKED_MESSAGE });
+    }
     if (fetchError.code === "ECONNABORTED") {
       return res
         .status(408)

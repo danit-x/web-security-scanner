@@ -4,6 +4,7 @@
 // or using an outdated TLS protocol version.
 
 const tls = require("tls");
+const { guardedLookup, assertPublicHost } = require("../ssrfGuard");
 
 // How many days before expiry we start warning about it.
 const EXPIRY_WARNING_DAYS = 30;
@@ -23,10 +24,18 @@ const WEAK_TLS_VERSIONS = ["TLSv1", "TLSv1.1", "SSLv3"];
  */
 const getCertificateInfo = (hostname) => {
   return new Promise((resolve, reject) => {
+    // Never open a TLS connection to an internal address (DEF-009): literal IPs
+    // are checked here, hostnames in guardedLookup at connect time.
+    try {
+      assertPublicHost(hostname);
+    } catch (err) {
+      return reject(err);
+    }
     const socket = tls.connect(
       {
         host: hostname,
         port: 443,
+        lookup: guardedLookup,
         servername: hostname, // needed for SNI — many hosts serve different certs per hostname
         rejectUnauthorized: false, // don't throw on invalid certs; we want to inspect them
         timeout: 8000, // match the same 8s budget used for the main axios fetch

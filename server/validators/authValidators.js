@@ -56,7 +56,10 @@ const registerValidationRules = [
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 characters long")
     .matches(/\d/)
-    .withMessage("Password must contain at least one number"),
+    .withMessage("Password must contain at least one number")
+    // Digits-only passwords such as 12345678 are among the most guessed (OBS-04).
+    .matches(/[A-Za-z]/)
+    .withMessage("Password must contain at least one letter"),
 ];
 
 // Rules for POST /api/auth/login

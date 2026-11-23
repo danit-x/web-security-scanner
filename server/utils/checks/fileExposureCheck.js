@@ -4,6 +4,7 @@
 // files, private keys). Requests are made in parallel to keep scan time down.
 
 const axios = require("axios");
+const { safeAxiosOptions } = require("../ssrfGuard");
 
 // -----------------------------------------------------------------------
 // Reference list of sensitive paths to probe, with severity + explanation.
@@ -153,6 +154,7 @@ const probePath = async (baseUrl, rule) => {
       },
       validateStatus: () => true, // we want to inspect the status ourselves, not throw on 404
       maxRedirects: 0, // a redirect (e.g. to a login page) means it's NOT directly exposed
+      ...safeAxiosOptions, // never probe an internal address (DEF-009)
     });
 
     // Only status 200 is a candidate — 404/403/301/302/etc. mean it's not

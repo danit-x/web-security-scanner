@@ -19,7 +19,7 @@
 | Class | Kind | Representative | Expected | Case |
 |---|---|---|---|---|
 | ≥ 8 characters with a digit | Valid | `Passw0rd1` | 201 | EP-PW-01 |
-| ≥ 8 digits only (weak but meets the rule) | Valid | `12345678` | 201 | EP-PW-07 |
+| ≥ 8 digits only (weak) | Valid in phase 3 → **Invalid since the OBS-04 fix (phase 9)** | `12345678` | 201 → 400 | EP-PW-07 |
 | < 8 characters | Invalid | `Pass1` | 400 | EP-PW-02 |
 | No digit | Invalid | `Password` | 400 | EP-PW-03 |
 | Empty string | Invalid | `""` | 400 | EP-PW-04 |

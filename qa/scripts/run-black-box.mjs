@@ -128,7 +128,8 @@ async function inputs() {
   await pw("EP-PW-04", "invalid: empty string", "", 400, "400 required");
   await pw("EP-PW-05", "invalid: field missing", undefined, 400, "400 required", true);
   await pw("EP-PW-06", "invalid type: number 12345678", 12345678, 400, "400 (type rejected, not a crash)");
-  await pw("EP-PW-07", "valid (weak): digits only '12345678'", "12345678", 201, "201 (meets the stated rule)");
+  // Was 201 (valid but weak). Since the OBS-04 fix (phase 9) a letter is required.
+  await pw("EP-PW-07", "invalid: digits only '12345678' (OBS-04)", "12345678", 400, "400 needs a letter");
 
   // ---- EP: email (register) ----
   const em = async (id, input, value, expStatus, expected) => {

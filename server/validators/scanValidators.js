@@ -136,4 +136,6 @@ module.exports = {
   scanValidationRules,
   noteValidationRules,
   handleValidationErrors,
+  // Shared with utils/ssrfGuard.js, which re-checks every connection (DEF-009).
+  isPrivateOrReservedIp,
 };
