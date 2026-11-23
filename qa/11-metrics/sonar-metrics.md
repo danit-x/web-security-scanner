@@ -172,13 +172,45 @@ No new Critical or High defect was found, so the test plan's exit criterion "no 
 2. **Ratings need triage.** Reliability **C** comes only from 5 false positives (§2.1).
 3. **Profile choice changes the result.** The core profile hides the most important finding (S3776 on `runScan`).
 4. **Coverage is reused, not re-measured.** The lcov file is the one produced by Phase 8/9 on Windows (259 Jest tests), and its `models/User.js` path needed its case fixed for a case-sensitive Linux scanner. Server code has not changed since (`git log` on `server/` ends at the same commit), so the figures are current. In CI the job uses the lcov the `unit-api` job has just produced.
-5. **Local vs. SonarCloud.** The numbers here come from the local SonarQube Community Build 26.11. SonarCloud uses the same analyser (SonarJS). Its default profile and its extra security engine for public projects may report a few more issues, and SonarCloud's figures should be added in §7 when it has run.
+5. **Local vs. SonarCloud.** The numbers in §2–§5 come from the local SonarQube Community Build 26.11. SonarCloud uses the same analyser (SonarJS). Its results are in §7: the same coverage, plus 3 taint-analysis findings on the original code, all triaged as not exploitable.
 
 ## 7. SonarCloud run (CI)
 
-The `sonar` job in [`.github/workflows/qa.yml`](../../.github/workflows/qa.yml) runs after `unit-api`, downloads its fresh coverage, fixes the paths, and runs `SonarSource/sonarqube-scan-action`. Until the repository owner adds the `SONAR_TOKEN` secret, the job prints a notice and skips the scan, so CI stays green. Setup steps: [sonarcloud-setup.md](sonarcloud-setup.md).
+The `sonar` job in [`.github/workflows/qa.yml`](../../.github/workflows/qa.yml) runs after `unit-api`, downloads its fresh coverage, fixes the paths, and runs `SonarSource/sonarqube-scan-action`. Without the `SONAR_TOKEN` secret it prints a notice and skips the scan. Setup steps: [sonarcloud-setup.md](sonarcloud-setup.md). The repository owner added the secret on 2026-11-23, and the job has uploaded an analysis on every push since then.
 
 | | |
 |---|---|
-| Dashboard | *(add link once the first SonarCloud analysis has run)* |
-| Result | *(pending: project not yet imported into SonarCloud)* |
+| Dashboard | <https://sonarcloud.io/dashboard?id=danit-x_web-security-scanner&branch=qa%2Fec4206-testing> |
+| Evidence | [`../evidence/sonar/sonarcloud/`](../evidence/sonar/sonarcloud/): public API JSON for both branches, no token |
+
+### 7.1 First run: wrong scope (fixed)
+
+The first CI scan (run 45204586083) analysed **20,771 lines**, not ~3,100, and reported coverage of only 47.7 %. The scanner log explains why:
+
+> `WARN The following properties are configured but have no effect: sonar.sources, sonar.test.inclusions, sonar.tests.`
+
+SonarCloud's new *analysis scope* scans the whole repository and ignores `sonar.sources`. It therefore analysed `qa/` (scripts and HTML evidence reports) and the workflow file, and raised 18 issues there. Examples include "use a full commit SHA" for actions, `npm ci` without `--ignore-scripts`, and `Math.random()` in test helpers. These are real CI-hardening points, but they are outside the application under test. **Fix** (commit `4381fbb`): the scope is now set by `sonar.exclusions` (everything except `server/` and `client/src/`). The next scan indexed 55 files, and all 18 out-of-scope issues closed.
+
+**Lesson:** always read the scanner log. A green job can still be measuring the wrong thing.
+
+### 7.2 Result on the QA branch (run 45205477540, commit `4381fbb`)
+
+| Quality gate | Bugs | Vulnerabilities | Hotspots | Open issues | Coverage | Duplication |
+|---|---|---|---|---|---|---|
+| **Passed** | **0** (A) | **0** (A) | 0 | 1 (S8786, accepted in §2.1) | **93.9 %** (line 96.1, branch 89.1) | 2.4 % |
+
+SonarCloud's coverage figure matches the local run exactly, because both read the same Jest lcov. SonarCloud classifies `qa/ec4206-testing` as a **short-lived branch** (`Branch name: qa/ec4206-testing, type: short`) and compares it with `main`. Its size and complexity measures (17 files, 1,484 lines) therefore cover only the files changed since `main`, which is why they are smaller than the local whole-project figures in §2. The default profile, `Sonar way core`, does not raise S3776 or S6772 (see §6 point 3 and [sonarcloud-setup.md](sonarcloud-setup.md)), so OBS-09 does not appear there.
+
+### 7.3 `main` (original code) and taint analysis
+
+When the repository was imported, SonarCloud's *Automatic Analysis* scanned `main`, the original code at `ba8a9ba`: **5 bugs, 4 vulnerabilities, Security rating E**. The 5 bugs are the S9383 false positives (§2.1). One vulnerability is the S5852 ReDoS in the old email regex, already found in §4 and removed by the DEF-008 fix.
+
+The other **3 come from taint analysis**. SonarCloud follows user input across files to a dangerous call, which the local Community Build cannot do (§6). Triage:
+
+| Rule | Where | Taint path | Triage |
+|---|---|---|---|
+| S5147 NoSQL injection, **Blocker** | `routes/scanRoutes.js:58` `ScanResult.find({ userId: req.userId })` | `authMiddleware.js:21` → `req.userId = decoded.id` → `find()` | **False positive.** The source is the `id` claim of a JWT that `jwt.verify()` has checked with the server's secret. A client cannot set it, for example to `{"$ne": null}`, without the secret, and a forged or altered token gets 401 (Jest `security/owasp.test.js`: "a token signed with a different secret is rejected"). The tool does not model signature verification as a sanitiser. Optional defence in depth: reject a non-string `decoded.id` in `authMiddleware` |
+| S5145 log injection, Minor | `controllers/scanController.js:87` logs `req.userId` and the scan URL | same source, plus the request body | **Not exploitable.** `userId` comes from the signed token. The URL has passed `isURL()`, which rejects whitespace including CR/LF, so it cannot forge a new log line |
+| S5145 log injection, Minor | `middleware/errorHandler.js:60` logs `req.originalUrl` | request line | **Not exploitable.** Node's HTTP parser rejects a raw CR/LF in the request line, and an encoded `%0A` is logged as text |
+
+All 3 were checked against the current branch, where the code is unchanged. **No new defect.** `main` will show the QA branch's result once PR #12 is merged and the first `main` analysis runs in CI.

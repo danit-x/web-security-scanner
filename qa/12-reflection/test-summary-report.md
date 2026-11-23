@@ -32,7 +32,7 @@ All 11 features in the plan (F1–F11) were tested at the levels the plan set ou
 | Regression | Continuous integration | GitHub Actions | 7 jobs; Node 22 + 24; coverage gate 90/85/90/90 | [08-ci](../08-ci/ci-notes.md) |
 | Performance | Load, stress, spike, breakpoint | JMeter 5.6.3 | 26,057 requests, **0 errors**, every SLA met up to 400 users | [09-performance-security](../09-performance-security/phase9-notes.md) |
 | Security | SCA, DAST, scripted OWASP Top 10 | npm audit, OWASP ZAP 2.17, Jest | 0 production vulnerabilities; ZAP rescan 0 Medium/Low; A01–A10 tests pass | [09-performance-security](../09-performance-security/phase9-notes.md) |
-| Static | Code quality metrics | SonarQube Community 26.11 | 0 vulnerabilities (A), 0 hotspots, 2.5 % duplication, 93.9 % coverage | [11-metrics](../11-metrics/sonar-metrics.md) |
+| Static | Code quality metrics, taint analysis | SonarQube Community 26.11 + SonarCloud (CI) | 0 vulnerabilities (A), 0 hotspots, 2.5 % duplication, 93.9 % coverage; SonarCloud quality gate Passed | [11-metrics](../11-metrics/sonar-metrics.md) |
 
 ## 3. Variances from the plan
 
