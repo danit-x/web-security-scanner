@@ -1,0 +1,14 @@
+{
+  "_comment": "Synthetic QA-only accounts. Emails get a per-run timestamp suffix so runs never clash. Only ever used against the local QA database.",
+  "userA": { "name": "QA User A", "emailPrefix": "qa.a", "domain": "example.com", "password": "Passw0rd1" },
+  "userB": { "name": "QA User B", "emailPrefix": "qa.b", "domain": "example.com", "password": "Passw0rd2" },
+  "gmailUser": { "name": "QA Gmail", "emailPrefix": "qa.tester", "domain": "gmail.com", "password": "Passw0rd3" },
+  "boundaries": {
+    "password7": "abcdef1",
+    "password8": "abcdefg1",
+    "passwordNoDigit": "abcdefgh",
+    "note500": 500,
+    "note501": 501,
+    "name101": 101
+  }
+}
