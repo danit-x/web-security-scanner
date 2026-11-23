@@ -1,5 +1,7 @@
 # Defect Log
 
+Phase 10 analysis: [root cause analysis](rca.md) · [lifecycle and each defect's path](defect-lifecycle.md) · [metrics](defect-metrics.md)
+
 Lifecycle used: **New → Open (triaged) → In progress → Fixed → Retest → Verified → Closed**. A defect can also be Reopened, Rejected or Deferred.
 
 Severity is the impact on the system. Priority is how urgently it must be fixed.
