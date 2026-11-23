@@ -15,7 +15,7 @@ Testing the Website Security Scanner (MERN) on branch `qa/ec4206-testing`.
 | 7 | Postman (360 assertions) + Selenium (11 UI tests, POM) | ✅ | [07-postman-selenium/phase7-notes.md](07-postman-selenium/phase7-notes.md) |
 | 8 | CI (GitHub Actions): 5-job pipeline, coverage gate | ✅ | [08-ci/ci-notes.md](08-ci/ci-notes.md) |
 | 9 | JMeter (load/stress/spike/breakpoint) + OWASP (SCA, ZAP DAST, scripted A02–A10) | ✅ DEF-009 (High SSRF), DEF-010 fixed | [09-performance-security/phase9-notes.md](09-performance-security/phase9-notes.md) |
-| 10 | Defects, RCA, lifecycle | 🟡 8 defects closed in P5; OBS-06 closed in P7; DEF-009/010, OBS-03/04 closed in P9; RCA pending | [10-defects/defect-log.md](10-defects/defect-log.md) |
+| 10 | Defects, RCA, lifecycle, metrics | ✅ 10/10 defects closed; 5 Whys + fishbone for DEF-001/DEF-009; DRE and phase containment | [10-defects/phase10-notes.md](10-defects/phase10-notes.md) |
 | 11 | SonarQube metrics | ⏳ | |
 | 12 | Reflection | ⏳ | |
 
