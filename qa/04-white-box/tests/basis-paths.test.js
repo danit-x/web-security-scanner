@@ -161,9 +161,9 @@ test("BP-P4 production, blocked hostname 0.0.0.0 -> BLOCKED_HOSTNAMES branch", a
   const errors = await withEnv("production", () => runRules({ url: "http://0.0.0.0" }));
   assert.deepEqual(errors, ["Scanning localhost or internal hostnames is not allowed"]);
 });
-test("BP-P4b 'localhost' never reaches the guard: isURL rejects it first", async () => {
+test("BP-P4b 'localhost' now reaches the guard and is blocked by the hostname rule (was: rejected by isURL, OBS-05/DEF-004 fixed)", async () => {
   const errors = await withEnv("production", () => runRules({ url: "http://localhost:3000" }));
-  assert.deepEqual(errors, ["Please provide a valid URL including http:// or https://"]);
+  assert.deepEqual(errors, ["Scanning localhost or internal hostnames is not allowed"]);
 });
 test("BP-P5 production, private literal IPv4 -> literal-IP branch", async () => {
   const errors = await withEnv("production", () => runRules({ url: "http://10.0.0.5" }));
@@ -185,10 +185,9 @@ test("BP-P8 production, DNS lookup fails -> 'Could not resolve'", async () => {
       () => runRules({ url: "http://nope.example.com" })));
   assert.deepEqual(errors, ["Could not resolve the provided domain"]);
 });
-test("BP-X1 IPv6 loopback literal is NOT caught by the literal-IP branch", async () => {
-  // new URL('http://[::1]/').hostname === '[::1]' (with brackets), so /^::1$/
-  // never matches; the URL is only rejected later because DNS can't resolve "[::1]".
+test("BP-X1 IPv6 loopback literal is now caught by the literal-IP branch (OBS-05 fixed)", async () => {
+  // Before the fix, new URL('http://[::1]/').hostname kept its brackets, so
+  // /^::1$/ never matched and the URL was only rejected because DNS failed.
   const errors = await withEnv("production", () => runRules({ url: "http://[::1]/" }));
-  assert.notDeepEqual(errors, ["Scanning private or internal IP addresses is not allowed"]);
-  assert.equal(errors.length, 1, "still rejected by some branch");
+  assert.deepEqual(errors, ["Scanning private or internal IP addresses is not allowed"]);
 });

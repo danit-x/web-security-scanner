@@ -16,11 +16,23 @@ const notFound = (req, res, next) => {
 };
 
 const errorHandler = (err, req, res, _next) => {
-  // If a status code was already set earlier (e.g. via res.status(400)
-  // before throwing), use it. Otherwise default to 500.
+  // Prefer a status carried by the error itself (body-parser sets
+  // err.status = 400 for malformed JSON, the CORS check sets 403). Next, a
+  // status already set on the response (e.g. notFound's 404). Otherwise 500.
+  // Before DEF-002/DEF-003, err.status was ignored, so client errors became 500s.
+  const errStatus = Number(err.status || err.statusCode);
   let statusCode =
-    res.statusCode && res.statusCode !== 200 ? res.statusCode : 500;
+    errStatus >= 400 && errStatus < 600
+      ? errStatus
+      : res.statusCode && res.statusCode !== 200
+        ? res.statusCode
+        : 500;
   let message = err.message || "Server error";
+
+  // Malformed JSON body: don't echo the parser's internal message.
+  if (err.type === "entity.parse.failed") {
+    message = "Malformed JSON in request body";
+  }
 
   // --- Translate common Mongoose/JWT error types into clean responses ---
 
@@ -62,9 +74,12 @@ const errorHandler = (err, req, res, _next) => {
   res.status(statusCode).json({
     success: false,
     message,
-    // Only include the stack trace in the response during local development —
-    // never in production, where it could leak internals to an attacker.
-    ...(process.env.NODE_ENV !== "production" && { stack: err.stack }),
+    // Only include the stack trace for genuine server errors (5xx) during
+    // local development — never in production, where it could leak internals
+    // to an attacker, and never for client errors (4xx), where the stack only
+    // points at the client's own mistake.
+    ...(process.env.NODE_ENV !== "production" &&
+      statusCode >= 500 && { stack: err.stack }),
   });
 };
 

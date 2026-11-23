@@ -18,8 +18,12 @@ const BLOCKED_IP_RANGES = [
   /^169\.254\./, // link-local (includes AWS/GCP/Azure metadata service)
   /^0\./, // "this network"
   /^::1$/, // IPv6 loopback
-  /^fc00:/, // IPv6 unique local
-  /^fe80:/, // IPv6 link-local
+  /^::$/, // IPv6 unspecified address
+  /^f[cd][0-9a-f]{0,2}:/i, // IPv6 unique local (fc00::/7, i.e. fc.. and fd..)
+  /^fe[89ab][0-9a-f]?:/i, // IPv6 link-local (fe80::/10)
+  // IPv4-mapped IPv6 (::ffff:a.b.c.d). The URL parser rewrites these to hex
+  // (::ffff:7f00:1), so the IPv4 rules above can't see them: block them all.
+  /^::ffff:/i,
 ];
 
 const BLOCKED_HOSTNAMES = ["localhost", "0.0.0.0"];
@@ -52,7 +56,10 @@ const blockPrivateTargets = async (value) => {
     throw new Error("Only http and https URLs are allowed");
   }
 
-  const hostname = parsedUrl.hostname.toLowerCase();
+  // WHATWG URL keeps IPv6 literals in brackets ("[::1]"); strip them so the
+  // IPv6 rules can match. Without this, IPv6 targets were only rejected by
+  // accident, when DNS failed to resolve "[::1]" (OBS-05).
+  const hostname = parsedUrl.hostname.toLowerCase().replace(/^\[(.*)\]$/, "$1");
 
   if (BLOCKED_HOSTNAMES.includes(hostname)) {
     throw new Error("Scanning localhost or internal hostnames is not allowed");
@@ -90,7 +97,10 @@ const scanValidationRules = [
     .trim()
     .notEmpty()
     .withMessage("A URL is required")
-    .isURL({ require_protocol: true })
+    // require_tld: false lets "localhost" through to blockPrivateTargets, which
+    // allows it in development and blocks it in production. With the default
+    // (true), localhost was rejected here in every environment (DEF-004).
+    .isURL({ require_protocol: true, require_tld: false })
     .withMessage("Please provide a valid URL including http:// or https://")
     .bail() // stop here if isURL already failed, no point running the async check
     .custom(blockPrivateTargets),

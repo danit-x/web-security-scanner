@@ -1,0 +1,65 @@
+﻿node.exe : FAIL ../qa/05-unit/regression/defects.test.js
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (FAIL ../qa/05-u...defects.test.js:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  ● DEF-001 email addresses are stored and matched exactly as typed › register keeps dots and +tag (only lower-cases)
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 400
+
+      31 |   test("register keeps dots and +tag (only lower-cases)", async () => {
+      32 |     const { res } = await registerUser({ email: typed });
+    > 33 |     expect(res.status).toBe(201);
+         |                        ^
+      34 |     expect(res.body.user.email).toBe(typed.toLowerCase());
+      35 |   });
+      36 |
+
+      at Object.toBe (../qa/05-unit/regression/defects.test.js:33:24)
+
+  ● DEF-001 email addresses are stored and matched exactly as typed › login with the exact address used at 
+registration succeeds
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 401
+
+      37 |   test("login with the exact address used at registration succeeds", async () => {
+      38 |     const res = await request(app).post("/api/auth/login").send({ email: typed, password: PASSWORD });
+    > 39 |     expect(res.status).toBe(200);
+         |                        ^
+      40 |     expect(res.body.token).toEqual(expect.any(String));
+      41 |   });
+      42 |
+
+      at Object.toBe (../qa/05-unit/regression/defects.test.js:39:24)
+
+  ● DEF-001 email addresses are stored and matched exactly as typed › login is case-insensitive and ignores 
+surrounding spaces
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 401
+
+      45 |       .post("/api/auth/login")
+      46 |       .send({ email: `  ${typed.toUpperCase()} `, password: PASSWORD });
+    > 47 |     expect(res.status).toBe(200);
+         |                        ^
+      48 |   });
+      49 | });
+      50 |
+
+      at Object.toBe (../qa/05-unit/regression/defects.test.js:47:24)
+
+Test Suites: 1 failed, 1 total
+Tests:       3 failed, 19 skipped, 22 total
+Snapshots:   0 total
+Time:        1.648 s, estimated 3 s
+Ran all test suites matching regression with tests matching "DEF-001".

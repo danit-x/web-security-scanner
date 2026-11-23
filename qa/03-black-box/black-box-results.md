@@ -1,13 +1,13 @@
 # Black-Box Execution Results (Phase 3)
 
-Run: 2026-11-23T10:34:14.216Z · Node v25.6.0 · local MongoDB · runner `qa/scripts/run-black-box.mjs`
-Raw evidence: `qa/evidence/black-box-2026-11-23T10-34-14-211Z.json` and the matching `.server.log`. Test design: [black-box-design.md](black-box-design.md)
+Run: 2026-11-23T11:09:40.543Z · Node v25.6.0 · local MongoDB · runner `qa/scripts/run-black-box.mjs`
+Raw evidence: `qa/evidence/black-box-2026-11-23T11-09-40-512Z.json` and the matching `.server.log`. Test design: [black-box-design.md](black-box-design.md)
 
-**Total 123 · PASS 120 · FAIL 3**
+**Total 123 · PASS 123 · FAIL 0**
 
 | Technique | Cases | Pass | Fail |
 |---|---|---|---|
-| Equivalence partitioning | 40 | 37 | 3 |
+| Equivalence partitioning | 40 | 40 | 0 |
 | Boundary value analysis | 53 | 53 | 0 |
 | Decision tables | 30 | 30 | 0 |
 
@@ -22,31 +22,31 @@ Raw evidence: `qa/evidence/black-box-2026-11-23T10-34-14-211Z.json` and the matc
 | EP-SC-03 | null | 100 | 100 | **PASS** |
 | EP-SC-04 | [{UNKNOWN}] | 100 | 100 | **PASS** |
 | EP-SC-05 | [{high}] | 100 | 100 | **PASS** |
-| EP-SC-06 | [null] | 100 | THROWS TypeError: Cannot read properties of null (reading 'severity') | **FAIL** |
+| EP-SC-06 | [null] | 100 | 100 | **PASS** |
 | EP-SC-07 | NaN | F | F | **PASS** |
 
 ### Password
 
 | ID | Input / condition | Expected | Actual | Result |
 |---|---|---|---|---|
-| EP-PW-01 | valid: 9 chars + digit | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxNjlmN2RhNTVmZjQ1Y2IxZmJmNSIsImlhdCI6MTc5NTQzMDA0NywiZXhwIjoxNzk2MDM0ODQ3fQ.EE-dPgj | **PASS** |
+| EP-PW-01 | valid: 9 chars + digit | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiNyIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.AHYf_qG | **PASS** |
 | EP-PW-02 | invalid: too short | 400 min length | 400 {"success":false,"message":"Password must be at least 8 characters long","errors":[{"type":"field","value":"Pass1","msg":"Password must be at least 8 characters | **PASS** |
 | EP-PW-03 | invalid: no digit | 400 needs a number | 400 {"success":false,"message":"Password must contain at least one number","errors":[{"type":"field","value":"Password","msg":"Password must contain at least one nu | **PASS** |
-| EP-PW-04 | invalid: empty string | 400 required | 400 {"success":false,"message":"Password is required","errors":[{"type":"field","value":"","msg":"Password is required","path":"password","location":"body"},{"type" | **PASS** |
-| EP-PW-05 | invalid: field missing | 400 required | 400 {"success":false,"message":"Password is required","errors":[{"type":"field","msg":"Password is required","path":"password","location":"body"},{"type":"field","m | **PASS** |
-| EP-PW-06 | invalid type: number 12345678 | 400 (type rejected, not a crash) | 500 {"success":false,"message":"Server error"} | **FAIL** |
-| EP-PW-07 | valid (weak): digits only '12345678' | 201 (meets the stated rule) | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxNjlmN2RhNTVmZjQ1Y2IxZmJmNiIsImlhdCI6MTc5NTQzMDA0NywiZXhwIjoxNzk2MDM0ODQ3fQ.QT0WtjD | **PASS** |
+| EP-PW-04 | invalid: empty string | 400 required | 400 {"success":false,"message":"Password is required","errors":[{"type":"field","value":"","msg":"Password is required","path":"password","location":"body"}]} | **PASS** |
+| EP-PW-05 | invalid: field missing | 400 required | 400 {"success":false,"message":"Password is required","errors":[{"type":"field","msg":"Password is required","path":"password","location":"body"}]} | **PASS** |
+| EP-PW-06 | invalid type: number 12345678 | 400 (type rejected, not a crash) | 400 {"success":false,"message":"Password must be text","errors":[{"type":"field","value":12345678,"msg":"Password must be text","path":"password","location":"body"} | **PASS** |
+| EP-PW-07 | valid (weak): digits only '12345678' | 201 (meets the stated rule) | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiOCIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.xVvM58t | **PASS** |
 
 ### Email
 
 | ID | Input / condition | Expected | Actual | Result |
 |---|---|---|---|---|
-| EP-EM-01 | valid | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxNjlmN2RhNTVmZjQ1Y2IxZmJmNyIsImlhdCI6MTc5NTQzMDA0NywiZXhwIjoxNzk2MDM0ODQ3fQ.iyr3nGC | **PASS** |
-| EP-EM-02 | invalid: no @ | 400 | 400 {"success":false,"message":"Please provide a valid email address","errors":[{"type":"field","value":"qa1795430046025example.com","msg":"Please provide a valid e | **PASS** |
+| EP-EM-01 | valid | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiOSIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.9B2R9Lt | **PASS** |
+| EP-EM-02 | invalid: no @ | 400 | 400 {"success":false,"message":"Please provide a valid email address","errors":[{"type":"field","value":"qa1795432172186example.com","msg":"Please provide a valid e | **PASS** |
 | EP-EM-03 | invalid: no domain | 400 | 400 {"success":false,"message":"Please provide a valid email address","errors":[{"type":"field","value":"user@","msg":"Please provide a valid email address","path": | **PASS** |
 | EP-EM-04 | invalid: no local part | 400 | 400 {"success":false,"message":"Please provide a valid email address","errors":[{"type":"field","value":"@example.com","msg":"Please provide a valid email address", | **PASS** |
 | EP-EM-05 | invalid: empty | 400 | 400 {"success":false,"message":"Email is required","errors":[{"type":"field","value":"","msg":"Email is required","path":"email","location":"body"},{"type":"field", | **PASS** |
-| EP-EM-06 | valid: mixed case + padding | 201, stored lower-case | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxNjlmN2RhNTVmZjQ1Y2IxZmJmOCIsImlhdCI6MTc5NTQzMDA0NywiZXhwIjoxNzk2MDM0ODQ3fQ.jQqV_5i stored=qa.case.1795430046025@example.com | **PASS** |
+| EP-EM-06 | valid: mixed case + padding | 201, stored lower-case | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiYSIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.tbYlOwc stored=qa.case.1795432172186@example.com | **PASS** |
 | EP-EM-07 | invalid type: object {$gt:''} | 400 | 400 {"success":false,"message":"Please provide a valid email address","errors":[{"type":"field","value":"[object Object]","msg":"Please provide a valid email addres | **PASS** |
 
 ### Login
@@ -59,10 +59,10 @@ Raw evidence: `qa/evidence/black-box-2026-11-23T10-34-14-211Z.json` and the matc
 
 | ID | Input / condition | Expected | Actual | Result |
 |---|---|---|---|---|
-| EP-URL-01 | valid: http + IP, reachable | 200 report | 200 {"success":true,"userId":"6b04169f7da55ff45cb1fbfe","url":"http://127.0.0.1:5070/","grade":"F","score":16,"summary":{"critical":0,"high":2,"medium":6,"low":2}," | **PASS** |
+| EP-URL-01 | valid: http + IP, reachable | 200 report | 200 {"success":true,"userId":"6b041eeee4cdc54f9055cfc0","url":"http://127.0.0.1:5070/","grade":"F","score":16,"summary":{"critical":0,"high":2,"medium":6,"low":2}," | **PASS** |
 | EP-URL-02 | valid: https, unreachable | 502 not reachable | 502 {"success":false,"message":"Site could not be reached.","detail":"Connection was refused by the server."} | **PASS** |
-| EP-URL-03 | valid: padded with spaces | 200 (trimmed) | 200 {"success":true,"userId":"6b04169f7da55ff45cb1fbfe","url":"http://127.0.0.1:5070/","grade":"F","score":16,"summary":{"critical":0,"high":2,"medium":6,"low":2}," | **PASS** |
-| EP-URL-04 | valid (dev): localhost hostname | 200 in dev (documented bypass) | 400 {"success":false,"message":"Please provide a valid URL including http:// or https://","errors":[{"type":"field","value":"http://localhost:5070/","msg":"Please p | **FAIL** |
+| EP-URL-03 | valid: padded with spaces | 200 (trimmed) | 200 {"success":true,"userId":"6b041eeee4cdc54f9055cfc0","url":"http://127.0.0.1:5070/","grade":"F","score":16,"summary":{"critical":0,"high":2,"medium":6,"low":2}," | **PASS** |
+| EP-URL-04 | valid (dev): localhost hostname | 200 in dev (documented bypass) | 200 {"success":true,"userId":"6b041eeee4cdc54f9055cfc0","url":"http://localhost:5070/","grade":"F","score":16,"summary":{"critical":0,"high":2,"medium":6,"low":2}," | **PASS** |
 | EP-URL-05 | invalid: no scheme | 400 | 400 {"success":false,"message":"Please provide a valid URL including http:// or https://","errors":[{"type":"field","value":"example.com","msg":"Please provide a va | **PASS** |
 | EP-URL-06 | invalid: ftp scheme | 400 | 400 {"success":false,"message":"URL must start with http:// or https://"} | **PASS** |
 | EP-URL-07 | invalid: javascript: scheme | 400 | 400 {"success":false,"message":"Please provide a valid URL including http:// or https://","errors":[{"type":"field","value":"javascript:alert(1)","msg":"Please prov | **PASS** |
@@ -74,10 +74,10 @@ Raw evidence: `qa/evidence/black-box-2026-11-23T10-34-14-211Z.json` and the matc
 
 | ID | Input / condition | Expected | Actual | Result |
 |---|---|---|---|---|
-| EP-NT-01 | valid: text | 200 | 200 {"success":true,"scan":{"summary":{"critical":0,"high":2,"medium":6,"low":2},"_id":"6b0416a07da55ff45cb1fc16","userId":"6b0416a07da55ff45cb1fc15","url":"http:// | **PASS** |
-| EP-NT-02 | valid: empty string (clears note) | 200, note cleared | 200 {"success":true,"scan":{"summary":{"critical":0,"high":2,"medium":6,"low":2},"_id":"6b0416a07da55ff45cb1fc16","userId":"6b0416a07da55ff45cb1fc15","url":"http:// stored(len)=0 | **PASS** |
-| EP-NT-03 | valid: whitespace only | 200, stored as '' | 200 {"success":true,"scan":{"summary":{"critical":0,"high":2,"medium":6,"low":2},"_id":"6b0416a07da55ff45cb1fc16","userId":"6b0416a07da55ff45cb1fc15","url":"http:// stored(len)=0 | **PASS** |
-| EP-NT-04 | valid: HTML/script text | 200, stored as plain text | 200 {"success":true,"scan":{"summary":{"critical":0,"high":2,"medium":6,"low":2},"_id":"6b0416a07da55ff45cb1fc16","userId":"6b0416a07da55ff45cb1fc15","url":"http:// stored(len)=25 | **PASS** |
+| EP-NT-01 | valid: text | 200 | 200 {"success":true,"scan":{"summary":{"critical":0,"high":2,"medium":6,"low":2},"_id":"6b041eeee4cdc54f9055cfe3","userId":"6b041eeee4cdc54f9055cfe2","url":"http:// | **PASS** |
+| EP-NT-02 | valid: empty string (clears note) | 200, note cleared | 200 {"success":true,"scan":{"summary":{"critical":0,"high":2,"medium":6,"low":2},"_id":"6b041eeee4cdc54f9055cfe3","userId":"6b041eeee4cdc54f9055cfe2","url":"http:// stored(len)=0 | **PASS** |
+| EP-NT-03 | valid: whitespace only | 200, stored as '' | 200 {"success":true,"scan":{"summary":{"critical":0,"high":2,"medium":6,"low":2},"_id":"6b041eeee4cdc54f9055cfe3","userId":"6b041eeee4cdc54f9055cfe2","url":"http:// stored(len)=0 | **PASS** |
+| EP-NT-04 | valid: HTML/script text | 200, stored as plain text | 200 {"success":true,"scan":{"summary":{"critical":0,"high":2,"medium":6,"low":2},"_id":"6b041eeee4cdc54f9055cfe3","userId":"6b041eeee4cdc54f9055cfe2","url":"http:// stored(len)=25 | **PASS** |
 | EP-NT-05 | invalid: missing field | 400 A note is required | 400 {"success":false,"message":"A note is required","errors":[{"type":"field","msg":"A note is required","path":"note","location":"body"}]} | **PASS** |
 | EP-NT-06 | invalid type: number | 400 A note must be text | 400 {"success":false,"message":"A note must be text","errors":[{"type":"field","value":42,"msg":"A note must be text","path":"note","location":"body"}]} | **PASS** |
 | EP-NT-07 | invalid type: null | 400 | 400 {"success":false,"message":"A note must be text","errors":[{"type":"field","value":null,"msg":"A note must be text","path":"note","location":"body"}]} | **PASS** |
@@ -127,27 +127,27 @@ Raw evidence: `qa/evidence/black-box-2026-11-23T10-34-14-211Z.json` and the matc
 | ID | Input / condition | Expected | Actual | Result |
 |---|---|---|---|---|
 | BVA-PW-01 | 7 chars | 400 | 400 {"success":false,"message":"Password must be at least 8 characters long","errors":[{"type":"field","value":"aaaaaa1","msg":"Password must be at least 8 characte | **PASS** |
-| BVA-PW-02 | 8 chars | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxNjlmN2RhNTVmZjQ1Y2IxZmJmOSIsImlhdCI6MTc5NTQzMDA0NywiZXhwIjoxNzk2MDM0ODQ3fQ.tg29yYN | **PASS** |
-| BVA-PW-03 | 9 chars | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxNjlmN2RhNTVmZjQ1Y2IxZmJmYSIsImlhdCI6MTc5NTQzMDA0NywiZXhwIjoxNzk2MDM0ODQ3fQ.qK8Mx4H | **PASS** |
+| BVA-PW-02 | 8 chars | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiYiIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.J4wZhoB | **PASS** |
+| BVA-PW-03 | 9 chars | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiYyIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.XP1soGN | **PASS** |
 
 ### Name length
 
 | ID | Input / condition | Expected | Actual | Result |
 |---|---|---|---|---|
 | BVA-NM-01 | 0 chars | 400 | 400 {"success":false,"message":"Name is required","errors":[{"type":"field","value":"","msg":"Name is required","path":"name","location":"body"}]} | **PASS** |
-| BVA-NM-02 | 1 chars | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxNjlmN2RhNTVmZjQ1Y2IxZmJmYiIsImlhdCI6MTc5NTQzMDA0NywiZXhwIjoxNzk2MDM0ODQ3fQ.OzGUFVa | **PASS** |
-| BVA-NM-03 | 99 chars | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxNjlmN2RhNTVmZjQ1Y2IxZmJmYyIsImlhdCI6MTc5NTQzMDA0NywiZXhwIjoxNzk2MDM0ODQ3fQ.chh1WqL | **PASS** |
-| BVA-NM-04 | 100 chars | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxNjlmN2RhNTVmZjQ1Y2IxZmJmZCIsImlhdCI6MTc5NTQzMDA0NywiZXhwIjoxNzk2MDM0ODQ3fQ.qAhxqsI | **PASS** |
-| BVA-NM-05 | 101 chars | 400 | 400 {"success":false,"message":"Name must be under 100 characters","errors":[{"type":"field","value":"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn \| message="Name must be under 100 characters" | **PASS** |
+| BVA-NM-02 | 1 chars | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiZCIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.FpLQI1s | **PASS** |
+| BVA-NM-03 | 99 chars | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVlZTRjZGM1NGY5MDU1Y2ZiZSIsImlhdCI6MTc5NTQzMjE3NCwiZXhwIjoxNzk2MDM2OTc0fQ.1e3JUtQ | **PASS** |
+| BVA-NM-04 | 100 chars | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVlZTRjZGM1NGY5MDU1Y2ZiZiIsImlhdCI6MTc5NTQzMjE3NCwiZXhwIjoxNzk2MDM2OTc0fQ.eiKC2s9 | **PASS** |
+| BVA-NM-05 | 101 chars | 400 | 400 {"success":false,"message":"Name must be 100 characters or fewer","errors":[{"type":"field","value":"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn \| message="Name must be 100 characters or fewer" | **PASS** |
 
 ### Note length
 
 | ID | Input / condition | Expected | Actual | Result |
 |---|---|---|---|---|
-| BVA-NT-01 | 499 chars | 200 | 200 {"success":true,"scan":{"summary":{"critical":0,"high":2,"medium":6,"low":2},"_id":"6b0416a07da55ff45cb1fc16","userId":"6b0416a07da55ff45cb1fc15","url":"http:// stored(len)=499 | **PASS** |
-| BVA-NT-02 | 500 chars | 200 | 200 {"success":true,"scan":{"summary":{"critical":0,"high":2,"medium":6,"low":2},"_id":"6b0416a07da55ff45cb1fc16","userId":"6b0416a07da55ff45cb1fc15","url":"http:// stored(len)=500 | **PASS** |
+| BVA-NT-01 | 499 chars | 200 | 200 {"success":true,"scan":{"summary":{"critical":0,"high":2,"medium":6,"low":2},"_id":"6b041eeee4cdc54f9055cfe3","userId":"6b041eeee4cdc54f9055cfe2","url":"http:// stored(len)=499 | **PASS** |
+| BVA-NT-02 | 500 chars | 200 | 200 {"success":true,"scan":{"summary":{"critical":0,"high":2,"medium":6,"low":2},"_id":"6b041eeee4cdc54f9055cfe3","userId":"6b041eeee4cdc54f9055cfe2","url":"http:// stored(len)=500 | **PASS** |
 | BVA-NT-03 | 501 chars | 400 max 500 | 400 {"success":false,"message":"A note cannot be longer than 500 characters","errors":[{"type":"field","value":"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn | **PASS** |
-| BVA-NT-04 | 500 chars + 1 trailing space (501 raw) | 200, trimmed to 500 | 200 {"success":true,"scan":{"summary":{"critical":0,"high":2,"medium":6,"low":2},"_id":"6b0416a07da55ff45cb1fc16","userId":"6b0416a07da55ff45cb1fc15","url":"http:// stored(len)=500 | **PASS** |
+| BVA-NT-04 | 500 chars + 1 trailing space (501 raw) | 200, trimmed to 500 | 200 {"success":true,"scan":{"summary":{"critical":0,"high":2,"medium":6,"low":2},"_id":"6b041eeee4cdc54f9055cfe3","userId":"6b041eeee4cdc54f9055cfe2","url":"http:// stored(len)=500 | **PASS** |
 
 ### Scan id
 
@@ -196,7 +196,7 @@ Raw evidence: `qa/evidence/black-box-2026-11-23T10-34-14-211Z.json` and the matc
 | DT1-GET-R5 | C1=Y C2=Valid C3=N C4=- C5=- | 400 Invalid scan ID | 400 {"success":false,"message":"Invalid scan ID"} | **PASS** |
 | DT1-GET-R6 | C1=Y C2=Valid C3=Y C4=N C5=- | 404 Scan result not found | 404 {"success":false,"message":"Scan result not found"} | **PASS** |
 | DT1-GET-R7 | C1=Y C2=Valid C3=Y C4=Y C5=N | 404 Scan result not found | 404 {"success":false,"message":"Scan result not found"} \| B's scan afterwards: 200, note="" | **PASS** |
-| DT1-GET-R8 | C1=Y C2=Valid C3=Y C4=Y C5=Y | 200 | 200 {"success":true,"scan":{"summary":{"critical":0,"high":2,"medium":6,"low":2},"_id":"6b0416a17bcb329aa9de01fc","userId":"6b0416a17bcb329aa9de01ef","url":"http:// | **PASS** |
+| DT1-GET-R8 | C1=Y C2=Valid C3=Y C4=Y C5=Y | 200 | 200 {"success":true,"scan":{"summary":{"critical":0,"high":2,"medium":6,"low":2},"_id":"6b041eef969587af65eee164","userId":"6b041eef969587af65eee157","url":"http:// | **PASS** |
 | DT1-PATCH-R1 | C1=N C2=- C3=- C4=- C5=- | 401 Authorization token is required | 401 {"message":"Authorization token is required"} | **PASS** |
 | DT1-PATCH-R2 | C1=N C2=- C3=N C4=- C5=- | 401 Authorization token is required | 401 {"message":"Authorization token is required"} | **PASS** |
 | DT1-PATCH-R3 | C1=Y C2=Invalid C3=- C4=- C5=- | 401 Invalid authorization token | 401 {"message":"Invalid authorization token"} | **PASS** |
@@ -204,7 +204,7 @@ Raw evidence: `qa/evidence/black-box-2026-11-23T10-34-14-211Z.json` and the matc
 | DT1-PATCH-R5 | C1=Y C2=Valid C3=N C4=- C5=- | 400 Invalid scan ID | 400 {"success":false,"message":"Invalid scan ID"} | **PASS** |
 | DT1-PATCH-R6 | C1=Y C2=Valid C3=Y C4=N C5=- | 404 Scan result not found | 404 {"success":false,"message":"Scan result not found"} | **PASS** |
 | DT1-PATCH-R7 | C1=Y C2=Valid C3=Y C4=Y C5=N | 404 Scan result not found | 404 {"success":false,"message":"Scan result not found"} \| B's scan afterwards: 200, note="" | **PASS** |
-| DT1-PATCH-R8 | C1=Y C2=Valid C3=Y C4=Y C5=Y | 200 | 200 {"success":true,"scan":{"summary":{"critical":0,"high":2,"medium":6,"low":2},"_id":"6b0416a17bcb329aa9de0207","userId":"6b0416a17bcb329aa9de01ef","url":"http:// | **PASS** |
+| DT1-PATCH-R8 | C1=Y C2=Valid C3=Y C4=Y C5=Y | 200 | 200 {"success":true,"scan":{"summary":{"critical":0,"high":2,"medium":6,"low":2},"_id":"6b041eef969587af65eee16f","userId":"6b041eef969587af65eee157","url":"http:// | **PASS** |
 | DT1-DELETE-R1 | C1=N C2=- C3=- C4=- C5=- | 401 Authorization token is required | 401 {"message":"Authorization token is required"} | **PASS** |
 | DT1-DELETE-R2 | C1=N C2=- C3=N C4=- C5=- | 401 Authorization token is required | 401 {"message":"Authorization token is required"} | **PASS** |
 | DT1-DELETE-R3 | C1=Y C2=Invalid C3=- C4=- C5=- | 401 Invalid authorization token | 401 {"message":"Invalid authorization token"} | **PASS** |
@@ -223,4 +223,4 @@ Raw evidence: `qa/evidence/black-box-2026-11-23T10-34-14-211Z.json` and the matc
 | DT2-R3 | Auth=Y URLvalid=N Owner=Y Reachable=- | 400 Please provide a valid URL including http:// or https:// | 400 {"success":false,"message":"Please provide a valid URL including http:// or https://","errors":[{"type":"field","value":"not-a-url","msg":"Please provide a vali | **PASS** |
 | DT2-R4 | Auth=Y URLvalid=Y Owner=N Reachable=- | 400 You must confirm you own this website or have permission to scan it. | 400 {"success":false,"message":"You must confirm you own this website or have permission to scan it."} | **PASS** |
 | DT2-R5 | Auth=Y URLvalid=Y Owner=Y Reachable=N | 502 Site could not be reached. | 502 {"success":false,"message":"Site could not be reached.","detail":"Connection was refused by the server."} | **PASS** |
-| DT2-R6 | Auth=Y URLvalid=Y Owner=Y Reachable=Y | 200 | 200 {"success":true,"userId":"6b0416a17bcb329aa9de0277","url":"http://127.0.0.1:5070/","grade":"F","score":16,"summary":{"critical":0,"high":2,"medium":6,"low":2}," | **PASS** |
+| DT2-R6 | Auth=Y URLvalid=Y Owner=Y Reachable=Y | 200 | 200 {"success":true,"userId":"6b041eef969587af65eee1df","url":"http://127.0.0.1:5070/","grade":"F","score":16,"summary":{"critical":0,"high":2,"medium":6,"low":2}," | **PASS** |

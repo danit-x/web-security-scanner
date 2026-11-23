@@ -1,0 +1,636 @@
+﻿  console.error
+    [POST /api/auth/login] SyntaxError: Unexpected end of JSON input
+        at JSON.parse (<anonymous>)
+        at parse (C:\dev\mernStack\server\node_modules\body-parser\lib\types\json.js:91:21)
+        at C:\dev\mernStack\server\node_modules\body-parser\lib\read.js:162:18
+        at AsyncResource.runInAsyncScope (node:async_hooks:226:14)
+        at invokeCallback (C:\dev\mernStack\server\node_modules\raw-body\index.js:238:16)
+        at done (C:\dev\mernStack\server\node_modules\raw-body\index.js:227:7)
+        at IncomingMessage.onEnd (C:\dev\mernStack\server\node_modules\raw-body\index.js:287:7)
+        at IncomingMessage.emit (node:events:508:20)
+        at endReadableNT (node:internal/streams/readable:1729:12)
+        at processTicksAndRejections (node:internal/process/task_queues:90:21)
+
+      58 |   // Log the full error server-side for debugging — never send stack
+      59 |   // traces to the client, that leaks internal file paths/logic.
+    > 60 |   console.error(`[${req.method} ${req.originalUrl}]`, err.stack || err.message);
+         |           ^
+      61 |
+      62 |   res.status(statusCode).json({
+      63 |     success: false,
+
+      at error (middleware/errorHandler.js:60:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/body-parser/lib/read.js:164:7
+      at invokeCallback (node_modules/raw-body/index.js:238:16)
+      at done (node_modules/raw-body/index.js:227:7)
+      at IncomingMessage.onEnd (node_modules/raw-body/index.js:287:7)
+
+  console.error
+    [GET /api/health] Error: Not allowed by CORS
+        at origin (C:\dev\mernStack\server\app.js:48:18)
+        at C:\dev\mernStack\server\node_modules\cors\lib\index.js:219:13
+        at optionsCallback (C:\dev\mernStack\server\node_modules\cors\lib\index.js:199:9)
+        at corsMiddleware (C:\dev\mernStack\server\node_modules\cors\lib\index.js:204:7)
+        at Layer.handleRequest (C:\dev\mernStack\server\node_modules\router\lib\layer.js:152:17)
+        at trimPrefix (C:\dev\mernStack\server\node_modules\router\index.js:342:13)
+        at C:\dev\mernStack\server\node_modules\router\index.js:297:9
+        at processParams (C:\dev\mernStack\server\node_modules\router\index.js:582:12)
+        at next (C:\dev\mernStack\server\node_modules\router\index.js:291:5)
+        at internalNext (C:\dev\mernStack\server\node_modules\helmet\index.cjs:558:6)
+        at xXssProtectionMiddleware (C:\dev\mernStack\server\node_modules\helmet\index.cjs:338:3)
+        at internalNext (C:\dev\mernStack\server\node_modules\helmet\index.cjs:556:6)
+        at xPoweredByMiddleware (C:\dev\mernStack\server\node_modules\helmet\index.cjs:331:3)
+        at internalNext (C:\dev\mernStack\server\node_modules\helmet\index.cjs:556:6)
+        at xPermittedCrossDomainPoliciesMiddleware (C:\dev\mernStack\server\node_modules\helmet\index.cjs:324:3)
+        at internalNext (C:\dev\mernStack\server\node_modules\helmet\index.cjs:556:6)
+        at xFrameOptionsMiddleware (C:\dev\mernStack\server\node_modules\helmet\index.cjs:308:3)
+        at internalNext (C:\dev\mernStack\server\node_modules\helmet\index.cjs:556:6)
+        at xDownloadOptionsMiddleware (C:\dev\mernStack\server\node_modules\helmet\index.cjs:288:3)
+        at internalNext (C:\dev\mernStack\server\node_modules\helmet\index.cjs:556:6)
+        at xDnsPrefetchControlMiddleware (C:\dev\mernStack\server\node_modules\helmet\index.cjs:281:3)
+        at internalNext (C:\dev\mernStack\server\node_modules\helmet\index.cjs:556:6)
+        at xContentTypeOptionsMiddleware (C:\dev\mernStack\server\node_modules\helmet\index.cjs:273:3)
+        at internalNext (C:\dev\mernStack\server\node_modules\helmet\index.cjs:556:6)
+        at strictTransportSecurityMiddleware (C:\dev\mernStack\server\node_modules\helmet\index.cjs:266:3)
+        at internalNext (C:\dev\mernStack\server\node_modules\helmet\index.cjs:556:6)
+        at referrerPolicyMiddleware (C:\dev\mernStack\server\node_modules\helmet\index.cjs:234:3)
+        at internalNext (C:\dev\mernStack\server\node_modules\helmet\index.cjs:556:6)
+        at originAgentClusterMiddleware (C:\dev\mernStack\server\node_modules\helmet\index.cjs:209:3)
+        at internalNext (C:\dev\mernStack\server\node_modules\helmet\index.cjs:556:6)
+        at crossOriginResourcePolicyMiddleware (C:\dev\mernStack\server\node_modules\helmet\index.cjs:202:3)
+        at internalNext (C:\dev\mernStack\server\node_modules\helmet\index.cjs:556:6)
+        at crossOriginOpenerPolicyMiddleware (C:\dev\mernStack\server\node_modules\helmet\index.cjs:186:3)
+        at internalNext (C:\dev\mernStack\server\node_modules\helmet\index.cjs:556:6)
+        at contentSecurityPolicyMiddleware (C:\dev\mernStack\server\node_modules\helmet\index.cjs:142:4)
+        at internalNext (C:\dev\mernStack\server\node_modules\helmet\index.cjs:556:6)
+        at helmetMiddleware (C:\dev\mernStack\server\node_modules\helmet\index.cjs:560:6)
+        at Layer.handleRequest (C:\dev\mernStack\server\node_modules\router\lib\layer.js:152:17)
+        at trimPrefix (C:\dev\mernStack\server\node_modules\router\index.js:342:13)
+        at C:\dev\mernStack\server\node_modules\router\index.js:297:9
+        at processParams (C:\dev\mernStack\server\node_modules\router\index.js:582:12)
+        at next (C:\dev\mernStack\server\node_modules\router\index.js:291:5)
+        at router.handle (C:\dev\mernStack\server\node_modules\router\index.js:186:3)
+        at app.handle (C:\dev\mernStack\server\node_modules\express\lib\application.js:177:15)
+        at Server.app (C:\dev\mernStack\server\node_modules\express\lib\express.js:38:9)
+        at Server.emit (node:events:508:20)
+        at parserOnIncoming (node:_http_server:1213:12)
+        at HTTPParser.parserOnHeadersComplete (node:_http_common:125:17)
+
+      58 |   // Log the full error server-side for debugging — never send stack
+      59 |   // traces to the client, that leaks internal file paths/logic.
+    > 60 |   console.error(`[${req.method} ${req.originalUrl}]`, err.stack || err.message);
+         |           ^
+      61 |
+      62 |   res.status(statusCode).json({
+      63 |     success: false,
+
+      at error (middleware/errorHandler.js:60:11)
+      at Layer.handleError (node_modules/router/lib/layer.js:116:17)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at Layer.handleError (node_modules/router/lib/layer.js:111:12)
+      at trimPrefix (node_modules/router/index.js:340:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at node_modules/cors/lib/index.js:221:17
+      at callback (app.js:48:9)
+      at node_modules/cors/lib/index.js:219:13
+      at optionsCallback (node_modules/cors/lib/index.js:199:9)
+      at corsMiddleware (node_modules/cors/lib/index.js:204:7)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at internalNext (node_modules/helmet/index.cjs:558:6)
+      at xXssProtectionMiddleware (node_modules/helmet/index.cjs:338:3)
+      at internalNext (node_modules/helmet/index.cjs:556:6)
+      at xPoweredByMiddleware (node_modules/helmet/index.cjs:331:3)
+      at internalNext (node_modules/helmet/index.cjs:556:6)
+      at xPermittedCrossDomainPoliciesMiddleware (node_modules/helmet/index.cjs:324:3)
+      at internalNext (node_modules/helmet/index.cjs:556:6)
+      at xFrameOptionsMiddleware (node_modules/helmet/index.cjs:308:3)
+      at internalNext (node_modules/helmet/index.cjs:556:6)
+      at xDownloadOptionsMiddleware (node_modules/helmet/index.cjs:288:3)
+      at internalNext (node_modules/helmet/index.cjs:556:6)
+      at xDnsPrefetchControlMiddleware (node_modules/helmet/index.cjs:281:3)
+      at internalNext (node_modules/helmet/index.cjs:556:6)
+      at xContentTypeOptionsMiddleware (node_modules/helmet/index.cjs:273:3)
+      at internalNext (node_modules/helmet/index.cjs:556:6)
+      at strictTransportSecurityMiddleware (node_modules/helmet/index.cjs:266:3)
+      at internalNext (node_modules/helmet/index.cjs:556:6)
+      at referrerPolicyMiddleware (node_modules/helmet/index.cjs:234:3)
+      at internalNext (node_modules/helmet/index.cjs:556:6)
+      at originAgentClusterMiddleware (node_modules/helmet/index.cjs:209:3)
+      at internalNext (node_modules/helmet/index.cjs:556:6)
+      at crossOriginResourcePolicyMiddleware (node_modules/helmet/index.cjs:202:3)
+      at internalNext (node_modules/helmet/index.cjs:556:6)
+      at crossOriginOpenerPolicyMiddleware (node_modules/helmet/index.cjs:186:3)
+      at internalNext (node_modules/helmet/index.cjs:556:6)
+      at contentSecurityPolicyMiddleware (node_modules/helmet/index.cjs:142:4)
+      at internalNext (node_modules/helmet/index.cjs:556:6)
+      at helmetMiddleware (node_modules/helmet/index.cjs:560:6)
+      at Layer.handleRequest (node_modules/router/lib/layer.js:152:17)
+      at trimPrefix (node_modules/router/index.js:342:13)
+      at node_modules/router/index.js:297:9
+      at processParams (node_modules/router/index.js:582:12)
+      at next (node_modules/router/index.js:291:5)
+      at router.handle (node_modules/router/index.js:186:3)
+      at app.handle (node_modules/express/lib/application.js:177:15)
+      at Server.app (node_modules/express/lib/express.js:38:9)
+
+  console.error
+    Register error: data must be a string or Buffer and salt must either be a salt string or a number of rounds
+
+      54 |     }
+      55 |
+    > 56 |     console.error("Register error:", error.message);
+         |             ^
+      57 |     return res.status(500).json({ success: false, message: "Server error" });
+      58 |   }
+      59 | };
+
+      at error (controllers/authController.js:56:13)
+
+  console.error
+    Login error: data and hash must be strings
+
+      85 |     });
+      86 |   } catch (error) {
+    > 87 |     console.error("Login error:", error.message);
+         |             ^
+      88 |     return res.status(500).json({ success: false, message: "Server error" });
+      89 |   }
+      90 | };
+
+      at error (controllers/authController.js:87:13)
+
+  console.error
+    Auth middleware error: jwt not active
+
+      32 |     }
+      33 |
+    > 34 |     console.error('Auth middleware error:', error.message);
+         |             ^
+      35 |     return res.status(500).json({ message: 'Server error' });
+      36 |   }
+      37 | };
+
+      at error (middleware/authMiddleware.js:34:13)
+      at Object.authMiddleware (../qa/05-unit/regression/defects.test.js:118:5)
+
+node.exe : FAIL ../qa/05-unit/regression/defects.test.js
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (FAIL ../qa/05-u...defects.test.js:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  ● DEF-001 email addresses are stored and matched exactly as typed › register keeps dots and +tag (only lower-cases)
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "first.last+qa.1795431712697@gmail.com"
+    Received: "firstlast@gmail.com"
+
+      32 |     const { res } = await registerUser({ email: typed });
+      33 |     expect(res.status).toBe(201);
+    > 34 |     expect(res.body.user.email).toBe(typed.toLowerCase());
+         |                                 ^
+      35 |   });
+      36 |
+      37 |   test("login with the exact address used at registration succeeds", async () => {
+
+      at Object.toBe (../qa/05-unit/regression/defects.test.js:34:33)
+
+  ● DEF-001 email addresses are stored and matched exactly as typed › login with the exact address used at 
+registration succeeds
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 401
+
+      37 |   test("login with the exact address used at registration succeeds", async () => {
+      38 |     const res = await request(app).post("/api/auth/login").send({ email: typed, password: PASSWORD });
+    > 39 |     expect(res.status).toBe(200);
+         |                        ^
+      40 |     expect(res.body.token).toEqual(expect.any(String));
+      41 |   });
+      42 |
+
+      at Object.toBe (../qa/05-unit/regression/defects.test.js:39:24)
+
+  ● DEF-001 email addresses are stored and matched exactly as typed › login is case-insensitive and ignores 
+surrounding spaces
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 200
+    Received: 401
+
+      45 |       .post("/api/auth/login")
+      46 |       .send({ email: `  ${typed.toUpperCase()} `, password: PASSWORD });
+    > 47 |     expect(res.status).toBe(200);
+         |                        ^
+      48 |   });
+      49 | });
+      50 |
+
+      at Object.toBe (../qa/05-unit/regression/defects.test.js:47:24)
+
+  ● DEF-002 malformed JSON body › returns 400 JSON without a stack trace
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 400
+    Received: 500
+
+      55 |       .set("Content-Type", "application/json")
+      56 |       .send('{"email":');
+    > 57 |     expect(res.status).toBe(400);
+         |                        ^
+      58 |     expect(res.body.success).toBe(false);
+      59 |     expect(res.body).not.toHaveProperty("stack");
+      60 |   });
+
+      at Object.toBe (../qa/05-unit/regression/defects.test.js:57:24)
+
+  ● DEF-003 disallowed CORS origin › is refused with 403, no ACAO header and no stack trace
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 403
+    Received: 500
+
+      64 |   test("is refused with 403, no ACAO header and no stack trace", async () => {
+      65 |     const res = await request(app).get("/api/health").set("Origin", "http://evil.example");
+    > 66 |     expect(res.status).toBe(403);
+         |                        ^
+      67 |     expect(res.headers["access-control-allow-origin"]).toBeUndefined();
+      68 |     expect(res.body).not.toHaveProperty("stack");
+      69 |   });
+
+      at Object.toBe (../qa/05-unit/regression/defects.test.js:66:24)
+
+  ● DEF-004 localhost targets › are accepted by the validator in development
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 3
+
+    - Array []
+    + Array [
+    +   "Please provide a valid URL including http:// or https://",
+    + ]
+
+      78 | describe("DEF-004 localhost targets", () => {
+      79 |   test("are accepted by the validator in development", async () => {
+    > 80 |     expect(await runScanRules("http://localhost:5070/", "development")).toEqual([]);
+         |                                                                         ^
+      81 |   });
+      82 |
+      83 |   test("are still blocked in production, now by the hostname check (OBS-05 part 1)", async () => {
+
+      at Object.toEqual (../qa/05-unit/regression/defects.test.js:80:73)
+
+  ● DEF-004 localhost targets › are still blocked in production, now by the hostname check (OBS-05 part 1)
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 1
+
+      Array [
+    -   "Scanning localhost or internal hostnames is not allowed",
+    +   "Please provide a valid URL including http:// or https://",
+      ]
+
+      82 |
+      83 |   test("are still blocked in production, now by the hostname check (OBS-05 part 1)", async () => {
+    > 84 |     expect(await runScanRules("http://localhost:3000", "production")).toEqual([
+         |                                                                       ^
+      85 |       "Scanning localhost or internal hostnames is not allowed",
+      86 |     ]);
+      87 |   });
+
+      at Object.toEqual (../qa/05-unit/regression/defects.test.js:84:71)
+
+  ● DEF-005 non-string password › register with a numeric password returns 400, not 500
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 400
+    Received: 500
+
+      93 |       .post("/api/auth/register")
+      94 |       .send({ name: "Num", email: uniqueEmail("num"), password: 12345678 });
+    > 95 |     expect(res.status).toBe(400);
+         |                        ^
+      96 |     expect(res.body.message).toBe("Password must be text");
+      97 |   });
+      98 |
+
+      at Object.toBe (../qa/05-unit/regression/defects.test.js:95:24)
+
+  ● DEF-005 non-string password › login with a numeric password returns 400, not 500
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 400
+    Received: 500
+
+      100 |     const { body } = await registerUser();
+      101 |     const res = await request(app).post("/api/auth/login").send({ email: body.email, password: 12345678 });
+    > 102 |     expect(res.status).toBe(400);
+          |                        ^
+      103 |   });
+      104 | });
+      105 |
+
+      at Object.toBe (../qa/05-unit/regression/defects.test.js:102:24)
+
+  ● DEF-006 calculateScore with a null finding › ignores the null entry instead of throwing
+
+    TypeError: Cannot read properties of null (reading 'severity')
+
+      43 |     // than crashing — defensive against bad data from a check that
+      44 |     // somehow produced a malformed finding.
+    > 45 |     const deduction = SEVERITY_DEDUCTIONS[finding.severity] || 0;
+         |                                                   ^
+      46 |     score -= deduction;
+      47 |   }
+      48 |
+
+      at severity (utils/scoring.js:45:51)
+      at Object.calculateScore (../qa/05-unit/regression/defects.test.js:108:12)
+
+  ● DEF-007 token that is not active yet (nbf in the future) › returns 401, not 500
+
+    expect(jest.fn()).toHaveBeenCalledWith(...expected)
+
+    Expected: 401
+    Received: 500
+
+    Number of calls: 1
+
+      118 |     authMiddleware({ headers: { authorization: `Bearer ${token}` } }, res, next);
+      119 |     expect(next).not.toHaveBeenCalled();
+    > 120 |     expect(res.status).toHaveBeenCalledWith(401);
+          |                        ^
+      121 |   });
+      122 | });
+      123 |
+
+      at Object.toHaveBeenCalledWith (../qa/05-unit/regression/defects.test.js:120:24)
+
+  ● OBS-02 name length message matches the rule › 101 characters -> 'Name must be 100 characters or fewer'
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: "Name must be 100 characters or fewer"
+    Received: "Name must be under 100 characters"
+
+      126 |     const { res } = await registerUser({ name: "n".repeat(101) });
+      127 |     expect(res.status).toBe(400);
+    > 128 |     expect(res.body.message).toBe("Name must be 100 characters or fewer");
+          |                              ^
+      129 |   });
+      130 | });
+      131 |
+
+      at Object.toBe (../qa/05-unit/regression/defects.test.js:128:30)
+
+  ● OBS-05 IPv6 literals are checked by the private-IP rule › production blocks http://[::1]/ with the private-IP 
+message
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 1
+
+      Array [
+    -   "Scanning private or internal IP addresses is not allowed",
+    +   "This domain resolves to a private or internal IP address",
+      ]
+
+      143 |     "http://[::ffff:169.254.169.254]/",
+      144 |   ])("production blocks %s with the private-IP message", async (url) => {
+    > 145 |     expect(await runScanRules(url, "production")).toEqual([PRIVATE_IP]);
+          |                                                   ^
+      146 |   });
+      147 |
+      148 |   test("a public IPv6 literal is still allowed", async () => {
+
+      at toEqual (../qa/05-unit/regression/defects.test.js:145:51)
+
+  ● OBS-05 IPv6 literals are checked by the private-IP rule › production blocks http://[::]/ with the private-IP 
+message
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 3
+    + Received  + 1
+
+    - Array [
+    -   "Scanning private or internal IP addresses is not allowed",
+    - ]
+    + Array []
+
+      143 |     "http://[::ffff:169.254.169.254]/",
+      144 |   ])("production blocks %s with the private-IP message", async (url) => {
+    > 145 |     expect(await runScanRules(url, "production")).toEqual([PRIVATE_IP]);
+          |                                                   ^
+      146 |   });
+      147 |
+      148 |   test("a public IPv6 literal is still allowed", async () => {
+
+      at toEqual (../qa/05-unit/regression/defects.test.js:145:51)
+
+  ● OBS-05 IPv6 literals are checked by the private-IP rule › production blocks http://[fd00::1]/ with the private-IP 
+message
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 3
+    + Received  + 1
+
+    - Array [
+    -   "Scanning private or internal IP addresses is not allowed",
+    - ]
+    + Array []
+
+      143 |     "http://[::ffff:169.254.169.254]/",
+      144 |   ])("production blocks %s with the private-IP message", async (url) => {
+    > 145 |     expect(await runScanRules(url, "production")).toEqual([PRIVATE_IP]);
+          |                                                   ^
+      146 |   });
+      147 |
+      148 |   test("a public IPv6 literal is still allowed", async () => {
+
+      at toEqual (../qa/05-unit/regression/defects.test.js:145:51)
+
+  ● OBS-05 IPv6 literals are checked by the private-IP rule › production blocks http://[fc00::1]/ with the private-IP 
+message
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 1
+
+      Array [
+    -   "Scanning private or internal IP addresses is not allowed",
+    +   "This domain resolves to a private or internal IP address",
+      ]
+
+      143 |     "http://[::ffff:169.254.169.254]/",
+      144 |   ])("production blocks %s with the private-IP message", async (url) => {
+    > 145 |     expect(await runScanRules(url, "production")).toEqual([PRIVATE_IP]);
+          |                                                   ^
+      146 |   });
+      147 |
+      148 |   test("a public IPv6 literal is still allowed", async () => {
+
+      at toEqual (../qa/05-unit/regression/defects.test.js:145:51)
+
+  ● OBS-05 IPv6 literals are checked by the private-IP rule › production blocks http://[fe80::1]/ with the private-IP 
+message
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 1
+    + Received  + 1
+
+      Array [
+    -   "Scanning private or internal IP addresses is not allowed",
+    +   "This domain resolves to a private or internal IP address",
+      ]
+
+      143 |     "http://[::ffff:169.254.169.254]/",
+      144 |   ])("production blocks %s with the private-IP message", async (url) => {
+    > 145 |     expect(await runScanRules(url, "production")).toEqual([PRIVATE_IP]);
+          |                                                   ^
+      146 |   });
+      147 |
+      148 |   test("a public IPv6 literal is still allowed", async () => {
+
+      at toEqual (../qa/05-unit/regression/defects.test.js:145:51)
+
+  ● OBS-05 IPv6 literals are checked by the private-IP rule › production blocks http://[::ffff:127.0.0.1]/ with the 
+private-IP message
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 3
+    + Received  + 1
+
+    - Array [
+    -   "Scanning private or internal IP addresses is not allowed",
+    - ]
+    + Array []
+
+      143 |     "http://[::ffff:169.254.169.254]/",
+      144 |   ])("production blocks %s with the private-IP message", async (url) => {
+    > 145 |     expect(await runScanRules(url, "production")).toEqual([PRIVATE_IP]);
+          |                                                   ^
+      146 |   });
+      147 |
+      148 |   test("a public IPv6 literal is still allowed", async () => {
+
+      at toEqual (../qa/05-unit/regression/defects.test.js:145:51)
+
+  ● OBS-05 IPv6 literals are checked by the private-IP rule › production blocks http://[::ffff:10.0.0.1]/ with the 
+private-IP message
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 3
+    + Received  + 1
+
+    - Array [
+    -   "Scanning private or internal IP addresses is not allowed",
+    - ]
+    + Array []
+
+      143 |     "http://[::ffff:169.254.169.254]/",
+      144 |   ])("production blocks %s with the private-IP message", async (url) => {
+    > 145 |     expect(await runScanRules(url, "production")).toEqual([PRIVATE_IP]);
+          |                                                   ^
+      146 |   });
+      147 |
+      148 |   test("a public IPv6 literal is still allowed", async () => {
+
+      at toEqual (../qa/05-unit/regression/defects.test.js:145:51)
+
+  ● OBS-05 IPv6 literals are checked by the private-IP rule › production blocks http://[::ffff:169.254.169.254]/ with 
+the private-IP message
+
+    expect(received).toEqual(expected) // deep equality
+
+    - Expected  - 3
+    + Received  + 1
+
+    - Array [
+    -   "Scanning private or internal IP addresses is not allowed",
+    - ]
+    + Array []
+
+      143 |     "http://[::ffff:169.254.169.254]/",
+      144 |   ])("production blocks %s with the private-IP message", async (url) => {
+    > 145 |     expect(await runScanRules(url, "production")).toEqual([PRIVATE_IP]);
+          |                                                   ^
+      146 |   });
+      147 |
+      148 |   test("a public IPv6 literal is still allowed", async () => {
+
+      at toEqual (../qa/05-unit/regression/defects.test.js:145:51)
+
+Test Suites: 1 failed, 1 total
+Tests:       20 failed, 2 passed, 22 total
+Snapshots:   0 total
+Time:        3.104 s
+Ran all test suites matching regression.

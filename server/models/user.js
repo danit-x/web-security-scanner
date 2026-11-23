@@ -14,10 +14,11 @@ const userSchema = new mongoose.Schema(
       unique: true, // creates a unique index in MongoDB
       lowercase: true,
       trim: true,
-      match: [
-        /^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/,
-        "Please add a valid email address",
-      ],
+      // Sanity check only (something@something.something, no spaces). The
+      // real format validation is express-validator's isEmail() on the route.
+      // The old strict regex rejected valid addresses with +tags or TLDs
+      // longer than 3 letters such as .info (DEF-008).
+      match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, "Please add a valid email address"],
     },
     password: {
       type: String,

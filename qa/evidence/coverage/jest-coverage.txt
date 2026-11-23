@@ -1,0 +1,55 @@
+﻿----------------------------|---------|----------|---------|---------|---------------------
+File                        | % Stmts | % Branch | % Funcs | % Lines | Uncovered Line #s   
+----------------------------|---------|----------|---------|---------|---------------------
+All files                   |   95.55 |    90.21 |   94.36 |    96.4 |                     
+ server                     |     100 |    83.33 |     100 |     100 |                     
+  app.js                    |     100 |    83.33 |     100 |     100 | 37                  
+ server/config              |     100 |      100 |     100 |     100 |                     
+  securityHeaders.js        |     100 |      100 |     100 |     100 |                     
+ server/controllers         |   96.59 |    87.69 |    92.3 |   96.55 |                     
+  authController.js         |    91.3 |    83.33 |   83.33 |   91.11 | 8,50-53             
+  scanController.js         |   98.46 |    88.67 |     100 |   98.44 | 57,82               
+ server/middleware          |   96.66 |    95.34 |   77.77 |   96.66 |                     
+  authMiddleware.js         |     100 |      100 |     100 |     100 |                     
+  errorHandler.js           |     100 |    96.55 |     100 |     100 | 72                  
+  rateLimiter.js            |   81.81 |       50 |      60 |   81.81 | 22,38               
+ server/models              |   83.33 |       50 |      75 |   83.33 |                     
+  ScanResults.js            |     100 |      100 |     100 |     100 |                     
+  User.js                   |   71.42 |       50 |      50 |   71.42 | 37,45-46,51         
+ server/routes              |     100 |      100 |     100 |     100 |                     
+  authRoutes.js             |     100 |      100 |     100 |     100 |                     
+  scanRoutes.js             |     100 |      100 |     100 |     100 |                     
+ server/utils               |     100 |      100 |     100 |     100 |                     
+  asyncHandler.js           |     100 |      100 |     100 |     100 |                     
+  scoring.js                |     100 |      100 |     100 |     100 |                     
+ server/utils/checks        |   93.61 |    89.06 |     100 |   95.94 |                     
+  checkSecurityHeaders.js   |     100 |      100 |     100 |     100 |                     
+  cookieCheck.js            |     100 |      100 |     100 |     100 |                     
+  fileExposureCheck.js      |   94.11 |    64.28 |     100 |     100 | 117-122,165-167     
+  libraryCheck.js           |   81.39 |    77.27 |     100 |   86.84 | 123,130-131,162-163 
+  mixedContentCheck.js      |   90.32 |    94.44 |     100 |   92.85 | 81-82               
+  sslCheck.js               |     100 |    96.55 |     100 |     100 | 135                 
+  vulnerableLibraryCheck.js |    91.3 |    85.71 |     100 |    91.3 | 53,65               
+ server/validators          |   97.77 |      100 |     100 |   97.67 |                     
+  authValidators.js         |     100 |      100 |     100 |     100 |                     
+  scanValidators.js         |   97.22 |      100 |     100 |   97.05 | 50                  
+----------------------------|---------|----------|---------|---------|---------------------
+
+=============================== Coverage summary ===============================
+Statements   : 95.55% ( 602/630 )
+Branches     : 90.21% ( 249/276 )
+Functions    : 94.36% ( 67/71 )
+Lines        : 96.4% ( 590/612 )
+================================================================================
+node.exe : 
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+Test Suites: 9 passed, 9 total
+Tests:       210 passed, 210 total
+Snapshots:   0 total
+Time:        2.931 s, estimated 4 s
+Ran all test suites.

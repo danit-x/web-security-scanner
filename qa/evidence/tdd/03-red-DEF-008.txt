@@ -1,0 +1,63 @@
+﻿node.exe : FAIL ../qa/05-unit/regression/defects.test.js
+At line:1 char:1
++ & "C:\Program Files\nodejs/node.exe" "C:\Program Files\nodejs/node_mo ...
++ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    + CategoryInfo          : NotSpecified: (FAIL ../qa/05-u...defects.test.js:String) [], RemoteException
+    + FullyQualifiedErrorId : NativeCommandError
+ 
+  ● DEF-008 valid addresses rejected by the User model's email regex › +tag on a non-Gmail domain can register
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 400
+
+      56 |   ])("%s can register", async (_label, make) => {
+      57 |     const { res } = await registerUser({ email: make(Date.now()) });
+    > 58 |     expect(res.status).toBe(201);
+         |                        ^
+      59 |   });
+      60 | });
+      61 |
+
+      at toBe (../qa/05-unit/regression/defects.test.js:58:24)
+
+  ● DEF-008 valid addresses rejected by the User model's email regex › 4-letter TLD can register
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 400
+
+      56 |   ])("%s can register", async (_label, make) => {
+      57 |     const { res } = await registerUser({ email: make(Date.now()) });
+    > 58 |     expect(res.status).toBe(201);
+         |                        ^
+      59 |   });
+      60 | });
+      61 |
+
+      at toBe (../qa/05-unit/regression/defects.test.js:58:24)
+
+  ● DEF-008 valid addresses rejected by the User model's email regex › 6-letter TLD can register
+
+    expect(received).toBe(expected) // Object.is equality
+
+    Expected: 201
+    Received: 400
+
+      56 |   ])("%s can register", async (_label, make) => {
+      57 |     const { res } = await registerUser({ email: make(Date.now()) });
+    > 58 |     expect(res.status).toBe(201);
+         |                        ^
+      59 |   });
+      60 | });
+      61 |
+
+      at toBe (../qa/05-unit/regression/defects.test.js:58:24)
+
+Test Suites: 1 failed, 1 total
+Tests:       3 failed, 22 skipped, 25 total
+Snapshots:   0 total
+Time:        2.205 s
+Ran all test suites matching regression with tests matching "DEF-008".

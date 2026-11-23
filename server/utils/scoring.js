@@ -41,8 +41,9 @@ const calculateScore = (findings) => {
   for (const finding of findings) {
     // Default to 0 deduction for an unrecognized severity value rather
     // than crashing — defensive against bad data from a check that
-    // somehow produced a malformed finding.
-    const deduction = SEVERITY_DEDUCTIONS[finding.severity] || 0;
+    // somehow produced a malformed finding — including a null/undefined
+    // entry, which used to throw a TypeError (DEF-006).
+    const deduction = SEVERITY_DEDUCTIONS[finding?.severity] || 0;
     score -= deduction;
   }
 
@@ -61,7 +62,9 @@ const scoreToGrade = (score) => {
       return grade;
     }
   }
-  return "F"; // unreachable given the thresholds above, but a safe fallback
+  // Reached when no threshold matches: a negative score or NaN (NaN >= 0 is
+  // false). Valid scores 0-100 always match a threshold above.
+  return "F";
 };
 
 /**

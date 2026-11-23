@@ -6,16 +6,17 @@ Severity is the impact on the system. Priority is how urgently it must be fixed.
 
 | ID | Title | Found by | Severity | Priority | Status |
 |---|---|---|---|---|---|
-| DEF-001 | Gmail users with dots or `+tags` in their address cannot log in after registering | TC-REG-10 | **High** | P1 | New |
-| DEF-002 | Malformed JSON body returns 500 with a stack trace instead of 400 | TC-API-05 | Medium | P2 | New |
-| DEF-003 | Disallowed CORS origin returns 500 with a stack trace | TC-API-04 | Low | P3 | New |
-| DEF-004 | `localhost` scan targets are rejected in development, contradicting the documented dev bypass | Run 1 cascade (TC-SCAN-01) | Low | P3 | New |
-| DEF-005 | Password sent as a JSON number crashes registration (500) | EP-PW-06 (Phase 3) | Medium | P2 | New |
-| DEF-006 | `calculateScore()` throws on a `null` finding, despite being documented as defensive | EP-SC-06 (Phase 3) | Low | P3 | New |
-| DEF-007 | Token with a future `nbf` (not-before) returns 500 instead of 401 | AM-P8 (Phase 4 basis path) | Low | P3 | New |
-| OBS-05 | SSRF guard checks that can never fire: the `localhost` entry (blocked earlier by `isURL`) and the IPv6 regexes (the hostname keeps its brackets) | Phase 4 coverage + BP-P4b/BP-X1 | (Observation) | P2 | New |
-| OBS-01 | Scan button is silently disabled. The ownership message in `handleSubmit` is unreachable (dead code). | TC-UI-05 | (Observation) | P4 | New |
-| OBS-02 | Name of 100 characters is accepted, but the message says "under 100 characters" | BVA-NM-04/05 | (Observation) | P4 | New |
+| DEF-001 | Gmail users with dots or `+tags` in their address cannot log in after registering | TC-REG-10 | **High** | P1 | **Closed** (Phase 5) |
+| DEF-002 | Malformed JSON body returns 500 with a stack trace instead of 400 | TC-API-05 | Medium | P2 | **Closed** (Phase 5) |
+| DEF-003 | Disallowed CORS origin returns 500 with a stack trace | TC-API-04 | Low | P3 | **Closed** (Phase 5) |
+| DEF-004 | `localhost` scan targets are rejected in development, contradicting the documented dev bypass | Run 1 cascade (TC-SCAN-01) | Low | P3 | **Closed** (Phase 5) |
+| DEF-005 | Password sent as a JSON number crashes registration (500) | EP-PW-06 (Phase 3) | Medium | P2 | **Closed** (Phase 5) |
+| DEF-006 | `calculateScore()` throws on a `null` finding, despite being documented as defensive | EP-SC-06 (Phase 3) | Low | P3 | **Closed** (Phase 5) |
+| DEF-007 | Token with a future `nbf` (not-before) returns 500 instead of 401 | AM-P8 (Phase 4 basis path) | Low | P3 | **Closed** (Phase 5) |
+| DEF-008 | Valid emails (`+tag`, TLDs longer than 3 letters such as `.info`) rejected by the User model regex | Exposed while fixing DEF-001 (Phase 5) | Medium | P2 | **Closed** (Phase 5) |
+| OBS-05 | SSRF guard checks that can never fire: the `localhost` entry (blocked earlier by `isURL`) and the IPv6 regexes (the hostname keeps its brackets) | Phase 4 coverage + BP-P4b/BP-X1 | (Observation) | P2 | **Closed** (Phase 5) |
+| OBS-01 | Scan button is silently disabled. The ownership message in `handleSubmit` is unreachable (dead code). | TC-UI-05 | (Observation) | P4 | **Closed** (Phase 5) |
+| OBS-02 | Name of 100 characters is accepted, but the message says "under 100 characters" | BVA-NM-04/05 | (Observation) | P4 | **Closed** (Phase 5) |
 | OBS-03 | Scores 87/90/93/95/96/98/99 can never occur. The schema allows grade `E`, which the scorer never produces. | BVA-SC-15 | (Observation) | P4 | New |
 | OBS-04 | Weak passwords such as `12345678` are accepted (no letter required, no breached-password check) | EP-PW-07 | (Observation) | P3 | New |
 
@@ -133,3 +134,42 @@ At 100 characters the name is accepted (`isLength({max:100})`), but the error me
 2. `new URL("http://[::1]/").hostname` returns `"[::1]"` with brackets, so the IPv6 regexes `/^::1$/`, `/^fc00:/` and `/^fe80:/` never match. IPv6 literals are rejected only because `dns.lookup("[::1]")` fails.
 
 The protection holds today, but only by accident. Follow-up in Phase 9 (OWASP A10).
+
+## DEF-008: Valid email addresses rejected by the User model regex
+
+**Found:** while fixing DEF-001 (Phase 5). Once `normalizeEmail()` was removed, registration of `first.last+qa@gmail.com` failed with 400 instead of 201.
+
+**Root cause:** the Mongoose schema had its own strict regex, `/^\w+([.-]?\w+)*@\w+([.-]?\w+)*(\.\w{2,3})+$/`. It rejects:
+- `+` in the local part
+- TLDs longer than 3 letters (`.info`, `.online`, `.museum`)
+
+It disagreed with the route validator (`isEmail()`), which accepts both.
+- `normalizeEmail()` had been masking the `+tag` case for Gmail only.
+- `user@example.info` was rejected even before the change.
+
+**Lesson:** two validators for the same field drift apart. A fix that removes one masking layer can expose the next defect. Retesting after every fix is what caught this.
+
+**Fix:** the model keeps only a sanity check (`/^[^\s@]+@[^\s@]+\.[^\s@]+$/`). Strict validation stays in one place, `isEmail()`.
+
+---
+
+## Phase 5 resolution summary
+
+Every fix followed **RED → GREEN → full regression**. Evidence is in `qa/evidence/tdd/`, and the full log is in [`qa/05-unit/tdd-log.md`](../05-unit/tdd-log.md).
+
+| ID | Fix (file) | Regression test | Retest result |
+|---|---|---|---|
+| DEF-001 | `normalizeEmail()` → `toLowerCase()` (validators/authValidators.js). Emails are stored as typed, per the product decision. | `defects.test.js › DEF-001` (3 tests), TC-REG-10 | PASS |
+| DEF-002 | errorHandler honours `err.status`, gives a clean message for malformed JSON, and includes a stack only on 5xx (middleware/errorHandler.js) | `› DEF-002`, TC-API-05 | PASS |
+| DEF-003 | CORS rejection carries `status = 403` (app.js) | `› DEF-003` (2 tests), TC-API-04 | PASS |
+| DEF-004 | `isURL({ require_tld: false })` (validators/scanValidators.js) | `› DEF-004` (2 tests), EP-URL-04 | PASS |
+| DEF-005 | `isString()` on the register and login password (validators/authValidators.js) | `› DEF-005` (2 tests), EP-PW-06 | PASS |
+| DEF-006 | `finding?.severity` (utils/scoring.js) | `› DEF-006`, EP-SC-06 | PASS |
+| DEF-007 | `error instanceof jwt.JsonWebTokenError` (middleware/authMiddleware.js) | `› DEF-007`, AM-P8 | PASS |
+| DEF-008 | Model email regex relaxed to a sanity check (models/User.js) | `› DEF-008` (3 tests) | PASS |
+| OBS-01 | Scan button no longer disabled while unticked, so the message shows (client Dashboard.jsx) | TC-UI-05 retest (manual, screenshot) | PASS |
+| OBS-02 | Message changed to "Name must be 100 characters or fewer" | `› OBS-02` | PASS |
+| OBS-05 | IPv6 brackets stripped. Added rules for `::`, fc00::/7, fe80::/10 and IPv4-mapped `::ffff:`. `localhost` now reaches the hostname rule. | `› OBS-05` (13 tests incl. 4 obfuscated-IPv4 guard tests), BP-P4b, BP-X1 | PASS |
+| (comment) | False "unreachable" comment in `scoreToGrade` corrected | – | – |
+
+Still open: OBS-03 (unreachable scores; grade `E` in the schema) and OBS-04 (weak password policy, Phase 9).
