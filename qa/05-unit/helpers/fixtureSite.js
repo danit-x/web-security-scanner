@@ -2,7 +2,7 @@
 // no security headers, an insecure cookie, an old jQuery, a redirect and a 404.
 const http = require("http");
 
-function startFixtureSite() {
+function startFixtureSite(port = 0) {
   const server = http.createServer((req, res) => {
     if (req.url === "/" || req.url === "/index.html") {
       res.writeHead(200, { "Content-Type": "text/html", "Set-Cookie": "session=abc123; Path=/" });
@@ -17,7 +17,7 @@ function startFixtureSite() {
     return res.end("not found");
   });
   return new Promise((resolve) => {
-    server.listen(0, "127.0.0.1", () => {
+    server.listen(port, "127.0.0.1", () => {
       const url = `http://127.0.0.1:${server.address().port}`;
       resolve({ url, close: () => new Promise((r) => server.close(r)) });
     });

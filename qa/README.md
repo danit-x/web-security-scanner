@@ -10,10 +10,10 @@ Testing the Website Security Scanner (MERN) on branch `qa/ec4206-testing`.
 | 4 | White-box: cyclomatic complexity, coverage | ✅ | [04-white-box/](04-white-box/) |
 | 5 | Unit tests (Jest) + TDD fixes | ✅ | [05-unit/tdd-log.md](05-unit/tdd-log.md) |
 | 6 | BDD (Cucumber): 44 scenarios, mutation-checked | ✅ | [06-bdd/bdd-notes.md](06-bdd/bdd-notes.md) |
-| 7 | Postman + Selenium | ⏳ | |
+| 7 | Postman (360 assertions) + Selenium (11 UI tests, POM) | ✅ | [07-postman-selenium/phase7-notes.md](07-postman-selenium/phase7-notes.md) |
 | 8 | CI (GitHub Actions) | ⏳ | |
 | 9 | JMeter + OWASP | ⏳ | |
-| 10 | Defects, RCA, lifecycle | 🟡 8 defects closed in P5; RCA pending | [10-defects/defect-log.md](10-defects/defect-log.md) |
+| 10 | Defects, RCA, lifecycle | 🟡 8 defects closed in P5; OBS-06 closed in P7; RCA pending | [10-defects/defect-log.md](10-defects/defect-log.md) |
 | 11 | SonarQube metrics | ⏳ | |
 | 12 | Reflection | ⏳ | |
 
@@ -32,6 +32,12 @@ npm run test:coverage --prefix server
 node --test "server/tests/*.test.js" "qa/04-white-box/tests/*.test.js"
 # 44 Cucumber BDD scenarios (HTML report in qa/evidence/bdd/)
 npm run test:bdd --prefix server
+# Postman API + data-driven runs (needs qa-api on :5000 and the fixture site on :5070)
+node qa/scripts/start-fixture-site.js
+powershell -File qa/07-postman-selenium/postman/run-postman.ps1
+# Selenium UI tests (also needs the client on :5173)
+npm install --prefix qa/07-postman-selenium/selenium
+npm test --prefix qa/07-postman-selenium/selenium
 ```
 
 `qa/scripts/start-test-api.js` starts the real API with a local DB and a test JWT secret, and refuses to start against a non-local database.

@@ -19,6 +19,7 @@ Severity is the impact on the system. Priority is how urgently it must be fixed.
 | OBS-02 | Name of 100 characters is accepted, but the message says "under 100 characters" | BVA-NM-04/05 | (Observation) | P4 | **Closed** (Phase 5) |
 | OBS-03 | Scores 87/90/93/95/96/98/99 can never occur. The schema allows grade `E`, which the scorer never produces. | BVA-SC-15 | (Observation) | P4 | New |
 | OBS-04 | Weak passwords such as `12345678` are accepted (no letter required, no breached-password check) | EP-PW-07 | (Observation) | P3 | New |
+| OBS-06 | Register form allows 6-character passwords (`minLength="6"`), but the API requires 8, so the browser accepts passwords the server always rejects | Phase 7 Selenium (code reading for locators) → TC-UI-11 | (Observation) | P4 | **Closed** (Phase 7) |
 
 ---
 
@@ -173,3 +174,13 @@ Every fix followed **RED → GREEN → full regression**. Evidence is in `qa/evi
 | (comment) | False "unreachable" comment in `scoreToGrade` corrected | – | – |
 
 Still open: OBS-03 (unreachable scores; grade `E` in the schema) and OBS-04 (weak password policy, Phase 9).
+
+## OBS-06: Register form password minimum disagrees with the API
+
+**Found:** Phase 7, while reading `client/src/pages/Register.jsx` to choose Selenium locators.
+**Observed:** both password inputs had `minLength="6"`. The API rejects anything under 8 characters (`authValidators.js`). A 6- or 7-character password passed browser validation, then failed with a 400 after a server round trip.
+**Expected:** client-side validation uses the same rule as the server, so the user gets immediate, consistent feedback.
+**Root cause:** the rule is duplicated in two places (client and server), and only the server copy was updated to 8.
+**Fix (test-first):** new Selenium test TC-UI-11 checks `minLength == 8` and that a 7-character password is blocked by the browser. It failed (`'6' !== '8'`), then `minLength="8"` was set on both inputs, and the test passed. The full UI suite then passed 3 runs in a row (33/33).
+**Verified:** TC-UI-11, screenshot `qa/evidence/selenium/TC-UI-11.png`.
+

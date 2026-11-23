@@ -1,0 +1,526 @@
+<claude-code-hint v="1" type="plugin" value="postman@claude-plugins-official" />
+No authorization data found. Please use the `postman login` command.
+Refer:https://learning.postman.com/docs/postman-cli/postman-cli-options/#postman-login
+
+Running your collection...
+postman
+
+WebSec Scanner API (EC4206 QA)
+
+Folder 00 Setup
+Sub-folder Health check (TC-API-01)
+
+  GET http://127.0.0.1:5000/api/health [200 OK, 1.02 KB, 46 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 200
+  Pass  body is {status: ok}
+  Pass  helmet: X-Content-Type-Options nosniff (TC-API-03)
+  Pass  helmet: X-Frame-Options set
+  Pass  helmet: Content-Security-Policy set
+
+Folder 01 Auth
+Sub-folder Register Alice (TC-REG-01)
+
+  POST http://127.0.0.1:5000/api/auth/register [201 Created, 1.33 KB, 119 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 201
+  Pass  response matches the user contract (JSON schema)
+  Pass  password never returned (TC-REG-11)
+
+Sub-folder Register Bob
+
+  POST http://127.0.0.1:5000/api/auth/register [201 Created, 1.33 KB, 272 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 201
+
+Sub-folder Register duplicate, different case (TC-REG-02, TC-REG-09)
+
+  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.06 KB, 11 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 400
+  Pass  message is 'User already exists'
+  Pass  no token issued
+
+Sub-folder Register with 7-char password (TC-REG-03, BVA)
+
+  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.21 KB, 6 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 400
+  Pass  message is 'Password must be at least 8 characters long'
+
+Sub-folder Register with numeric password (DEF-005 regression)
+
+  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.17 KB, 19 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 400
+  Pass  message is 'Password must be text'
+
+Sub-folder Login Alice (TC-LOG-01)
+
+  POST http://127.0.0.1:5000/api/auth/login [200 OK, 1.32 KB, 173 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 200
+  Pass  response matches the user contract (JSON schema)
+  Pass  same user as registered
+
+Sub-folder Login wrong password (TC-LOG-02)
+
+  POST http://127.0.0.1:5000/api/auth/login [401 Unauthorized, 1.06 KB, 259 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 401
+  Pass  message is 'Invalid email or password'
+  Pass  no token issued
+
+Sub-folder Login unknown email, same message (TC-LOG-03)
+
+  POST http://127.0.0.1:5000/api/auth/login [401 Unauthorized, 1.06 KB, 16 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 401
+  Pass  message is 'Invalid email or password'
+  Pass  no token issued
+
+Sub-folder Login missing password (TC-LOG-04)
+
+  POST http://127.0.0.1:5000/api/auth/login [400 Bad Request, 1.15 KB, 30 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 400
+  Pass  message is 'Password is required'
+
+Sub-folder Login malformed JSON (TC-API-05, DEF-002 regression)
+
+  POST http://127.0.0.1:5000/api/auth/login [400 Bad Request, 998 B, 12 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 400
+  Pass  no stack property
+
+Folder 02 Token
+Sub-folder Me with valid token (TC-AUTH-01)
+
+  GET http://127.0.0.1:5000/api/auth/me [200 OK, 1.15 KB, 25 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 200
+  Pass  returns Alice
+
+Sub-folder Me without token (TC-AUTH-02)
+
+  GET http://127.0.0.1:5000/api/auth/me [401 Unauthorized, 1.06 KB, 23 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 401
+  Pass  message is 'Authorization token is required'
+
+Sub-folder Me with tampered token (TC-AUTH-03)
+
+  GET http://127.0.0.1:5000/api/auth/me [401 Unauthorized, 1.05 KB, 24 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 401
+  Pass  message is 'Invalid authorization token'
+
+Sub-folder Me with empty bearer value (TC-AUTH-05)
+
+  GET http://127.0.0.1:5000/api/auth/me [401 Unauthorized, 1.06 KB, 24 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 401
+  Pass  message is 'Authorization token is required'
+
+Folder 03 Scan
+Sub-folder Scan fixture as Alice (TC-SCAN-01)
+
+  POST http://127.0.0.1:5000/api/scan [200 OK, 11.21 KB, 118 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 200
+  Pass  report matches the scan contract (JSON schema)
+  Pass  summary counts agree with findings
+  Pass  fixture weaknesses detected
+
+Sub-folder Scan fixture as Bob
+
+  POST http://127.0.0.1:5000/api/scan [200 OK, 11.21 KB, 91 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 200
+
+Sub-folder Scan without ownership confirmation (TC-SCAN-02)
+
+  POST http://127.0.0.1:5000/api/scan [400 Bad Request, 1.1 KB, 22 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 400
+  Pass  message is 'You must confirm you own this website or have permission to scan it.'
+
+Sub-folder Scan URL without protocol (TC-SCAN-03)
+
+  POST http://127.0.0.1:5000/api/scan [400 Bad Request, 1.24 KB, 26 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 400
+  Pass  message is 'Please provide a valid URL including http:// or https://'
+
+Sub-folder Scan empty URL (TC-SCAN-04)
+
+  POST http://127.0.0.1:5000/api/scan [400 Bad Request, 1.27 KB, 25 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 400
+  Pass  message is 'A URL is required'
+
+Sub-folder Scan ftp:// URL (TC-SCAN-05)
+
+  POST http://127.0.0.1:5000/api/scan [400 Bad Request, 1.08 KB, 9 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 400
+  Pass  message is 'URL must start with http:// or https://'
+
+Sub-folder Scan unreachable host (TC-SCAN-06)
+
+  POST http://127.0.0.1:5000/api/scan [502 Bad Gateway, 1.11 KB, 6 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 502
+  Pass  message is 'Site could not be reached.'
+
+Sub-folder Scan without login (TC-SCAN-07)
+
+  POST http://127.0.0.1:5000/api/scan [401 Unauthorized, 1.06 KB, 12 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 401
+
+Folder 04 History
+Sub-folder List my history (TC-HIS-01)
+
+  GET http://127.0.0.1:5000/api/history [200 OK, 6.35 KB, 41 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 200
+  Pass  exactly my one scan
+  Pass  every scan belongs to me
+  Pass  Bob's scan is not listed
+
+Sub-folder Open my scan (TC-HIS-02)
+
+  GET http://127.0.0.1:5000/api/history/6b04248d976cda82a8580696 [200 OK, 6.34 KB, 37 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 200
+  Pass  same scan
+
+Sub-folder Open Bob's scan as Alice (TC-HIS-03, IDOR)
+
+  GET http://127.0.0.1:5000/api/history/6b04248d976cda82a85806a1 [404 Not Found, 1.06 KB, 35 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 404
+  Pass  message is 'Scan result not found'
+
+Sub-folder Open malformed id (TC-HIS-04)
+
+  GET http://127.0.0.1:5000/api/history/abc [400 Bad Request, 1.06 KB, 20 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 400
+  Pass  message is 'Invalid scan ID'
+
+Sub-folder Open unknown id (TC-HIS-05)
+
+  GET http://127.0.0.1:5000/api/history/000000000000000000000000 [404 Not Found, 1.06 KB, 18 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 404
+  Pass  message is 'Scan result not found'
+
+Sub-folder Add note to my scan (TC-NOTE-01)
+
+  PATCH http://127.0.0.1:5000/api/history/6b04248d976cda82a8580696 [200 OK, 6.37 KB, 75 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 200
+
+Sub-folder Note was saved
+
+  GET http://127.0.0.1:5000/api/history/6b04248d976cda82a8580696 [200 OK, 6.37 KB, 5 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 200
+  Pass  note persisted
+
+Sub-folder Note of 501 chars (TC-NOTE-02, BVA)
+
+  PATCH http://127.0.0.1:5000/api/history/6b04248d976cda82a8580696 [400 Bad Request, 1.69 KB, 20 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 400
+  Pass  message is 'A note cannot be longer than 500 characters'
+
+Sub-folder Non-string note (TC-NOTE-03)
+
+  PATCH http://127.0.0.1:5000/api/history/6b04248d976cda82a8580696 [400 Bad Request, 1.16 KB, 23 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 400
+  Pass  message is 'A note must be text'
+
+Sub-folder Note on Bob's scan as Alice (TC-NOTE-04, IDOR)
+
+  PATCH http://127.0.0.1:5000/api/history/6b04248d976cda82a85806a1 [404 Not Found, 1.06 KB, 40 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 404
+
+Sub-folder Delete Bob's scan as Alice (TC-DEL-02, IDOR)
+
+  DELETE http://127.0.0.1:5000/api/history/6b04248d976cda82a85806a1 [404 Not Found, 1.06 KB, 18 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 404
+
+Sub-folder Bob's scan still exists, unchanged
+
+  GET http://127.0.0.1:5000/api/history/6b04248d976cda82a85806a1 [200 OK, 6.34 KB, 29 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 200
+  Pass  note untouched
+
+Sub-folder Delete my scan (TC-DEL-01)
+
+  DELETE http://127.0.0.1:5000/api/history/6b04248d976cda82a8580696 [200 OK, 1.04 KB, 41 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 200
+  Pass  confirmation body
+
+Sub-folder Deleted scan is gone
+
+  GET http://127.0.0.1:5000/api/history/6b04248d976cda82a8580696 [404 Not Found, 1.06 KB, 17 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 404
+
+Folder 05 Security
+Sub-folder Unknown route (TC-API-02)
+
+  GET http://127.0.0.1:5000/api/does-not-exist [404 Not Found, 1.07 KB, 12 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 404
+  Pass  success false
+
+Sub-folder CORS: allowed origin echoed
+
+  GET http://127.0.0.1:5000/api/health [200 OK, 1.07 KB, 13 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 200
+  Pass  Access-Control-Allow-Origin is the client
+
+Sub-folder CORS: other origin refused (TC-API-04, DEF-003 regression)
+
+  GET http://127.0.0.1:5000/api/health [403 Forbidden, 931 B, 18 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 403
+  Pass  no CORS allow header
+
+Sub-folder Brute force: wrong password x6 from one IP (TC-LOG-05)
+
+  POST http://127.0.0.1:5000/api/auth/login [401 Unauthorized, 1.06 KB, 133 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  attempt 1: 401 (allowed, wrong password)
+
+Attempting to set next request to Brute force: wrong password x6 from one IP (TC-LOG-05)
+
+Sub-folder Brute force: wrong password x6 from one IP (TC-LOG-05)
+
+  POST http://127.0.0.1:5000/api/auth/login [401 Unauthorized, 1.06 KB, 80 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  attempt 2: 401 (allowed, wrong password)
+
+Attempting to set next request to Brute force: wrong password x6 from one IP (TC-LOG-05)
+
+Sub-folder Brute force: wrong password x6 from one IP (TC-LOG-05)
+
+  POST http://127.0.0.1:5000/api/auth/login [401 Unauthorized, 1.06 KB, 76 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  attempt 3: 401 (allowed, wrong password)
+
+Attempting to set next request to Brute force: wrong password x6 from one IP (TC-LOG-05)
+
+Sub-folder Brute force: wrong password x6 from one IP (TC-LOG-05)
+
+  POST http://127.0.0.1:5000/api/auth/login [401 Unauthorized, 1.06 KB, 120 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  attempt 4: 401 (allowed, wrong password)
+
+Attempting to set next request to Brute force: wrong password x6 from one IP (TC-LOG-05)
+
+Sub-folder Brute force: wrong password x6 from one IP (TC-LOG-05)
+
+  POST http://127.0.0.1:5000/api/auth/login [401 Unauthorized, 1.06 KB, 78 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  attempt 5: 401 (allowed, wrong password)
+
+Attempting to set next request to Brute force: wrong password x6 from one IP (TC-LOG-05)
+
+Sub-folder Brute force: wrong password x6 from one IP (TC-LOG-05)
+
+  POST http://127.0.0.1:5000/api/auth/login [429 Too Many Requests, 1.11 KB, 5 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  attempt 6: 429 throttled
+  Pass  message is 'Too many login attempts. Please try again in 15 minutes.'
+  Pass  RateLimit headers present
+
+Sub-folder Correct password is also blocked from the throttled IP
+
+  POST http://127.0.0.1:5000/api/auth/login [429 Too Many Requests, 1.11 KB, 3 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 429
+  Pass  no token issued
+
+Sub-folder Another IP can still log in
+
+  POST http://127.0.0.1:5000/api/auth/login [200 OK, 1.32 KB, 85 ms]
+  Pass  [all] responds within 10000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  status is 200
+
+----------------------------------------------------------------------
+|                         |            executed |             failed |
+--------------------------+---------------------+---------------------
+|              iterations |                   1 |                  0 |
+--------------------------+---------------------+---------------------
+|                requests |                  48 |                  0 |
+--------------------------+---------------------+---------------------
+|            test-scripts |                  96 |                  0 |
+--------------------------+---------------------+---------------------
+|      prerequest-scripts |                  62 |                  0 |
+--------------------------+---------------------+---------------------
+|              assertions |                 288 |                  0 |
+----------------------------------------------------------------------
+| total run duration: 9.1 s                                          |
+----------------------------------------------------------------------
+| total data received: 51.96 KB (approx)                             |
+----------------------------------------------------------------------
+| average response time: 50 ms [min: 3 ms, max: 272 ms, s.d.: 59 ms] |
+----------------------------------------------------------------------
+Postman credentials are required for publishing run details to Postman cloud.
+Please specify it by using the `postman login` command
