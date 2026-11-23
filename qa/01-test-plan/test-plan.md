@@ -162,7 +162,7 @@ Both are needed. Verification catches defects early and cheaply. Validation catc
 | Black-box design (EP, BVA, decision table) | `qa/03-black-box/` |
 | White-box analysis | `qa/04-white-box/` |
 | Unit and BDD tests | `qa/05-unit/`, `qa/06-bdd/` |
-| Postman, Selenium, CI | `qa/07-automation/`, `.github/workflows/` |
+| Postman, Selenium, CI | `qa/07-postman-selenium/`, `qa/08-ci/`, `.github/workflows/` |
 | JMeter and OWASP | `qa/09-performance-security/` |
 | Defect reports + RCA | `qa/10-defects/` |
 | SonarQube metrics | `qa/11-metrics/` |
