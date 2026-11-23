@@ -26,6 +26,7 @@ Severity is the impact on the system. Priority is how urgently it must be fixed.
 | OBS-06 | Register form allows 6-character passwords (`minLength="6"`), but the API requires 8, so the browser accepts passwords the server always rejects | Phase 7 Selenium (code reading for locators) → TC-UI-11 | (Observation) | P4 | **Closed** (Phase 7) |
 | OBS-07 | Sign-up has no dedicated rate limit (`registerLimiter` is commented out); it is the most CPU-expensive endpoint (bcrypt) | Phase 9 code review + JMeter breakpoint test | (Observation) | P3 | **Deferred**: recommendation |
 | OBS-08 | Auth throughput ceiling: about 32 sign-ups/s and 32 logins/s on the test machine; beyond that requests queue (p95 12.4 s) but never fail | Phase 9 JMeter breakpoint (800 users) | (Observation) | P4 | **Deferred**: capacity note, tuning shown |
+| OBS-09 | `runScan` is still too complex: cyclomatic V(G) 32 (was 31 in Phase 4), cognitive 28 (limit 15). The Phase 4 refactor was not done, and the DEF-009 fix added a branch | Phase 11 SonarQube S3776 (Critical, maintainability) | (Observation) | P3 | **Deferred**: refactor recommendation |
 
 ---
 
@@ -237,3 +238,7 @@ After a redirect, the file-exposure check also probes `/.env`, `/.git/config` an
 ## OBS-08: Authentication throughput ceiling (deferred, capacity note)
 
 With 800 users arriving in 10 s, sign-up and login level off at about 32 requests/s each (about 65 bcrypt operations/s). Requests then queue (register p95 12.4 s, login p95 6.1 s) but **never fail**, and reads stay fast (p95 ≤ 14 ms) because bcrypt runs off the event loop. Raising `UV_THREADPOOL_SIZE` from 4 to 8 roughly doubled auth throughput (to about 57–60/s) and cut register p95 to 2.7 s. **Recommendation:** set `UV_THREADPOOL_SIZE` to match the host's cores and scale horizontally for peak sign-up traffic. Not a defect at realistic load: every SLA passed up to 400 users.
+
+## OBS-09: `runScan` complexity (deferred, Phase 11)
+
+SonarQube rule S3776 (Critical, maintainability) flags `server/controllers/scanController.js:53` `runScan` with cognitive complexity **28** (limit 15). ESLint measures V(G) **32**. Phase 4 measured 31 and recommended splitting it. That was not done, and the DEF-009 fix (`5ef122c`) added `if (isBlockedError(...))` to it. The function works and is 98.5 % line-covered, so this is not a failure. **Recommendation:** split it into `fetchTarget()`, `runChecks()` (a table of checks run in one loop with one shared `try/catch`) and `mapFetchError()` (a lookup table from error code to status and message). Each part ends up under 10. The existing 259 Jest tests and 44 BDD scenarios make the refactor safe. Deferred: a refactor is outside QA's remit. Details: [../11-metrics/sonar-metrics.md](../11-metrics/sonar-metrics.md) §3.

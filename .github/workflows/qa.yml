@@ -3,11 +3,13 @@
 #
 #   lint-build ──► unit-api (Node 22, 24) ──┬─► bdd
 #                                           ├─► postman
-#                                           └─► selenium
+#                                           ├─► selenium
+#                                           └─► sonar (phase 11, SonarCloud)
 #
 # Every job gets a fresh Ubuntu VM. Tests that need a database use a MongoDB
-# service container, never the deployed Atlas database. No secrets are needed:
-# all keys and passwords below are throw-away test values.
+# service container, never the deployed Atlas database. All keys and passwords
+# below are throw-away test values. The only real secret is SONAR_TOKEN (a
+# GitHub Actions secret); without it the sonar job skips its scan and stays green.
 name: QA pipeline
 
 on:
@@ -221,3 +223,31 @@ jobs:
             qa/evidence/selenium/
             api.log
             client.log
+
+  # ---------------------------------------------------------------- phase 11
+  sonar:
+    name: Static analysis (SonarCloud)
+    needs: unit-api
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # full history: SonarCloud uses blame for "new code"
+      - name: Download Jest coverage from unit-api
+        uses: actions/download-artifact@v5
+        with:
+          name: coverage-jest
+          path: qa/evidence/coverage/jest/
+      - name: Rewrite lcov paths to repo-relative
+        run: node qa/11-metrics/fix-lcov-paths.js
+      - name: Skip notice (no SONAR_TOKEN secret yet)
+        if: env.SONAR_TOKEN == ''
+        run: echo "::notice::SONAR_TOKEN secret not set, SonarCloud scan skipped. See qa/11-metrics/sonarcloud-setup.md"
+      - name: SonarCloud scan
+        if: env.SONAR_TOKEN != ''
+        uses: SonarSource/sonarqube-scan-action@v8.5.0
+        env:
+          SONAR_HOST_URL: https://sonarcloud.io

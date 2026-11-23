@@ -16,7 +16,7 @@ Testing the Website Security Scanner (MERN) on branch `qa/ec4206-testing`.
 | 8 | CI (GitHub Actions): 5-job pipeline, coverage gate | ✅ | [08-ci/ci-notes.md](08-ci/ci-notes.md) |
 | 9 | JMeter (load/stress/spike/breakpoint) + OWASP (SCA, ZAP DAST, scripted A02–A10) | ✅ DEF-009 (High SSRF), DEF-010 fixed | [09-performance-security/phase9-notes.md](09-performance-security/phase9-notes.md) |
 | 10 | Defects, RCA, lifecycle, metrics | ✅ 10/10 defects closed; 5 Whys + fishbone for DEF-001/DEF-009; DRE and phase containment | [10-defects/phase10-notes.md](10-defects/phase10-notes.md) |
-| 11 | SonarQube metrics | ⏳ | |
+| 11 | SonarQube static analysis metrics | ✅ 0 vulnerabilities, 93.9 % coverage, 2.5 % duplication; `runScan` V(G) 31 → 32 (OBS-09) | [11-metrics/phase11-notes.md](11-metrics/phase11-notes.md) |
 | 12 | Reflection | ⏳ | |
 
 ## Run the tests
@@ -43,6 +43,8 @@ npm test --prefix qa/07-postman-selenium/selenium
 # JMeter load/stress/spike (needs JMeter 5.6.3 in C:	ools), SLA check
 powershell -File qa/09-performance-security/jmeter/run-jmeter.ps1 -Scenario all
 node qa/09-performance-security/jmeter/check-sla.mjs qa/evidence/jmeter/load/report
+# SonarQube static analysis, local fallback (needs Docker; SonarCloud runs in CI)
+powershell -File qa/11-metrics/run-sonar-local.ps1
 # OWASP ZAP DAST (needs the DAST API on :5060 and `npm run preview --prefix client -- --port 4173`)
 node qa/scripts/start-dast-api.js
 powershell -File qa/09-performance-security/zap/run-zap.ps1
