@@ -18,6 +18,17 @@ SonarCloud is free for public repositories. The CI job `sonar` in `.github/workf
 4. SonarCloud shows a **SONAR_TOKEN** value. On GitHub open the repo → **Settings → Secrets and variables → Actions → New repository secret**. Set Name = `SONAR_TOKEN`, Secret = the value. **Never** paste the token in a file, commit, issue or chat: the repo is public.
 5. Re-run the latest *QA pipeline* run on `qa/ec4206-testing` (Actions tab → run → *Re-run all jobs*). The `Static analysis (SonarCloud)` job now uploads the analysis. Open <https://sonarcloud.io/project/overview?id=danit-x_web-security-scanner>.
 
+## Rule set (quality profile)
+
+The Phase 11 report uses **Sonar way extended**, which includes S3776 (cognitive complexity, the `runScan` finding) and S8786 (regex backtracking). SonarCloud analyses with its built-in **Sonar way** profile unless told otherwise. In the local core profile these two rules are not active, so CI could report fewer code smells than the report. To make SonarCloud match:
+
+1. In SonarCloud open the **danit-x** organization → **Quality Profiles** → **JavaScript** → **Sonar way** → ⋮ → **Extend**, and name it `EC4206 extended`.
+2. In the new profile click **Activate more rules**, search for **S3776** and **S8786**, and activate both (keep the S3776 threshold at 15).
+3. Project **web-security-scanner** → **Administration → Quality Profiles** → set JavaScript to `EC4206 extended`.
+4. Re-run the `sonar` job. Code smells should then match the report (4).
+
+If this is not done, remember that SonarCloud findings can differ from the report because the rule set differs, not the code.
+
 If SonarCloud shows a different **project key** or **organization key** than `danit-x_web-security-scanner` / `danit-x`, change the two lines at the top of `sonar-project.properties` to match.
 
 ## Fallback
