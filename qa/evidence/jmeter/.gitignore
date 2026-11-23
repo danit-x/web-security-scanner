@@ -1,0 +1,6 @@
+# Generated HTML dashboards are ~3 MB of identical JS each; rebuild one with
+#   C:\tools\apache-jmeter-5.6.3\bin\jmeter.bat -g <scenario>/results.jtl -o <scenario>/report
+# Raw results, per-run statistics.json, console summaries and sla-summary.md are kept.
+*/report/*
+!*/report/statistics.json
+*/jmeter.log

@@ -11,7 +11,7 @@ Iteration 1/12
 
 Root Register: {{caseId}}
 
-  POST http://127.0.0.1:5000/api/auth/register [201 Created, 1.33 KB, 93 ms]
+  POST http://127.0.0.1:5000/api/auth/register [201 Created, 1.33 KB, 142 ms]
   Pass  [all] responds within 2000 ms
   Pass  [all] JSON response
   Pass  [all] no stack trace leaked
@@ -23,7 +23,7 @@ Iteration 2/12
 
 Root Register: {{caseId}}
 
-  POST http://127.0.0.1:5000/api/auth/register [201 Created, 1.33 KB, 91 ms]
+  POST http://127.0.0.1:5000/api/auth/register [201 Created, 1.33 KB, 137 ms]
   Pass  [all] responds within 2000 ms
   Pass  [all] JSON response
   Pass  [all] no stack trace leaked
@@ -35,7 +35,7 @@ Iteration 3/12
 
 Root Register: {{caseId}}
 
-  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.21 KB, 7 ms]
+  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.21 KB, 9 ms]
   Pass  [all] responds within 2000 ms
   Pass  [all] JSON response
   Pass  [all] no stack trace leaked
@@ -47,7 +47,7 @@ Iteration 4/12
 
 Root Register: {{caseId}}
 
-  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.21 KB, 12 ms]
+  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.21 KB, 4 ms]
   Pass  [all] responds within 2000 ms
   Pass  [all] JSON response
   Pass  [all] no stack trace leaked
@@ -59,7 +59,7 @@ Iteration 5/12
 
 Root Register: {{caseId}}
 
-  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.16 KB, 4 ms]
+  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.16 KB, 19 ms]
   Pass  [all] responds within 2000 ms
   Pass  [all] JSON response
   Pass  [all] no stack trace leaked
@@ -71,7 +71,7 @@ Iteration 6/12
 
 Root Register: {{caseId}}
 
-  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.17 KB, 5 ms]
+  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.17 KB, 32 ms]
   Pass  [all] responds within 2000 ms
   Pass  [all] JSON response
   Pass  [all] no stack trace leaked
@@ -83,7 +83,7 @@ Iteration 7/12
 
 Root Register: {{caseId}}
 
-  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.2 KB, 4 ms]
+  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.2 KB, 13 ms]
   Pass  [all] responds within 2000 ms
   Pass  [all] JSON response
   Pass  [all] no stack trace leaked
@@ -95,7 +95,7 @@ Iteration 8/12
 
 Root Register: {{caseId}}
 
-  POST http://127.0.0.1:5000/api/auth/register [201 Created, 1.33 KB, 92 ms]
+  POST http://127.0.0.1:5000/api/auth/register [201 Created, 1.33 KB, 378 ms]
   Pass  [all] responds within 2000 ms
   Pass  [all] JSON response
   Pass  [all] no stack trace leaked
@@ -107,7 +107,7 @@ Iteration 9/12
 
 Root Register: {{caseId}}
 
-  POST http://127.0.0.1:5000/api/auth/register [201 Created, 1.33 KB, 94 ms]
+  POST http://127.0.0.1:5000/api/auth/register [201 Created, 1.33 KB, 188 ms]
   Pass  [all] responds within 2000 ms
   Pass  [all] JSON response
   Pass  [all] no stack trace leaked
@@ -119,7 +119,7 @@ Iteration 10/12
 
 Root Register: {{caseId}}
 
-  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.15 KB, 8 ms]
+  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.15 KB, 17 ms]
   Pass  [all] responds within 2000 ms
   Pass  [all] JSON response
   Pass  [all] no stack trace leaked
@@ -131,7 +131,7 @@ Iteration 11/12
 
 Root Register: {{caseId}}
 
-  POST http://127.0.0.1:5000/api/auth/register [201 Created, 1.43 KB, 91 ms]
+  POST http://127.0.0.1:5000/api/auth/register [201 Created, 1.43 KB, 272 ms]
   Pass  [all] responds within 2000 ms
   Pass  [all] JSON response
   Pass  [all] no stack trace leaked
@@ -143,7 +143,7 @@ Iteration 12/12
 
 Root Register: {{caseId}}
 
-  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.29 KB, 10 ms]
+  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.29 KB, 12 ms]
   Pass  [all] responds within 2000 ms
   Pass  [all] JSON response
   Pass  [all] no stack trace leaked
@@ -151,24 +151,24 @@ Root Register: {{caseId}}
   Pass  BVA-name-101: status 400
   Pass  BVA-name-101: message
 
----------------------------------------------------------------------
-|                         |           executed |             failed |
---------------------------+--------------------+---------------------
-|              iterations |                 12 |                  0 |
---------------------------+--------------------+---------------------
-|                requests |                 12 |                  0 |
---------------------------+--------------------+---------------------
-|            test-scripts |                 24 |                  0 |
---------------------------+--------------------+---------------------
-|      prerequest-scripts |                 12 |                  0 |
---------------------------+--------------------+---------------------
-|              assertions |                 72 |                  0 |
----------------------------------------------------------------------
-| total run duration: 1665 ms                                       |
----------------------------------------------------------------------
-| total data received: 3.03 KB (approx)                             |
----------------------------------------------------------------------
-| average response time: 42 ms [min: 4 ms, max: 94 ms, s.d.: 41 ms] |
----------------------------------------------------------------------
+------------------------------------------------------------------------
+|                         |             executed |              failed |
+--------------------------+----------------------+----------------------
+|              iterations |                   12 |                   0 |
+--------------------------+----------------------+----------------------
+|                requests |                   12 |                   0 |
+--------------------------+----------------------+----------------------
+|            test-scripts |                   24 |                   0 |
+--------------------------+----------------------+----------------------
+|      prerequest-scripts |                   12 |                   0 |
+--------------------------+----------------------+----------------------
+|              assertions |                   72 |                   0 |
+------------------------------------------------------------------------
+| total run duration: 2.7 s                                            |
+------------------------------------------------------------------------
+| total data received: 3.03 KB (approx)                                |
+------------------------------------------------------------------------
+| average response time: 101 ms [min: 4 ms, max: 378 ms, s.d.: 118 ms] |
+------------------------------------------------------------------------
 Postman credentials are required for publishing run details to Postman cloud.
 Please specify it by using the `postman login` command

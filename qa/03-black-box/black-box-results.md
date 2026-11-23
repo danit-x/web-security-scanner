@@ -29,24 +29,24 @@ Raw evidence: `qa/evidence/black-box-2026-11-23T11-09-40-512Z.json` and the matc
 
 | ID | Input / condition | Expected | Actual | Result |
 |---|---|---|---|---|
-| EP-PW-01 | valid: 9 chars + digit | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiNyIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.AHYf_qG | **PASS** |
+| EP-PW-01 | valid: 9 chars + digit | 201 | 201 {"success":true,"token":"<redacted-test-jwt> | **PASS** |
 | EP-PW-02 | invalid: too short | 400 min length | 400 {"success":false,"message":"Password must be at least 8 characters long","errors":[{"type":"field","value":"Pass1","msg":"Password must be at least 8 characters | **PASS** |
 | EP-PW-03 | invalid: no digit | 400 needs a number | 400 {"success":false,"message":"Password must contain at least one number","errors":[{"type":"field","value":"Password","msg":"Password must contain at least one nu | **PASS** |
 | EP-PW-04 | invalid: empty string | 400 required | 400 {"success":false,"message":"Password is required","errors":[{"type":"field","value":"","msg":"Password is required","path":"password","location":"body"}]} | **PASS** |
 | EP-PW-05 | invalid: field missing | 400 required | 400 {"success":false,"message":"Password is required","errors":[{"type":"field","msg":"Password is required","path":"password","location":"body"}]} | **PASS** |
 | EP-PW-06 | invalid type: number 12345678 | 400 (type rejected, not a crash) | 400 {"success":false,"message":"Password must be text","errors":[{"type":"field","value":12345678,"msg":"Password must be text","path":"password","location":"body"} | **PASS** |
-| EP-PW-07 | valid (weak): digits only '12345678' | 201 (meets the stated rule) | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiOCIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.xVvM58t | **PASS** |
+| EP-PW-07 | valid (weak): digits only '12345678' | 201 (meets the stated rule) | 201 {"success":true,"token":"<redacted-test-jwt> | **PASS** |
 
 ### Email
 
 | ID | Input / condition | Expected | Actual | Result |
 |---|---|---|---|---|
-| EP-EM-01 | valid | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiOSIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.9B2R9Lt | **PASS** |
+| EP-EM-01 | valid | 201 | 201 {"success":true,"token":"<redacted-test-jwt> | **PASS** |
 | EP-EM-02 | invalid: no @ | 400 | 400 {"success":false,"message":"Please provide a valid email address","errors":[{"type":"field","value":"qa1795432172186example.com","msg":"Please provide a valid e | **PASS** |
 | EP-EM-03 | invalid: no domain | 400 | 400 {"success":false,"message":"Please provide a valid email address","errors":[{"type":"field","value":"user@","msg":"Please provide a valid email address","path": | **PASS** |
 | EP-EM-04 | invalid: no local part | 400 | 400 {"success":false,"message":"Please provide a valid email address","errors":[{"type":"field","value":"@example.com","msg":"Please provide a valid email address", | **PASS** |
 | EP-EM-05 | invalid: empty | 400 | 400 {"success":false,"message":"Email is required","errors":[{"type":"field","value":"","msg":"Email is required","path":"email","location":"body"},{"type":"field", | **PASS** |
-| EP-EM-06 | valid: mixed case + padding | 201, stored lower-case | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiYSIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.tbYlOwc stored=qa.case.1795432172186@example.com | **PASS** |
+| EP-EM-06 | valid: mixed case + padding | 201, stored lower-case | 201 {"success":true,"token":"<redacted-test-jwt> stored=qa.case.1795432172186@example.com | **PASS** |
 | EP-EM-07 | invalid type: object {$gt:''} | 400 | 400 {"success":false,"message":"Please provide a valid email address","errors":[{"type":"field","value":"[object Object]","msg":"Please provide a valid email addres | **PASS** |
 
 ### Login
@@ -127,17 +127,17 @@ Raw evidence: `qa/evidence/black-box-2026-11-23T11-09-40-512Z.json` and the matc
 | ID | Input / condition | Expected | Actual | Result |
 |---|---|---|---|---|
 | BVA-PW-01 | 7 chars | 400 | 400 {"success":false,"message":"Password must be at least 8 characters long","errors":[{"type":"field","value":"aaaaaa1","msg":"Password must be at least 8 characte | **PASS** |
-| BVA-PW-02 | 8 chars | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiYiIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.J4wZhoB | **PASS** |
-| BVA-PW-03 | 9 chars | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiYyIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.XP1soGN | **PASS** |
+| BVA-PW-02 | 8 chars | 201 | 201 {"success":true,"token":"<redacted-test-jwt> | **PASS** |
+| BVA-PW-03 | 9 chars | 201 | 201 {"success":true,"token":"<redacted-test-jwt> | **PASS** |
 
 ### Name length
 
 | ID | Input / condition | Expected | Actual | Result |
 |---|---|---|---|---|
 | BVA-NM-01 | 0 chars | 400 | 400 {"success":false,"message":"Name is required","errors":[{"type":"field","value":"","msg":"Name is required","path":"name","location":"body"}]} | **PASS** |
-| BVA-NM-02 | 1 chars | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiZCIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.FpLQI1s | **PASS** |
-| BVA-NM-03 | 99 chars | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVlZTRjZGM1NGY5MDU1Y2ZiZSIsImlhdCI6MTc5NTQzMjE3NCwiZXhwIjoxNzk2MDM2OTc0fQ.1e3JUtQ | **PASS** |
-| BVA-NM-04 | 100 chars | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVlZTRjZGM1NGY5MDU1Y2ZiZiIsImlhdCI6MTc5NTQzMjE3NCwiZXhwIjoxNzk2MDM2OTc0fQ.eiKC2s9 | **PASS** |
+| BVA-NM-02 | 1 chars | 201 | 201 {"success":true,"token":"<redacted-test-jwt> | **PASS** |
+| BVA-NM-03 | 99 chars | 201 | 201 {"success":true,"token":"<redacted-test-jwt> | **PASS** |
+| BVA-NM-04 | 100 chars | 201 | 201 {"success":true,"token":"<redacted-test-jwt> | **PASS** |
 | BVA-NM-05 | 101 chars | 400 | 400 {"success":false,"message":"Name must be 100 characters or fewer","errors":[{"type":"field","value":"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn \| message="Name must be 100 characters or fewer" | **PASS** |
 
 ### Note length

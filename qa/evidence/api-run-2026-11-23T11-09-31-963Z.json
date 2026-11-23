@@ -44,7 +44,7 @@
       "title": "Register with valid data",
       "status": "PASS",
       "expected": "201 + token + user",
-      "actual": "201 {\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWU3ZjUzMzgwZGMyZDI4ODc4NiIsImlhdCI6MTc5NTQzMjE2NywiZXhwIjoxNzk2MDM2OTY3fQ._0C8GK0"
+      "actual": "201 {\"success\":true,\"token\":\"<redacted-test-jwt>"
     },
     {
       "id": "TC-REG-02",
@@ -65,7 +65,7 @@
       "title": "Password exactly 8 chars accepted",
       "status": "PASS",
       "expected": "201",
-      "actual": "201 {\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWU3ZjUzMzgwZGMyZDI4ODc4NyIsImlhdCI6MTc5NTQzMjE2NywiZXhwIjoxNzk2MDM2OTY3fQ.tEVU0pe"
+      "actual": "201 {\"success\":true,\"token\":\"<redacted-test-jwt>"
     },
     {
       "id": "TC-REG-05",
@@ -100,14 +100,14 @@
       "title": "Email case/space insensitive",
       "status": "PASS",
       "expected": "register 201, login 200",
-      "actual": "register 201 (stored qa.mixed.1795432166026@example.com), login 200 {\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWU3ZjUzMzgwZGMyZDI4ODc4OCIsImlhdCI6MTc5NTQzMjE2NywiZXhwIjoxNzk2MDM2OTY3fQ.wiIHTTN"
+      "actual": "register 201 (stored qa.mixed.1795432166026@example.com), login 200 {\"success\":true,\"token\":\"<redacted-test-jwt>"
     },
     {
       "id": "TC-REG-10",
       "title": "Gmail address can log in after register",
       "status": "PASS",
       "expected": "register 201, login 200 with qa.tester.1795432166026@gmail.com",
-      "actual": "register 201 (stored as qa.tester.1795432166026@gmail.com), login 200 {\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWU3ZjUzMzgwZGMyZDI4ODc4OSIsImlhdCI6MTc5NTQzMjE2NywiZXhwIjoxNzk2MDM2OTY3fQ.iZ8Y0m5"
+      "actual": "register 201 (stored as qa.tester.1795432166026@gmail.com), login 200 {\"success\":true,\"token\":\"<redacted-test-jwt>"
     },
     {
       "id": "TC-AUTH-01",
@@ -282,7 +282,7 @@
       "title": "Valid login",
       "status": "PASS",
       "expected": "200 + token",
-      "actual": "200 {\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVhN2Q2YTYxYzkyMTQ2NDliOSIsImlhdCI6MTc5NTQzMjE3MCwiZXhwIjoxNzk2MDM2OTcwfQ.4LAGisv"
+      "actual": "200 {\"success\":true,\"token\":\"<redacted-test-jwt>"
     },
     {
       "id": "TC-LOG-02",

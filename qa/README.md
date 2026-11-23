@@ -14,8 +14,8 @@ Testing the Website Security Scanner (MERN) on branch `qa/ec4206-testing`.
 | 6 | BDD (Cucumber): 44 scenarios, mutation-checked | ✅ | [06-bdd/bdd-notes.md](06-bdd/bdd-notes.md) |
 | 7 | Postman (360 assertions) + Selenium (11 UI tests, POM) | ✅ | [07-postman-selenium/phase7-notes.md](07-postman-selenium/phase7-notes.md) |
 | 8 | CI (GitHub Actions): 5-job pipeline, coverage gate | ✅ | [08-ci/ci-notes.md](08-ci/ci-notes.md) |
-| 9 | JMeter + OWASP | ⏳ | |
-| 10 | Defects, RCA, lifecycle | 🟡 8 defects closed in P5; OBS-06 closed in P7; RCA pending | [10-defects/defect-log.md](10-defects/defect-log.md) |
+| 9 | JMeter (load/stress/spike/breakpoint) + OWASP (SCA, ZAP DAST, scripted A02–A10) | ✅ DEF-009 (High SSRF), DEF-010 fixed | [09-performance-security/phase9-notes.md](09-performance-security/phase9-notes.md) |
+| 10 | Defects, RCA, lifecycle | 🟡 8 defects closed in P5; OBS-06 closed in P7; DEF-009/010, OBS-03/04 closed in P9; RCA pending | [10-defects/defect-log.md](10-defects/defect-log.md) |
 | 11 | SonarQube metrics | ⏳ | |
 | 12 | Reflection | ⏳ | |
 
@@ -28,7 +28,7 @@ Testing the Website Security Scanner (MERN) on branch `qa/ec4206-testing`.
 node qa/scripts/run-api-cases.mjs
 # 123 black-box cases (EP, BVA, decision tables)
 node qa/scripts/run-black-box.mjs
-# 210 Jest unit + API tests, with coverage
+# 259 Jest unit + API + security tests, with coverage gate
 npm run test:coverage --prefix server
 # 57 node:test tests (original 32 + 25 white-box basis paths)
 node --test "server/tests/*.test.js" "qa/04-white-box/tests/*.test.js"
@@ -40,6 +40,12 @@ powershell -File qa/07-postman-selenium/postman/run-postman.ps1
 # Selenium UI tests (also needs the client on :5173)
 npm install --prefix qa/07-postman-selenium/selenium
 npm test --prefix qa/07-postman-selenium/selenium
+# JMeter load/stress/spike (needs JMeter 5.6.3 in C:	ools), SLA check
+powershell -File qa/09-performance-security/jmeter/run-jmeter.ps1 -Scenario all
+node qa/09-performance-security/jmeter/check-sla.mjs qa/evidence/jmeter/load/report
+# OWASP ZAP DAST (needs the DAST API on :5060 and `npm run preview --prefix client -- --port 4173`)
+node qa/scripts/start-dast-api.js
+powershell -File qa/09-performance-security/zap/run-zap.ps1
 ```
 
 `qa/scripts/start-test-api.js` starts the real API with a local DB and a test JWT secret, and refuses to start against a non-local database.

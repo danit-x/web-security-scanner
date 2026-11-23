@@ -1,0 +1,22 @@
+{
+  "_comment": "Single source of truth for the client's HTTP security headers (QA DEF-010). Served in production by vercel.json and locally by `vite preview` (vite.config.js). qa/05-unit/unit/clientSecurityHeaders.test.js fails if vercel.json drifts from this file. %API_ORIGIN% is the backend: productionApiOrigin in production, http://localhost:5000 locally. If the API moves to a custom domain, change productionApiOrigin AND vercel.json.",
+  "productionApiOrigin": "https://*.onrender.com",
+  "contentSecurityPolicy": {
+    "default-src": ["'self'"],
+    "script-src": ["'self'"],
+    "style-src": ["'self'", "https://fonts.googleapis.com"],
+    "font-src": ["'self'", "https://fonts.gstatic.com"],
+    "img-src": ["'self'", "data:"],
+    "connect-src": ["'self'", "%API_ORIGIN%"],
+    "object-src": ["'none'"],
+    "base-uri": ["'self'"],
+    "form-action": ["'self'"],
+    "frame-ancestors": ["'none'"]
+  },
+  "headers": {
+    "X-Frame-Options": "DENY",
+    "X-Content-Type-Options": "nosniff",
+    "Referrer-Policy": "strict-origin-when-cross-origin",
+    "Permissions-Policy": "camera=(), microphone=(), geolocation=()"
+  }
+}

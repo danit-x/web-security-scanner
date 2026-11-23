@@ -376,7 +376,7 @@
       "title": "Password: valid: 9 chars + digit",
       "status": "PASS",
       "expected": "201",
-      "actual": "201 {\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiNyIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.AHYf_qG",
+      "actual": "201 {\"success\":true,\"token\":\"<redacted-test-jwt>",
       "tech": "EP",
       "group": "Password",
       "input": "valid: 9 chars + digit"
@@ -436,7 +436,7 @@
       "title": "Password: valid (weak): digits only '12345678'",
       "status": "PASS",
       "expected": "201 (meets the stated rule)",
-      "actual": "201 {\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiOCIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.xVvM58t",
+      "actual": "201 {\"success\":true,\"token\":\"<redacted-test-jwt>",
       "tech": "EP",
       "group": "Password",
       "input": "valid (weak): digits only '12345678'"
@@ -446,7 +446,7 @@
       "title": "Email: valid",
       "status": "PASS",
       "expected": "201",
-      "actual": "201 {\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiOSIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.9B2R9Lt",
+      "actual": "201 {\"success\":true,\"token\":\"<redacted-test-jwt>",
       "tech": "EP",
       "group": "Email",
       "input": "valid"
@@ -496,7 +496,7 @@
       "title": "Email: valid: mixed case + padding",
       "status": "PASS",
       "expected": "201, stored lower-case",
-      "actual": "201 {\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiYSIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.tbYlOwc stored=qa.case.1795432172186@example.com",
+      "actual": "201 {\"success\":true,\"token\":\"<redacted-test-jwt> stored=qa.case.1795432172186@example.com",
       "tech": "EP",
       "group": "Email",
       "input": "valid: mixed case + padding"
@@ -536,7 +536,7 @@
       "title": "Password length: 8 chars",
       "status": "PASS",
       "expected": "201",
-      "actual": "201 {\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiYiIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.J4wZhoB",
+      "actual": "201 {\"success\":true,\"token\":\"<redacted-test-jwt>",
       "tech": "BVA",
       "group": "Password length",
       "input": "8 chars"
@@ -546,7 +546,7 @@
       "title": "Password length: 9 chars",
       "status": "PASS",
       "expected": "201",
-      "actual": "201 {\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiYyIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.XP1soGN",
+      "actual": "201 {\"success\":true,\"token\":\"<redacted-test-jwt>",
       "tech": "BVA",
       "group": "Password length",
       "input": "9 chars"
@@ -566,7 +566,7 @@
       "title": "Name length: 1 chars",
       "status": "PASS",
       "expected": "201",
-      "actual": "201 {\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVkZTRjZGM1NGY5MDU1Y2ZiZCIsImlhdCI6MTc5NTQzMjE3MywiZXhwIjoxNzk2MDM2OTczfQ.FpLQI1s",
+      "actual": "201 {\"success\":true,\"token\":\"<redacted-test-jwt>",
       "tech": "BVA",
       "group": "Name length",
       "input": "1 chars"
@@ -576,7 +576,7 @@
       "title": "Name length: 99 chars",
       "status": "PASS",
       "expected": "201",
-      "actual": "201 {\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVlZTRjZGM1NGY5MDU1Y2ZiZSIsImlhdCI6MTc5NTQzMjE3NCwiZXhwIjoxNzk2MDM2OTc0fQ.1e3JUtQ",
+      "actual": "201 {\"success\":true,\"token\":\"<redacted-test-jwt>",
       "tech": "BVA",
       "group": "Name length",
       "input": "99 chars"
@@ -586,7 +586,7 @@
       "title": "Name length: 100 chars",
       "status": "PASS",
       "expected": "201",
-      "actual": "201 {\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVlZTRjZGM1NGY5MDU1Y2ZiZiIsImlhdCI6MTc5NTQzMjE3NCwiZXhwIjoxNzk2MDM2OTc0fQ.eiKC2s9",
+      "actual": "201 {\"success\":true,\"token\":\"<redacted-test-jwt>",
       "tech": "BVA",
       "group": "Name length",
       "input": "100 chars"

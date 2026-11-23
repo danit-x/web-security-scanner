@@ -41,7 +41,11 @@ export async function req(method, p, { token, body, headers = {}, raw } = {}) {
   try { parsed = JSON.parse(text); } catch { parsed = text; }
   return { status: res.status, body: parsed, headers: res.headers };
 }
-export const short = (r) => `${r.status} ${JSON.stringify(r.body).slice(0, 160)}`;
+// Evidence is committed to a public repo: never write tokens, even test ones
+// (phase 9 hygiene fix). Any JWT-shaped string becomes a placeholder.
+export const redactTokens = (text) =>
+  String(text).replace(/eyJ[\w-]+\.[\w-]+\.[\w-]*/g, "<redacted-test-jwt>");
+export const short = (r) => `${r.status} ${redactTokens(JSON.stringify(r.body)).slice(0, 160)}`;
 
 // ---------- fixture website (the only scan target) ----------
 // Deliberately weak: no security headers, insecure cookie, old jQuery.
@@ -117,8 +121,8 @@ export function writeEvidence(prefix, payload, serverLog) {
   const evDir = path.join(repo, "qa/evidence");
   fs.mkdirSync(evDir, { recursive: true });
   const json = path.join(evDir, `${prefix}-${stamp}.json`);
-  fs.writeFileSync(json, JSON.stringify({ runAt: new Date().toISOString(), node: process.version, ...payload }, null, 2));
-  if (serverLog !== undefined) fs.writeFileSync(path.join(evDir, `${prefix}-${stamp}.server.log`), serverLog);
+  fs.writeFileSync(json, redactTokens(JSON.stringify({ runAt: new Date().toISOString(), node: process.version, ...payload }, null, 2)));
+  if (serverLog !== undefined) fs.writeFileSync(path.join(evDir, `${prefix}-${stamp}.server.log`), redactTokens(serverLog));
   return path.relative(repo, json).replace(/\\/g, "/");
 }
 

@@ -14,12 +14,16 @@ Severity is the impact on the system. Priority is how urgently it must be fixed.
 | DEF-006 | `calculateScore()` throws on a `null` finding, despite being documented as defensive | EP-SC-06 (Phase 3) | Low | P3 | **Closed** (Phase 5) |
 | DEF-007 | Token with a future `nbf` (not-before) returns 500 instead of 401 | AM-P8 (Phase 4 basis path) | Low | P3 | **Closed** (Phase 5) |
 | DEF-008 | Valid emails (`+tag`, TLDs longer than 3 letters such as `.info`) rejected by the User model regex | Exposed while fixing DEF-001 (Phase 5) | Medium | P2 | **Closed** (Phase 5) |
+| DEF-009 | SSRF guard bypassed by redirects and DNS rebinding: the scanner can be steered to `169.254.169.254` or other internal hosts (OWASP A10) | Phase 9 code review + `security/def-009-ssrf.test.js` | **High** | P1 | **Closed** (Phase 9) |
+| DEF-010 | React client served with no security headers (no CSP, no clickjacking protection, no `nosniff`) (OWASP A05) | Phase 9 ZAP passive scan (2 Medium, 1 Low) + `vercel.json` review | Medium | P2 | **Closed** (Phase 9) |
 | OBS-05 | SSRF guard checks that can never fire: the `localhost` entry (blocked earlier by `isURL`) and the IPv6 regexes (the hostname keeps its brackets) | Phase 4 coverage + BP-P4b/BP-X1 | (Observation) | P2 | **Closed** (Phase 5) |
 | OBS-01 | Scan button is silently disabled. The ownership message in `handleSubmit` is unreachable (dead code). | TC-UI-05 | (Observation) | P4 | **Closed** (Phase 5) |
 | OBS-02 | Name of 100 characters is accepted, but the message says "under 100 characters" | BVA-NM-04/05 | (Observation) | P4 | **Closed** (Phase 5) |
-| OBS-03 | Scores 87/90/93/95/96/98/99 can never occur. The schema allows grade `E`, which the scorer never produces. | BVA-SC-15 | (Observation) | P4 | New |
-| OBS-04 | Weak passwords such as `12345678` are accepted (no letter required, no breached-password check) | EP-PW-07 | (Observation) | P3 | New |
+| OBS-03 | Scores 87/90/93/95/96/98/99 can never occur. The schema allows grade `E`, which the scorer never produces. | BVA-SC-15 | (Observation) | P4 | **Closed** (Phase 9): `E` removed; score gaps accepted as by design |
+| OBS-04 | Weak passwords such as `12345678` are accepted (no letter required, no breached-password check) | EP-PW-07 | (Observation) | P3 | **Closed** (Phase 9): a letter is now required |
 | OBS-06 | Register form allows 6-character passwords (`minLength="6"`), but the API requires 8, so the browser accepts passwords the server always rejects | Phase 7 Selenium (code reading for locators) → TC-UI-11 | (Observation) | P4 | **Closed** (Phase 7) |
+| OBS-07 | Sign-up has no dedicated rate limit (`registerLimiter` is commented out); it is the most CPU-expensive endpoint (bcrypt) | Phase 9 code review + JMeter breakpoint test | (Observation) | P3 | **Deferred**: recommendation |
+| OBS-08 | Auth throughput ceiling: about 32 sign-ups/s and 32 logins/s on the test machine; beyond that requests queue (p95 12.4 s) but never fail | Phase 9 JMeter breakpoint (800 users) | (Observation) | P4 | **Deferred**: capacity note, tuning shown |
 
 ---
 
@@ -113,8 +117,14 @@ At 100 characters the name is accepted (`isLength({max:100})`), but the error me
 - **Scores:** deductions are 25, 15, 8 and 3, so the scores {87, 90, 93, 95, 96, 98, 99} can never be produced, and the A boundary (90) is never hit by a real scan.
 - **Grades:** `ScanResults.grade` allows `"E"`, but `scoreToGrade` never returns it. This is a spec/implementation mismatch, found during verification.
 
+**Phase 9 resolution:**
+- *Grade E:* fixed test-first. `unit/scanResultModel.test.js` derives the set of grades the scorer can produce (A, B, C, D, F, by walking every score 0–100) and checks that the schema accepts exactly those. `"E" is rejected` failed, `E` was removed from the enum, and it passed.
+- *Score gaps:* accepted as **by design**. They come from the deduction sizes (25/15/8/3). Grade A is still reachable (100, 97, 94, 92, 91), so no requirement is broken. Changing the weights would change every user's grade, which is a product decision, not a defect.
+
 ## OBS-04: Weak passwords accepted
 `12345678` satisfies the policy (at least 8 characters, at least one digit). It will be revisited under OWASP A07 (Identification and Authentication Failures) in Phase 9.
+
+**Phase 9 resolution:** the register rule now also requires a letter (`.matches(/[A-Za-z]/)`, message "Password must contain at least one letter"). Written test-first: `security/owasp.test.js` rejects `12345678` and `00000000` (red, then green), and a control case confirms `abcdefg1` is still accepted. Black-box case EP-PW-07 now expects 400. A breached-password check (e.g. the k-anonymity Pwned Passwords API) remains a recommendation; it would send data to a third party, so it needs a product decision.
 
 ## DEF-007: Token with a future `nbf` returns 500 instead of 401
 
@@ -184,3 +194,44 @@ Still open: OBS-03 (unreachable scores; grade `E` in the schema) and OBS-04 (wea
 **Fix (test-first):** new Selenium test TC-UI-11 checks `minLength == 8` and that a 7-character password is blocked by the browser. It failed (`'6' !== '8'`), then `minLength="8"` was set on both inputs, and the test passed. The full UI suite then passed 3 runs in a row (33/33).
 **Verified:** TC-UI-11, screenshot `qa/evidence/selenium/TC-UI-11.png`.
 
+## DEF-009: SSRF guard bypassed by redirects and DNS rebinding (OWASP A10)
+
+**Severity:** High. **Priority:** P1. **Found:** Phase 9, code review while writing the OWASP tests.
+**Observed:** `validators/scanValidators.js` checks only the URL the user typed. `scanController` then calls `axios.get(url, { maxRedirects: 5 })`, which:
+1. follows redirects with no further check, so a public page answering `302 Location: http://169.254.169.254/latest/meta-data/` is followed; and
+2. resolves the hostname a *second* time when the socket connects, so a hostname can resolve to a public IP for the check and to `127.0.0.1` for the connection (DNS rebinding, a time-of-check vs time-of-use flaw).
+
+After a redirect, the file-exposure check also probes `/.env`, `/.git/config` and similar paths **on the final (internal) origin**, and the TLS check connects to it, so findings about internal services could appear in the report.
+**Expected:** in production, no request the scanner makes (first hop, redirect hops, file probes, TLS check) may reach a private, loopback, link-local or otherwise internal address.
+**Root cause:** the SSRF control sat at the *input* boundary only. Network-level controls have to apply where the connection is actually made.
+**Fix (test-first):** `security/def-009-ssrf.test.js` mocks DNS so no real internal or public host is contacted. It covers rebinding, redirect to `169.254.169.254`, redirect to a name resolving to `10.0.0.5`, the file probes, a public control case, and dev mode. 5 tests were red before the fix.
+- New `server/utils/ssrfGuard.js`:
+  - `guardedLookup` resolves the host and refuses if *any* address is internal. It is used by the http/https agents for every connection and redirect hop, and by the TLS check.
+  - `beforeRedirect` checks literal-IP redirect targets, which skip DNS.
+  - Keep-alive is off, so a pooled socket is never reused without a fresh lookup.
+- Blocked targets return **400** "The target resolves to a private or internal address." Production only, matching the validator's documented dev bypass.
+
+**Verified:** 35/35 security tests, full Jest suite 259/259, BDD, Postman and Selenium unchanged.
+
+## DEF-010: React client served without security headers (OWASP A05)
+
+**Severity:** Medium. **Priority:** P2. **Found:** Phase 9, ZAP passive scan of the production build: *CSP Header Not Set* (Medium), *Missing Anti-clickjacking Header* (Medium), *X-Content-Type-Options Header Missing* (Low). Confirmed by reviewing `client/vercel.json`, which only had a rewrite rule.
+**Root cause:** the API is hardened with helmet, but the frontend is a static site whose headers come from the host's config, and that config had none.
+**Fix (test-first):**
+- `client/security-headers.json` is the single source of truth. It sets a strict CSP (`script-src 'self'`, `frame-ancestors 'none'`, `object-src 'none'`, `connect-src 'self'` plus the API origin), `X-Frame-Options: DENY`, `nosniff`, `Referrer-Policy` and `Permissions-Policy`.
+- `vercel.json` serves the headers in production, and `vite preview` serves the same ones locally.
+- `unit/clientSecurityHeaders.test.js` fails if `vercel.json` drifts from the source file. It was red first.
+
+**Verified:**
+- ZAP rerun: 0 Medium / 0 Low on the client.
+- All 11 Selenium tests pass against the CSP-protected production build, with no CSP violations in the browser console.
+
+**Deployment note:** `productionApiOrigin` is `https://*.onrender.com`. If the API moves to a custom domain, update it there and in `vercel.json`, or the CSP will block API calls.
+
+## OBS-07: Sign-up has no dedicated rate limit (deferred)
+
+`authRoutes.js` has `registerLimiter` commented out, so sign-up is limited only by the general limit (100 requests per 15 min per IP). The JMeter breakpoint test showed sign-up is the most expensive endpoint (bcrypt), so it is the cheapest one to use for CPU exhaustion. **Recommendation:** enable a dedicated limiter (e.g. 10 sign-ups per hour per IP) and verify that `trust proxy` matches the real number of proxy hops in production, because every IP-based limit relies on it. Deferred rather than fixed: the right limit is a product decision, and the test suites would need a test-mode allowance.
+
+## OBS-08: Authentication throughput ceiling (deferred, capacity note)
+
+With 800 users arriving in 10 s, sign-up and login level off at about 32 requests/s each (about 65 bcrypt operations/s). Requests then queue (register p95 12.4 s, login p95 6.1 s) but **never fail**, and reads stay fast (p95 ≤ 14 ms) because bcrypt runs off the event loop. Raising `UV_THREADPOOL_SIZE` from 4 to 8 roughly doubled auth throughput (to about 57–60/s) and cut register p95 to 2.7 s. **Recommendation:** set `UV_THREADPOOL_SIZE` to match the host's cores and scale horizontally for peak sign-up traffic. Not a defect at realistic load: every SLA passed up to 400 users.

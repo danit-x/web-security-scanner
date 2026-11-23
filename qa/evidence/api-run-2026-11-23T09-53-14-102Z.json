@@ -44,7 +44,7 @@
       "title": "Register with valid data",
       "status": "PASS",
       "expected": "201 + token + user",
-      "actual": "201 {\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQwZDA1MDlmMDlmMWUxZTZiOThkNCIsImlhdCI6MTc5NTQyNzU4OSwiZXhwIjoxNzk2MDMyMzg5fQ.gZFxpDH"
+      "actual": "201 {\"success\":true,\"token\":\"<redacted-test-jwt>"
     },
     {
       "id": "TC-REG-02",
@@ -65,7 +65,7 @@
       "title": "Password exactly 8 chars accepted",
       "status": "PASS",
       "expected": "201",
-      "actual": "201 {\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQwZDA1MDlmMDlmMWUxZTZiOThkNSIsImlhdCI6MTc5NTQyNzU4OSwiZXhwIjoxNzk2MDMyMzg5fQ.agrwKhP"
+      "actual": "201 {\"success\":true,\"token\":\"<redacted-test-jwt>"
     },
     {
       "id": "TC-REG-05",
@@ -100,7 +100,7 @@
       "title": "Email case/space insensitive",
       "status": "PASS",
       "expected": "register 201, login 200",
-      "actual": "register 201 (stored qa.mixed.1795427588500@example.com), login 200 {\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQwZDA1MDlmMDlmMWUxZTZiOThkNiIsImlhdCI6MTc5NTQyNzU4OSwiZXhwIjoxNzk2MDMyMzg5fQ.BbW8vIn"
+      "actual": "register 201 (stored qa.mixed.1795427588500@example.com), login 200 {\"success\":true,\"token\":\"<redacted-test-jwt>"
     },
     {
       "id": "TC-REG-10",
@@ -282,7 +282,7 @@
       "title": "Valid login",
       "status": "PASS",
       "expected": "200 + token",
-      "actual": "200 {\"success\":true,\"token\":\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQwZDA4NGQwNGVkZDZkZTNkZTQ0ZCIsImlhdCI6MTc5NTQyNzU5MiwiZXhwIjoxNzk2MDMyMzkyfQ.L9_iJye"
+      "actual": "200 {\"success\":true,\"token\":\"<redacted-test-jwt>"
     },
     {
       "id": "TC-LOG-02",

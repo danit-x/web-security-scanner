@@ -1,0 +1,111 @@
+# qa/09-performance-security/zap/zap-plan.yaml
+# OWASP ZAP automation plan (QA phase 9, DAST). Run with run-zap.ps1, which
+# creates a test user and sets the ${...} environment variables used below.
+#
+#   api    : full ACTIVE scan of the REST API on the DAST instance (:5060)
+#            seeded with every endpoint (requestor job), each protected
+#            request carrying the test user's Bearer token. POST /api/scan is passively scanned
+#            only: active payloads in its `url` field would make the API fetch
+#            third-party sites. SSRF there is covered by DEF-009 tests.
+#   client : spider + PASSIVE scan of the production build (vite preview, :4173)
+#
+# Local targets only. Nothing outside 127.0.0.1 / localhost is in scope.
+#
+# ${ZAP_*} placeholders are filled in by run-zap.ps1 before ZAP starts: ZAP
+# substitutes environment variables in URLs and bodies but NOT in request
+# headers, so the Bearer token would otherwise be sent as the literal text.
+env:
+  contexts:
+    - name: api
+      urls:
+        - http://127.0.0.1:5060/api
+      includePaths:
+        - "http://127\\.0\\.0\\.1:5060/api.*"
+      excludePaths:
+        - "http://127\\.0\\.0\\.1:5060/api/scan.*"
+    - name: client
+      urls:
+        - http://localhost:4173/
+      includePaths:
+        - "http://localhost:4173.*"
+  parameters:
+    failOnError: true
+    failOnWarning: false
+    progressToStdout: true
+
+jobs:
+  # Seeds every endpoint. The active scanner builds its attacks FROM these
+  # messages and keeps their headers, so the Bearer token is set on each
+  # protected request here. responseCode makes ZAP warn if a seed is not
+  # answered as expected (a silent 401 would make the scan test nothing).
+  - type: requestor
+    name: seed-api-endpoints
+    requests:
+      - url: http://127.0.0.1:5060/api/health
+        method: GET
+        responseCode: 200
+      - url: http://127.0.0.1:5060/api/auth/register
+        method: POST
+        headers: ["Content-Type: application/json"]
+        data: '{"name":"Zap Seed","email":"zap.seed.${ZAP_RUN}@example.com","password":"Passw0rd1"}'
+        responseCode: 201
+      - url: http://127.0.0.1:5060/api/auth/login
+        method: POST
+        headers: ["Content-Type: application/json"]
+        data: '{"email":"${ZAP_EMAIL}","password":"Passw0rd1"}'
+        responseCode: 200
+      - url: http://127.0.0.1:5060/api/auth/me
+        method: GET
+        headers: ["Authorization: Bearer ${ZAP_TOKEN}"]
+        responseCode: 200
+      - url: http://127.0.0.1:5060/api/history
+        method: GET
+        headers: ["Authorization: Bearer ${ZAP_TOKEN}"]
+        responseCode: 200
+      - url: http://127.0.0.1:5060/api/history/${ZAP_SCAN_ID}
+        method: GET
+        headers: ["Authorization: Bearer ${ZAP_TOKEN}"]
+        responseCode: 200
+      - url: http://127.0.0.1:5060/api/history/${ZAP_SCAN_ID}
+        method: PATCH
+        headers: ["Content-Type: application/json", "Authorization: Bearer ${ZAP_TOKEN}"]
+        data: '{"note":"zap note"}'
+        responseCode: 200
+      - url: http://127.0.0.1:5060/api/scan
+        method: POST
+        headers: ["Content-Type: application/json", "Authorization: Bearer ${ZAP_TOKEN}"]
+        data: '{"url":"http://127.0.0.1:5070/","ownershipConfirmed":true}'
+        responseCode: 200
+
+  - type: spider
+    name: spider-client
+    parameters:
+      context: client
+      maxDuration: 2
+
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 5
+
+  - type: activeScan
+    name: active-scan-api
+    parameters:
+      context: api
+      maxScanDurationInMins: 20
+      threadPerHost: 4
+
+  - type: passiveScan-wait
+    parameters:
+      maxDuration: 5
+
+  - type: report
+    parameters:
+      template: traditional-html
+      reportDir: ${ZAP_REPORT_DIR}
+      reportFile: zap-report.html
+      reportTitle: "WebSec Scanner: OWASP ZAP DAST (local QA stack)"
+  - type: report
+    parameters:
+      template: traditional-json
+      reportDir: ${ZAP_REPORT_DIR}
+      reportFile: zap-report.json

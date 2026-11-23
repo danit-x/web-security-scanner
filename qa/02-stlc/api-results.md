@@ -12,18 +12,18 @@ Raw evidence: `qa/evidence/api-run-2026-11-23T11-09-31-963Z.json` and the matchi
 | TC-API-03 | Security headers present | nosniff, X-Frame-Options set, no X-Powered-By | X-Content-Type-Options=nosniff, X-Frame-Options=SAMEORIGIN, X-Powered-By=null | **PASS** |
 | TC-API-04 | Disallowed CORS origin refused cleanly | 4xx, no ACAO header, no stack trace | 403, ACAO=null, stackInBody=false, message=Not allowed by CORS | **PASS** |
 | TC-API-05 | Malformed JSON body | 400 JSON, no stack trace | 400, stackInBody=false, message=Malformed JSON in request body | **PASS** |
-| TC-REG-01 | Register with valid data | 201 + token + user | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWU3ZjUzMzgwZGMyZDI4ODc4NiIsImlhdCI6MTc5NTQzMjE2NywiZXhwIjoxNzk2MDM2OTY3fQ._0C8GK0 | **PASS** |
+| TC-REG-01 | Register with valid data | 201 + token + user | 201 {"success":true,"token":"<redacted-test-jwt> | **PASS** |
 | TC-REG-02 | Duplicate email rejected | 400 User already exists | 400 {"success":false,"message":"User already exists"} | **PASS** |
 | TC-REG-03 | Password 7 chars rejected | 400 at least 8 characters | 400 {"success":false,"message":"Password must be at least 8 characters long","errors":[{"type":"field","value":"abcdef1","msg":"Password must be at least 8 characte | **PASS** |
-| TC-REG-04 | Password exactly 8 chars accepted | 201 | 201 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWU3ZjUzMzgwZGMyZDI4ODc4NyIsImlhdCI6MTc5NTQzMjE2NywiZXhwIjoxNzk2MDM2OTY3fQ.tEVU0pe | **PASS** |
+| TC-REG-04 | Password exactly 8 chars accepted | 201 | 201 {"success":true,"token":"<redacted-test-jwt> | **PASS** |
 | TC-REG-05 | Password without digit rejected | 400 one number | 400 {"success":false,"message":"Password must contain at least one number","errors":[{"type":"field","value":"abcdefgh","msg":"Password must contain at least one nu | **PASS** |
 | TC-REG-06 | Invalid email rejected | 400 valid email | 400 {"success":false,"message":"Please provide a valid email address","errors":[{"type":"field","value":"user@","msg":"Please provide a valid email address","path": | **PASS** |
 | TC-REG-07 | Whitespace-only name rejected | 400 Name is required | 400 {"success":false,"message":"Name is required","errors":[{"type":"field","value":"","msg":"Name is required","path":"name","location":"body"}]} | **PASS** |
 | TC-REG-08 | Name 101 chars rejected | 400 name length | 400 {"success":false,"message":"Name must be 100 characters or fewer","errors":[{"type":"field","value":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa | **PASS** |
-| TC-REG-09 | Email case/space insensitive | register 201, login 200 | register 201 (stored qa.mixed.1795432166026@example.com), login 200 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWU3ZjUzMzgwZGMyZDI4ODc4OCIsImlhdCI6MTc5NTQzMjE2NywiZXhwIjoxNzk2MDM2OTY3fQ.wiIHTTN | **PASS** |
-| TC-REG-10 | Gmail address can log in after register | register 201, login 200 with qa.tester.1795432166026@gmail.com | register 201 (stored as qa.tester.1795432166026@gmail.com), login 200 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWU3ZjUzMzgwZGMyZDI4ODc4OSIsImlhdCI6MTc5NTQzMjE2NywiZXhwIjoxNzk2MDM2OTY3fQ.iZ8Y0m5 | **PASS** |
+| TC-REG-09 | Email case/space insensitive | register 201, login 200 | register 201 (stored qa.mixed.1795432166026@example.com), login 200 {"success":true,"token":"<redacted-test-jwt> | **PASS** |
+| TC-REG-10 | Gmail address can log in after register | register 201, login 200 with qa.tester.1795432166026@gmail.com | register 201 (stored as qa.tester.1795432166026@gmail.com), login 200 {"success":true,"token":"<redacted-test-jwt> | **PASS** |
 | TC-REG-11 | Password hash never returned | no password field | register.user keys=_id,name,email,createdAt; me.user keys=_id,name,email,createdAt | **PASS** |
-| TC-LOG-01 | Valid login | 200 + token | 200 {"success":true,"token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjZiMDQxZWVhN2Q2YTYxYzkyMTQ2NDliOSIsImlhdCI6MTc5NTQzMjE3MCwiZXhwIjoxNzk2MDM2OTcwfQ.4LAGisv | **PASS** |
+| TC-LOG-01 | Valid login | 200 + token | 200 {"success":true,"token":"<redacted-test-jwt> | **PASS** |
 | TC-LOG-02 | Wrong password | 401 Invalid email or password | 401 {"success":false,"message":"Invalid email or password"} | **PASS** |
 | TC-LOG-03 | Unknown email same message | 401 identical message to LOG-02 | 401 {"success":false,"message":"Invalid email or password"} | **PASS** |
 | TC-LOG-04 | Missing password | 400 Password is required | 400 {"success":false,"message":"Password is required","errors":[{"type":"field","msg":"Password is required","path":"password","location":"body"}]} | **PASS** |
