@@ -18,6 +18,8 @@ SonarCloud is free for public repositories. The CI job `sonar` in `.github/workf
 4. SonarCloud shows a **SONAR_TOKEN** value. On GitHub open the repo → **Settings → Secrets and variables → Actions → New repository secret**. Set Name = `SONAR_TOKEN`, Secret = the value. **Never** paste the token in a file, commit, issue or chat: the repo is public.
 5. Re-run the latest *QA pipeline* run on `qa/ec4206-testing` (Actions tab → run → *Re-run all jobs*). The `Static analysis (SonarCloud)` job now uploads the analysis. Open <https://sonarcloud.io/project/overview?id=danit-x_web-security-scanner>.
 
+**Quality profile.** SonarCloud starts with its default **Sonar way** profile, not the "Sonar way extended" profile used for the report. In the local runs, the default-style profile (run1) did not raise S3776 (cognitive complexity) or S6772 (JSX spacing), so CI would show fewer code smells than the report. To get the same findings, go to *Quality Profiles → JavaScript*, copy **Sonar way**, activate S3776 and S6772 in the copy, set it as the default (or assign it to this project), and re-run the job.
+
 If SonarCloud shows a different **project key** or **organization key** than `danit-x_web-security-scanner` / `danit-x`, change the two lines at the top of `sonar-project.properties` to match.
 
 ## Fallback

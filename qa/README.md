@@ -17,7 +17,7 @@ Testing the Website Security Scanner (MERN) on branch `qa/ec4206-testing`.
 | 9 | JMeter (load/stress/spike/breakpoint) + OWASP (SCA, ZAP DAST, scripted A02–A10) | ✅ DEF-009 (High SSRF), DEF-010 fixed | [09-performance-security/phase9-notes.md](09-performance-security/phase9-notes.md) |
 | 10 | Defects, RCA, lifecycle, metrics | ✅ 10/10 defects closed; 5 Whys + fishbone for DEF-001/DEF-009; DRE and phase containment | [10-defects/phase10-notes.md](10-defects/phase10-notes.md) |
 | 11 | SonarQube static analysis metrics | ✅ 0 vulnerabilities, 93.9 % coverage, 2.5 % duplication; `runScan` V(G) 31 → 32 (OBS-09) | [11-metrics/phase11-notes.md](11-metrics/phase11-notes.md) |
-| 12 | Reflection | ⏳ | |
+| 12 | Test summary report + reflection | ✅ all 4 exit criteria met; release recommended with 2 conditions | [12-reflection/test-summary-report.md](12-reflection/test-summary-report.md), [reflection.md](12-reflection/reflection.md) |
 
 ## Run the tests
 
@@ -40,7 +40,7 @@ powershell -File qa/07-postman-selenium/postman/run-postman.ps1
 # Selenium UI tests (also needs the client on :5173)
 npm install --prefix qa/07-postman-selenium/selenium
 npm test --prefix qa/07-postman-selenium/selenium
-# JMeter load/stress/spike (needs JMeter 5.6.3 in C:	ools), SLA check
+# JMeter load/stress/spike (needs JMeter 5.6.3 in C:\tools), SLA check
 powershell -File qa/09-performance-security/jmeter/run-jmeter.ps1 -Scenario all
 node qa/09-performance-security/jmeter/check-sla.mjs qa/evidence/jmeter/load/report
 # SonarQube static analysis, local fallback (needs Docker; SonarCloud runs in CI)
