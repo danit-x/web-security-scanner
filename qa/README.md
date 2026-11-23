@@ -1,5 +1,7 @@
 # QA: EC4206 Software Testing & QA (Option A)
 
+[![QA pipeline](https://github.com/danit-x/web-security-scanner/actions/workflows/qa.yml/badge.svg?branch=qa%2Fec4206-testing)](https://github.com/danit-x/web-security-scanner/actions/workflows/qa.yml?query=branch%3Aqa%2Fec4206-testing)
+
 Testing the Website Security Scanner (MERN) on branch `qa/ec4206-testing`.
 
 | Phase | Topic | Status | Files |
@@ -11,7 +13,7 @@ Testing the Website Security Scanner (MERN) on branch `qa/ec4206-testing`.
 | 5 | Unit tests (Jest) + TDD fixes | ✅ | [05-unit/tdd-log.md](05-unit/tdd-log.md) |
 | 6 | BDD (Cucumber): 44 scenarios, mutation-checked | ✅ | [06-bdd/bdd-notes.md](06-bdd/bdd-notes.md) |
 | 7 | Postman (360 assertions) + Selenium (11 UI tests, POM) | ✅ | [07-postman-selenium/phase7-notes.md](07-postman-selenium/phase7-notes.md) |
-| 8 | CI (GitHub Actions) | ⏳ | |
+| 8 | CI (GitHub Actions): 5-job pipeline, coverage gate | ✅ | [08-ci/ci-notes.md](08-ci/ci-notes.md) |
 | 9 | JMeter + OWASP | ⏳ | |
 | 10 | Defects, RCA, lifecycle | 🟡 8 defects closed in P5; OBS-06 closed in P7; RCA pending | [10-defects/defect-log.md](10-defects/defect-log.md) |
 | 11 | SonarQube metrics | ⏳ | |

@@ -23,5 +23,10 @@ module.exports = {
   ],
   coverageDirectory: "<rootDir>/../qa/evidence/coverage/jest",
   coverageReporters: ["text", "text-summary", "lcovonly", "json-summary"],
+  // Quality gate (QA phase 8): `jest --coverage` fails if coverage drops below
+  // these. Baseline at phase 5: 95.6 % statements, 90.2 % branches.
+  coverageThreshold: {
+    global: { statements: 90, branches: 85, functions: 90, lines: 90 },
+  },
   testTimeout: 30000,
 };
