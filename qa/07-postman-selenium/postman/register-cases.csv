@@ -1,0 +1,13 @@
+caseId,name,nameLength,email,password,passwordType,expectedStatus,expectedMessage
+EP-valid,Alice,,dd.RUN.a@example.com,Passw0rd1,,201,
+BVA-pw-8,Alice,,dd.RUN.b@example.com,abcdefg1,,201,
+BVA-pw-7,Alice,,dd.RUN.c@example.com,abcdef1,,400,Password must be at least 8 characters long
+EP-pw-nodigit,Alice,,dd.RUN.d@example.com,Password,,400,Password must contain at least one number
+EP-pw-empty,Alice,,dd.RUN.e@example.com,,,400,Password is required
+EP-pw-number,Alice,,dd.RUN.f@example.com,12345678,number,400,Password must be text
+EP-email-invalid,Alice,,not-an-email,Passw0rd1,,400,Please provide a valid email address
+EP-email-plus-tag,Alice,,dd.RUN+qa@gmail.com,Passw0rd1,,201,
+EP-email-long-tld,Alice,,dd.RUN.g@example.info,Passw0rd1,,201,
+EP-name-empty,,,dd.RUN.h@example.com,Passw0rd1,,400,Name is required
+BVA-name-100,,100,dd.RUN.i@example.com,Passw0rd1,,201,
+BVA-name-101,,101,dd.RUN.j@example.com,Passw0rd1,,400,Name must be 100 characters or fewer

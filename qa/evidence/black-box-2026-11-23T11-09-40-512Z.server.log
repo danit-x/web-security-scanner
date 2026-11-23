@@ -1,0 +1,41 @@
+
+--- EP + BVA inputs ---
+[qa] API starting on :5055 (NODE_ENV=development, local DB)
+◇ injected env (0) from server\.env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+MongoDB connected
+Server is running on http://localhost:5055
+Scan requested by user 6b041eeee4cdc54f9055cfc0 for url: http://127.0.0.1:5070/
+Scan requested by user 6b041eeee4cdc54f9055cfc0 for url: https://127.0.0.1:5079/
+Scan requested by user 6b041eeee4cdc54f9055cfc0 for url: http://127.0.0.1:5070/
+Scan requested by user 6b041eeee4cdc54f9055cfc0 for url: http://localhost:5070/
+Scan requested by user 6b041eeee4cdc54f9055cfe2 for url: http://127.0.0.1:5070/
+
+--- Decision tables ---
+[qa] API starting on :5055 (NODE_ENV=development, local DB)
+◇ injected env (0) from server\.env // tip: ⌘ override existing { override: true }
+MongoDB connected
+Server is running on http://localhost:5055
+Scan requested by user 6b041eef969587af65eee158 for url: http://127.0.0.1:5070/
+Scan requested by user 6b041eef969587af65eee157 for url: http://127.0.0.1:5070/
+Scan requested by user 6b041eef969587af65eee157 for url: http://127.0.0.1:5070/
+Scan requested by user 6b041eef969587af65eee157 for url: http://127.0.0.1:5070/
+Scan requested by user 6b041eef969587af65eee1df for url: http://127.0.0.1:5079/
+Scan requested by user 6b041eef969587af65eee1df for url: http://127.0.0.1:5070/
+
+--- Login limit ---
+[qa] API starting on :5055 (NODE_ENV=development, local DB)
+◇ injected env (0) from server\.env // tip: ◈ encrypted .env [www.dotenvx.com]
+MongoDB connected
+Server is running on http://localhost:5055
+
+--- Scan limit ---
+[qa] API starting on :5055 (NODE_ENV=development, local DB)
+◇ injected env (0) from server\.env // tip: ◈ encrypted .env [www.dotenvx.com]
+MongoDB connected
+Server is running on http://localhost:5055
+
+--- General limit ---
+[qa] API starting on :5055 (NODE_ENV=development, local DB)
+◇ injected env (0) from server\.env // tip: ◈ secrets for agents [www.dotenvx.com]
+MongoDB connected
+Server is running on http://localhost:5055

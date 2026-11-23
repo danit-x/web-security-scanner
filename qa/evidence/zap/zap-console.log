@@ -1,0 +1,90 @@
+
+C:\Program Files\ZAP\Zed Attack Proxy>if exist "C:\Users\danit\ZAP\.ZAP_JVM.properties" (set /p jvmopts= 0<"C:\Users\danit\ZAP\.ZAP_JVM.properties" )  else (set jvmopts=-Xmx512m ) 
+
+C:\Program Files\ZAP\Zed Attack Proxy>java -Xmx512m -jar zap-2.17.0.jar -cmd -dir "C:\tools\zap-home" -port 8095 -config start.checkForUpdates=false -autorun "C:\Users\danit\AppData\Local\Temp\zap-plan.rendered.yaml" 
+433 [main] INFO  org.parosproxy.paros.Constant - Copying default configuration to C:\tools\zap-home\config.xml
+518 [main] INFO  org.parosproxy.paros.Constant - Creating directory C:\tools\zap-home\session
+520 [main] INFO  org.parosproxy.paros.Constant - Creating directory C:\tools\zap-home\dirbuster
+520 [main] INFO  org.parosproxy.paros.Constant - Creating directory C:\tools\zap-home\fuzzers
+521 [main] INFO  org.parosproxy.paros.Constant - Creating directory C:\tools\zap-home\plugin
+WARNING: A terminally deprecated method in sun.misc.Unsafe has been called
+WARNING: sun.misc.Unsafe::objectFieldOffset has been called by io.netty.util.internal.PlatformDependent0$4 (file:/C:/Program%20Files/ZAP/Zed%20Attack%20Proxy/./plugin/network-beta-0.25.0.zap)
+WARNING: Please consider reporting this to the maintainers of class io.netty.util.internal.PlatformDependent0$4
+WARNING: sun.misc.Unsafe::objectFieldOffset will be removed in a future release
+Job seed-api-endpoints set url = http://127.0.0.1:5060/api/health
+Job seed-api-endpoints set method = GET
+Job seed-api-endpoints set responseCode = 200
+Job seed-api-endpoints set url = http://127.0.0.1:5060/api/auth/register
+Job seed-api-endpoints set method = POST
+Job seed-api-endpoints set headers = [Content-Type: application/json]
+Job seed-api-endpoints set data = {"name":"Zap Seed","email":"zap.seed.1795439566621@example.com","password":"Passw0rd1"}
+Job seed-api-endpoints set responseCode = 201
+Job seed-api-endpoints set url = http://127.0.0.1:5060/api/auth/login
+Job seed-api-endpoints set method = POST
+Job seed-api-endpoints set headers = [Content-Type: application/json]
+Job seed-api-endpoints set data = {"email":"zap.1795439566621@example.com","password":"Passw0rd1"}
+Job seed-api-endpoints set responseCode = 200
+Job seed-api-endpoints set url = http://127.0.0.1:5060/api/auth/me
+Job seed-api-endpoints set method = GET
+Job seed-api-endpoints set headers = [Authorization: Bearer <redacted-test-jwt>]
+Job seed-api-endpoints set responseCode = 200
+Job seed-api-endpoints set url = http://127.0.0.1:5060/api/history
+Job seed-api-endpoints set method = GET
+Job seed-api-endpoints set headers = [Authorization: Bearer <redacted-test-jwt>]
+Job seed-api-endpoints set responseCode = 200
+Job seed-api-endpoints set url = http://127.0.0.1:5060/api/history/6b043bce1fc8bb9eb484fc99
+Job seed-api-endpoints set method = GET
+Job seed-api-endpoints set headers = [Authorization: Bearer <redacted-test-jwt>]
+Job seed-api-endpoints set responseCode = 200
+Job seed-api-endpoints set url = http://127.0.0.1:5060/api/history/6b043bce1fc8bb9eb484fc99
+Job seed-api-endpoints set method = PATCH
+Job seed-api-endpoints set headers = [Content-Type: application/json, Authorization: Bearer <redacted-test-jwt>]
+Job seed-api-endpoints set data = {"note":"zap note"}
+Job seed-api-endpoints set responseCode = 200
+Job seed-api-endpoints set url = http://127.0.0.1:5060/api/scan
+Job seed-api-endpoints set method = POST
+Job seed-api-endpoints set headers = [Content-Type: application/json, Authorization: Bearer <redacted-test-jwt>]
+Job seed-api-endpoints set data = {"url":"http://127.0.0.1:5070/","ownershipConfirmed":true}
+Job seed-api-endpoints set responseCode = 200
+Job spider-client set context = client
+Job spider-client set maxDuration = 2
+Job passiveScan-wait set maxDuration = 5
+Job active-scan-api set context = api
+Job active-scan-api set maxScanDurationInMins = 20
+Job active-scan-api set threadPerHost = 4
+Job passiveScan-wait set maxDuration = 5
+Job report set template = traditional-html
+Job report set reportDir = C:\dev\mernStack\qa\evidence\zap
+Job report set reportFile = zap-report.html
+Job report set reportTitle = WebSec Scanner: OWASP ZAP DAST (local QA stack)
+Job report set template = traditional-json
+Job report set reportDir = C:\dev\mernStack\qa\evidence\zap
+Job report set reportFile = zap-report.json
+Job requestor started
+Job seed-api-endpoints requesting URL http://127.0.0.1:5060/api/health
+Job seed-api-endpoints requesting URL http://127.0.0.1:5060/api/auth/register
+Job seed-api-endpoints requesting URL http://127.0.0.1:5060/api/auth/login
+Job seed-api-endpoints requesting URL http://127.0.0.1:5060/api/auth/me
+Job seed-api-endpoints requesting URL http://127.0.0.1:5060/api/history
+Job seed-api-endpoints requesting URL http://127.0.0.1:5060/api/history/6b043bce1fc8bb9eb484fc99
+Job seed-api-endpoints requesting URL http://127.0.0.1:5060/api/history/6b043bce1fc8bb9eb484fc99
+Job seed-api-endpoints requesting URL http://127.0.0.1:5060/api/scan
+Job requestor finished, time taken: 00:00:00
+Job spider started
+Job spider-client requesting URL http://localhost:4173/
+[Fatal Error] :1:3: The markup in the document preceding the root element must be well-formed.
+Job spider-client found 27 URLs
+Job spider finished, time taken: 00:00:00
+Job passiveScan-wait started
+Job passiveScan-wait finished, time taken: 00:00:03
+Job activeScan started
+Job activeScan finished, time taken: 00:00:39
+Job passiveScan-wait started
+Job passiveScan-wait finished, time taken: 00:00:01
+Job report started
+Job report generated report C:\dev\mernStack\qa\evidence\zap\zap-report.html
+Job report finished, time taken: 00:00:00
+Job report started
+Job report generated report C:\dev\mernStack\qa\evidence\zap\zap-report.json
+Job report finished, time taken: 00:00:00
+Automation plan succeeded!

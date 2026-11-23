@@ -31,7 +31,7 @@ const registerValidationRules = [
     .notEmpty()
     .withMessage("Name is required")
     .isLength({ max: 100 })
-    .withMessage("Name must be under 100 characters"),
+    .withMessage("Name must be 100 characters or fewer"),
 
   body("email")
     .trim()
@@ -39,15 +39,27 @@ const registerValidationRules = [
     .withMessage("Email is required")
     .isEmail()
     .withMessage("Please provide a valid email address")
-    .normalizeEmail(), // lowercases + strips dots in gmail etc. — keeps lookups consistent
+    // Only lower-case: the address is stored exactly as typed. normalizeEmail()
+    // used to strip Gmail dots and +tags here, but login never did the same,
+    // so those users could not log back in (DEF-001).
+    .toLowerCase(),
 
   body("password")
     .notEmpty()
     .withMessage("Password is required")
+    .bail()
+    // Validators check a string *copy* of the value, so a JSON number passed
+    // every rule and then crashed bcrypt.hash() with a 500 (DEF-005).
+    .isString()
+    .withMessage("Password must be text")
+    .bail()
     .isLength({ min: 8 })
     .withMessage("Password must be at least 8 characters long")
     .matches(/\d/)
-    .withMessage("Password must contain at least one number"),
+    .withMessage("Password must contain at least one number")
+    // Digits-only passwords such as 12345678 are among the most guessed (OBS-04).
+    .matches(/[A-Za-z]/)
+    .withMessage("Password must contain at least one letter"),
 ];
 
 // Rules for POST /api/auth/login
@@ -61,7 +73,12 @@ const loginValidationRules = [
     .isEmail()
     .withMessage("Please provide a valid email address"),
 
-  body("password").notEmpty().withMessage("Password is required"),
+  body("password")
+    .notEmpty()
+    .withMessage("Password is required")
+    .bail()
+    .isString() // bcrypt.compare() throws on non-strings (DEF-005)
+    .withMessage("Password must be text"),
 ];
 
 module.exports = {

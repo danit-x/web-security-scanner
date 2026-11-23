@@ -1,0 +1,18 @@
+npm warn cleanup Failed to remove some directories [
+npm warn cleanup   [
+npm warn cleanup     'C:\\dev\\mernStack\\client\\node_modules\\@rolldown\\.binding-win32-x64-msvc-xKgsn5rX',
+npm warn cleanup     [Error: EPERM: operation not permitted, unlink 'C:\dev\mernStack\client\node_modules\@rolldown\.binding-win32-x64-msvc-xKgsn5rX\rolldown-binding.win32-x64-msvc.node'] {
+npm warn cleanup       errno: -4048,
+npm warn cleanup       code: 'EPERM',
+npm warn cleanup       syscall: 'unlink',
+npm warn cleanup       path: 'C:\\dev\\mernStack\\client\\node_modules\\@rolldown\\.binding-win32-x64-msvc-xKgsn5rX\\rolldown-binding.win32-x64-msvc.node'
+npm warn cleanup     }
+npm warn cleanup   ]
+npm warn cleanup ]
+
+added 12 packages, removed 7 packages, changed 31 packages, and audited 189 packages in 36s
+
+41 packages are looking for funding
+  run `npm fund` for details
+
+found 0 vulnerabilities

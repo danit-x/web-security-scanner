@@ -1,0 +1,253 @@
+# .github/workflows/qa.yml
+# EC4206 QA phase 8: continuous integration for the Website Security Scanner.
+#
+#   lint-build ──► unit-api (Node 22, 24) ──┬─► bdd
+#                                           ├─► postman
+#                                           ├─► selenium
+#                                           └─► sonar (phase 11, SonarCloud)
+#
+# Every job gets a fresh Ubuntu VM. Tests that need a database use a MongoDB
+# service container, never the deployed Atlas database. All keys and passwords
+# below are throw-away test values. The only real secret is SONAR_TOKEN (a
+# GitHub Actions secret); without it the sonar job skips its scan and stays green.
+name: QA pipeline
+
+on:
+  push:
+    branches: [main, "qa/**"]
+  pull_request:
+    branches: [main]
+  workflow_dispatch: # "Run workflow" button on the Actions tab
+
+# A newer push to the same branch cancels the older, now-irrelevant run.
+concurrency:
+  group: qa-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  NODE_VERSION: "24"
+  MONGO_URL: mongodb://127.0.0.1:27017
+
+jobs:
+  # ---------------------------------------------------------------- stage 1
+  lint-build:
+    name: Lint + build client
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      - run: npm ci
+      - name: ESLint
+        run: npm run lint
+      - name: Production build (vite)
+        run: npm run build
+
+  # ---------------------------------------------------------------- stage 2
+  unit-api:
+    name: Unit + API tests (Node ${{ matrix.node }})
+    needs: lint-build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        node: ["22", "24"]
+    services:
+      mongo:
+        image: mongo:8
+        ports: ["27017:27017"]
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_MONGO_URI: mongodb://127.0.0.1:27017
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+        working-directory: server
+      - name: Original unit tests + white-box basis paths (node:test, 57 tests)
+        run: node --test "server/tests/*.test.js" "qa/04-white-box/tests/*.test.js"
+      - name: Jest unit, API and security tests with coverage gate (259 tests)
+        run: npm run test:coverage
+        working-directory: server
+      - name: Upload coverage report
+        if: always() && matrix.node == '24'
+        uses: actions/upload-artifact@v5
+        with:
+          name: coverage-jest
+          path: qa/evidence/coverage/jest/
+          if-no-files-found: warn
+
+  # ---------------------------------------------------------------- stage 3
+  bdd:
+    name: BDD (Cucumber)
+    needs: unit-api
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      mongo:
+        image: mongo:8
+        ports: ["27017:27017"]
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      TEST_MONGO_URI: mongodb://127.0.0.1:27017
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+        working-directory: server
+      - name: Cucumber (44 scenarios)
+        run: npm run test:bdd
+        working-directory: server
+      - name: Upload Cucumber report
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: cucumber-report
+          path: qa/evidence/bdd/
+
+  postman:
+    name: API collection (Postman CLI)
+    needs: unit-api
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    services:
+      mongo:
+        image: mongo:8
+        ports: ["27017:27017"]
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+        working-directory: server
+      - name: Install Postman CLI
+        run: npm install --global postman-cli
+      - name: Start QA API and fixture site
+        run: |
+          QA_MONGO_URI="$MONGO_URL/websec_qa" nohup node qa/scripts/start-test-api.js > api.log 2>&1 &
+          nohup node qa/scripts/start-fixture-site.js > fixture.log 2>&1 &
+          bash qa/scripts/wait-for.sh http://127.0.0.1:5000/api/health http://127.0.0.1:5070/
+      - name: Main collection (43 requests)
+        working-directory: qa/07-postman-selenium/postman
+        run: >-
+          postman collection run websec-api.postman_collection.json
+          -e local.postman_environment.json --no-report-events --timeout-request 15000
+          | tee ../../evidence/postman/api-run.log
+          ; exit ${PIPESTATUS[0]}
+      - name: Data-driven registration (12 CSV rows)
+        working-directory: qa/07-postman-selenium/postman
+        run: >-
+          postman collection run websec-register-data-driven.postman_collection.json
+          -e local.postman_environment.json -d register-cases.csv --no-report-events
+          | tee ../../evidence/postman/data-driven-run.log
+          ; exit ${PIPESTATUS[0]}
+      - name: Upload Postman logs
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: postman-logs
+          path: |
+            qa/evidence/postman/
+            api.log
+
+  selenium:
+    name: UI tests (Selenium, headless Chrome)
+    needs: unit-api
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      mongo:
+        image: mongo:8
+        ports: ["27017:27017"]
+        options: >-
+          --health-cmd "mongosh --quiet --eval 'db.runCommand({ ping: 1 })'"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: npm
+          cache-dependency-path: |
+            server/package-lock.json
+            client/package-lock.json
+            qa/07-postman-selenium/selenium/package-lock.json
+      - name: Install dependencies
+        run: |
+          npm ci --prefix server
+          npm ci --prefix client
+          npm ci --prefix qa/07-postman-selenium/selenium
+      - name: Start QA API, client and fixture site
+        run: |
+          QA_MONGO_URI="$MONGO_URL/websec_qa" nohup node qa/scripts/start-test-api.js > api.log 2>&1 &
+          nohup node qa/scripts/start-fixture-site.js > fixture.log 2>&1 &
+          nohup npm run dev --prefix client -- --port 5173 --strictPort > client.log 2>&1 &
+          bash qa/scripts/wait-for.sh http://127.0.0.1:5000/api/health http://127.0.0.1:5070/ http://localhost:5173/
+      - name: Selenium + Mocha (11 tests)
+        run: npm test --prefix qa/07-postman-selenium/selenium
+      - name: Upload screenshots and server logs
+        if: always()
+        uses: actions/upload-artifact@v5
+        with:
+          name: selenium-screenshots
+          path: |
+            qa/evidence/selenium/
+            api.log
+            client.log
+
+  # ---------------------------------------------------------------- phase 11
+  sonar:
+    name: Static analysis (SonarCloud)
+    needs: unit-api
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+    steps:
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0 # full history: SonarCloud uses blame for "new code"
+      - name: Download Jest coverage from unit-api
+        uses: actions/download-artifact@v5
+        with:
+          name: coverage-jest
+          path: qa/evidence/coverage/jest/
+      - name: Rewrite lcov paths to repo-relative
+        run: node qa/11-metrics/fix-lcov-paths.js
+      - name: Skip notice (no SONAR_TOKEN secret yet)
+        if: env.SONAR_TOKEN == ''
+        run: echo "::notice::SONAR_TOKEN secret not set, SonarCloud scan skipped. See qa/11-metrics/sonarcloud-setup.md"
+      - name: SonarCloud scan
+        if: env.SONAR_TOKEN != ''
+        uses: SonarSource/sonarqube-scan-action@v8.5.0
+        env:
+          SONAR_HOST_URL: https://sonarcloud.io

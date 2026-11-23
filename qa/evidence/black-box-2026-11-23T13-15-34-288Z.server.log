@@ -1,0 +1,41 @@
+
+--- EP + BVA inputs ---
+[qa] API starting on :5055 (NODE_ENV=development, local DB)
+◇ injected env (0) from server\.env // tip: ◈ encrypted .env [www.dotenvx.com]
+MongoDB connected
+Server is running on http://localhost:5055
+Scan requested by user 6b043c6fd51d61905ffa919f for url: http://127.0.0.1:5070/
+Scan requested by user 6b043c6fd51d61905ffa919f for url: https://127.0.0.1:5079/
+Scan requested by user 6b043c6fd51d61905ffa919f for url: http://127.0.0.1:5070/
+Scan requested by user 6b043c6fd51d61905ffa919f for url: http://localhost:5070/
+Scan requested by user 6b043c70d51d61905ffa91c1 for url: http://127.0.0.1:5070/
+
+--- Decision tables ---
+[qa] API starting on :5055 (NODE_ENV=development, local DB)
+◇ injected env (0) from server\.env // tip: ⌁ auth for agents [www.vestauth.com]
+MongoDB connected
+Server is running on http://localhost:5055
+Scan requested by user 6b043c711ed3d5a5a6870a36 for url: http://127.0.0.1:5070/
+Scan requested by user 6b043c711ed3d5a5a6870a35 for url: http://127.0.0.1:5070/
+Scan requested by user 6b043c711ed3d5a5a6870a35 for url: http://127.0.0.1:5070/
+Scan requested by user 6b043c711ed3d5a5a6870a35 for url: http://127.0.0.1:5070/
+Scan requested by user 6b043c711ed3d5a5a6870abd for url: http://127.0.0.1:5079/
+Scan requested by user 6b043c711ed3d5a5a6870abd for url: http://127.0.0.1:5070/
+
+--- Login limit ---
+[qa] API starting on :5055 (NODE_ENV=development, local DB)
+◇ injected env (0) from server\.env // tip: ⌘ suppress logs { quiet: true }
+MongoDB connected
+Server is running on http://localhost:5055
+
+--- Scan limit ---
+[qa] API starting on :5055 (NODE_ENV=development, local DB)
+◇ injected env (0) from server\.env // tip: ⌘ multiple files { path: ['.env.local', '.env'] }
+MongoDB connected
+Server is running on http://localhost:5055
+
+--- General limit ---
+[qa] API starting on :5055 (NODE_ENV=development, local DB)
+◇ injected env (0) from server\.env // tip: ⌘ enable debugging { debug: true }
+MongoDB connected
+Server is running on http://localhost:5055

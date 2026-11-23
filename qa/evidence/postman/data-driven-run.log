@@ -1,0 +1,174 @@
+<claude-code-hint v="1" type="plugin" value="postman@claude-plugins-official" />
+No authorization data found. Please use the `postman login` command.
+Refer:https://learning.postman.com/docs/postman-cli/postman-cli-options/#postman-login
+
+Running your collection...
+postman
+
+WebSec Register: data-driven (EC4206 QA)
+
+Iteration 1/12
+
+Root Register: {{caseId}}
+
+  POST http://127.0.0.1:5000/api/auth/register [201 Created, 1.33 KB, 142 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  EP-valid: status 201
+  Pass  EP-valid: token issued
+
+Iteration 2/12
+
+Root Register: {{caseId}}
+
+  POST http://127.0.0.1:5000/api/auth/register [201 Created, 1.33 KB, 137 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  BVA-pw-8: status 201
+  Pass  BVA-pw-8: token issued
+
+Iteration 3/12
+
+Root Register: {{caseId}}
+
+  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.21 KB, 9 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  BVA-pw-7: status 400
+  Pass  BVA-pw-7: message
+
+Iteration 4/12
+
+Root Register: {{caseId}}
+
+  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.21 KB, 4 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  EP-pw-nodigit: status 400
+  Pass  EP-pw-nodigit: message
+
+Iteration 5/12
+
+Root Register: {{caseId}}
+
+  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.16 KB, 19 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  EP-pw-empty: status 400
+  Pass  EP-pw-empty: message
+
+Iteration 6/12
+
+Root Register: {{caseId}}
+
+  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.17 KB, 32 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  EP-pw-number: status 400
+  Pass  EP-pw-number: message
+
+Iteration 7/12
+
+Root Register: {{caseId}}
+
+  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.2 KB, 13 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  EP-email-invalid: status 400
+  Pass  EP-email-invalid: message
+
+Iteration 8/12
+
+Root Register: {{caseId}}
+
+  POST http://127.0.0.1:5000/api/auth/register [201 Created, 1.33 KB, 378 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  EP-email-plus-tag: status 201
+  Pass  EP-email-plus-tag: token issued
+
+Iteration 9/12
+
+Root Register: {{caseId}}
+
+  POST http://127.0.0.1:5000/api/auth/register [201 Created, 1.33 KB, 188 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  EP-email-long-tld: status 201
+  Pass  EP-email-long-tld: token issued
+
+Iteration 10/12
+
+Root Register: {{caseId}}
+
+  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.15 KB, 17 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  EP-name-empty: status 400
+  Pass  EP-name-empty: message
+
+Iteration 11/12
+
+Root Register: {{caseId}}
+
+  POST http://127.0.0.1:5000/api/auth/register [201 Created, 1.43 KB, 272 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  BVA-name-100: status 201
+  Pass  BVA-name-100: token issued
+
+Iteration 12/12
+
+Root Register: {{caseId}}
+
+  POST http://127.0.0.1:5000/api/auth/register [400 Bad Request, 1.29 KB, 12 ms]
+  Pass  [all] responds within 2000 ms
+  Pass  [all] JSON response
+  Pass  [all] no stack trace leaked
+  Pass  [all] X-Powered-By hidden
+  Pass  BVA-name-101: status 400
+  Pass  BVA-name-101: message
+
+------------------------------------------------------------------------
+|                         |             executed |              failed |
+--------------------------+----------------------+----------------------
+|              iterations |                   12 |                   0 |
+--------------------------+----------------------+----------------------
+|                requests |                   12 |                   0 |
+--------------------------+----------------------+----------------------
+|            test-scripts |                   24 |                   0 |
+--------------------------+----------------------+----------------------
+|      prerequest-scripts |                   12 |                   0 |
+--------------------------+----------------------+----------------------
+|              assertions |                   72 |                   0 |
+------------------------------------------------------------------------
+| total run duration: 2.7 s                                            |
+------------------------------------------------------------------------
+| total data received: 3.03 KB (approx)                                |
+------------------------------------------------------------------------
+| average response time: 101 ms [min: 4 ms, max: 378 ms, s.d.: 118 ms] |
+------------------------------------------------------------------------
+Postman credentials are required for publishing run details to Postman cloud.
+Please specify it by using the `postman login` command

@@ -1,0 +1,323 @@
+{
+  "runAt": "2026-11-23T11:09:31.966Z",
+  "node": "v25.6.0",
+  "pass": 45,
+  "fail": 0,
+  "results": [
+    {
+      "id": "TC-API-01",
+      "title": "Health check",
+      "status": "PASS",
+      "expected": "200 {status:ok}",
+      "actual": "200 {\"status\":\"ok\"}"
+    },
+    {
+      "id": "TC-API-02",
+      "title": "Unknown route",
+      "status": "PASS",
+      "expected": "404 JSON success:false",
+      "actual": "404 {\"success\":false,\"message\":\"Route not found: /api/does-not-exist\"}"
+    },
+    {
+      "id": "TC-API-03",
+      "title": "Security headers present",
+      "status": "PASS",
+      "expected": "nosniff, X-Frame-Options set, no X-Powered-By",
+      "actual": "X-Content-Type-Options=nosniff, X-Frame-Options=SAMEORIGIN, X-Powered-By=null"
+    },
+    {
+      "id": "TC-API-04",
+      "title": "Disallowed CORS origin refused cleanly",
+      "status": "PASS",
+      "expected": "4xx, no ACAO header, no stack trace",
+      "actual": "403, ACAO=null, stackInBody=false, message=Not allowed by CORS"
+    },
+    {
+      "id": "TC-API-05",
+      "title": "Malformed JSON body",
+      "status": "PASS",
+      "expected": "400 JSON, no stack trace",
+      "actual": "400, stackInBody=false, message=Malformed JSON in request body"
+    },
+    {
+      "id": "TC-REG-01",
+      "title": "Register with valid data",
+      "status": "PASS",
+      "expected": "201 + token + user",
+      "actual": "201 {\"success\":true,\"token\":\"<redacted-test-jwt>"
+    },
+    {
+      "id": "TC-REG-02",
+      "title": "Duplicate email rejected",
+      "status": "PASS",
+      "expected": "400 User already exists",
+      "actual": "400 {\"success\":false,\"message\":\"User already exists\"}"
+    },
+    {
+      "id": "TC-REG-03",
+      "title": "Password 7 chars rejected",
+      "status": "PASS",
+      "expected": "400 at least 8 characters",
+      "actual": "400 {\"success\":false,\"message\":\"Password must be at least 8 characters long\",\"errors\":[{\"type\":\"field\",\"value\":\"abcdef1\",\"msg\":\"Password must be at least 8 characte"
+    },
+    {
+      "id": "TC-REG-04",
+      "title": "Password exactly 8 chars accepted",
+      "status": "PASS",
+      "expected": "201",
+      "actual": "201 {\"success\":true,\"token\":\"<redacted-test-jwt>"
+    },
+    {
+      "id": "TC-REG-05",
+      "title": "Password without digit rejected",
+      "status": "PASS",
+      "expected": "400 one number",
+      "actual": "400 {\"success\":false,\"message\":\"Password must contain at least one number\",\"errors\":[{\"type\":\"field\",\"value\":\"abcdefgh\",\"msg\":\"Password must contain at least one nu"
+    },
+    {
+      "id": "TC-REG-06",
+      "title": "Invalid email rejected",
+      "status": "PASS",
+      "expected": "400 valid email",
+      "actual": "400 {\"success\":false,\"message\":\"Please provide a valid email address\",\"errors\":[{\"type\":\"field\",\"value\":\"user@\",\"msg\":\"Please provide a valid email address\",\"path\":"
+    },
+    {
+      "id": "TC-REG-07",
+      "title": "Whitespace-only name rejected",
+      "status": "PASS",
+      "expected": "400 Name is required",
+      "actual": "400 {\"success\":false,\"message\":\"Name is required\",\"errors\":[{\"type\":\"field\",\"value\":\"\",\"msg\":\"Name is required\",\"path\":\"name\",\"location\":\"body\"}]}"
+    },
+    {
+      "id": "TC-REG-08",
+      "title": "Name 101 chars rejected",
+      "status": "PASS",
+      "expected": "400 name length",
+      "actual": "400 {\"success\":false,\"message\":\"Name must be 100 characters or fewer\",\"errors\":[{\"type\":\"field\",\"value\":\"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    {
+      "id": "TC-REG-09",
+      "title": "Email case/space insensitive",
+      "status": "PASS",
+      "expected": "register 201, login 200",
+      "actual": "register 201 (stored qa.mixed.1795432166026@example.com), login 200 {\"success\":true,\"token\":\"<redacted-test-jwt>"
+    },
+    {
+      "id": "TC-REG-10",
+      "title": "Gmail address can log in after register",
+      "status": "PASS",
+      "expected": "register 201, login 200 with qa.tester.1795432166026@gmail.com",
+      "actual": "register 201 (stored as qa.tester.1795432166026@gmail.com), login 200 {\"success\":true,\"token\":\"<redacted-test-jwt>"
+    },
+    {
+      "id": "TC-AUTH-01",
+      "title": "Valid token accepted",
+      "status": "PASS",
+      "expected": "200 own profile",
+      "actual": "200 {\"success\":true,\"user\":{\"_id\":\"6b041ee7f53380dc2d288786\",\"name\":\"QA User A\",\"email\":\"qa.a.1795432166026@example.com\",\"createdAt\":\"2026-11-23T11:09:27.236Z\"}}"
+    },
+    {
+      "id": "TC-REG-11",
+      "title": "Password hash never returned",
+      "status": "PASS",
+      "expected": "no password field",
+      "actual": "register.user keys=_id,name,email,createdAt; me.user keys=_id,name,email,createdAt"
+    },
+    {
+      "id": "TC-AUTH-02",
+      "title": "No token",
+      "status": "PASS",
+      "expected": "401 token required",
+      "actual": "401 {\"message\":\"Authorization token is required\"}"
+    },
+    {
+      "id": "TC-AUTH-03",
+      "title": "Tampered token",
+      "status": "PASS",
+      "expected": "401 Invalid authorization token",
+      "actual": "401 {\"message\":\"Invalid authorization token\"}"
+    },
+    {
+      "id": "TC-AUTH-04",
+      "title": "Expired token",
+      "status": "PASS",
+      "expected": "401 token has expired",
+      "actual": "401 {\"message\":\"Authorization token has expired\"}"
+    },
+    {
+      "id": "TC-AUTH-05",
+      "title": "Empty bearer value",
+      "status": "PASS",
+      "expected": "401",
+      "actual": "401 {\"message\":\"Authorization token is required\"}"
+    },
+    {
+      "id": "TC-SCAN-01",
+      "title": "Scan a reachable site",
+      "status": "PASS",
+      "expected": "200, saved _id, grade A-F, score 0-100, summary matches, header findings",
+      "actual": "200 grade=F score=16 findings=10 summary={\"critical\":0,\"high\":2,\"medium\":6,\"low\":2} summaryMatches=true"
+    },
+    {
+      "id": "TC-SCAN-02",
+      "title": "Ownership not confirmed",
+      "status": "PASS",
+      "expected": "400 confirm ownership",
+      "actual": "400 {\"success\":false,\"message\":\"You must confirm you own this website or have permission to scan it.\"}"
+    },
+    {
+      "id": "TC-SCAN-03",
+      "title": "URL without protocol",
+      "status": "PASS",
+      "expected": "400",
+      "actual": "400 {\"success\":false,\"message\":\"Please provide a valid URL including http:// or https://\",\"errors\":[{\"type\":\"field\",\"value\":\"example.com\",\"msg\":\"Please provide a va"
+    },
+    {
+      "id": "TC-SCAN-04",
+      "title": "Empty URL",
+      "status": "PASS",
+      "expected": "400 A URL is required",
+      "actual": "400 {\"success\":false,\"message\":\"A URL is required\",\"errors\":[{\"type\":\"field\",\"value\":\"\",\"msg\":\"A URL is required\",\"path\":\"url\",\"location\":\"body\"},{\"type\":\"field\",\"v"
+    },
+    {
+      "id": "TC-SCAN-05",
+      "title": "Non-HTTP scheme",
+      "status": "PASS",
+      "expected": "400",
+      "actual": "400 {\"success\":false,\"message\":\"URL must start with http:// or https://\"}"
+    },
+    {
+      "id": "TC-SCAN-06",
+      "title": "Unreachable host handled",
+      "status": "PASS",
+      "expected": "502 Site could not be reached, server still up",
+      "actual": "502 {\"success\":false,\"message\":\"Site could not be reached.\",\"detail\":\"Connection was refused by the server.\"}; serverAlive=true"
+    },
+    {
+      "id": "TC-SCAN-07",
+      "title": "Scan without auth",
+      "status": "PASS",
+      "expected": "401",
+      "actual": "401 {\"message\":\"Authorization token is required\"}"
+    },
+    {
+      "id": "TC-HIS-01",
+      "title": "History only mine, newest first",
+      "status": "PASS",
+      "expected": "200 count=2 all userId=A newest first",
+      "actual": "200 count=2 allMine=true sorted=true"
+    },
+    {
+      "id": "TC-HIS-02",
+      "title": "Open own scan",
+      "status": "PASS",
+      "expected": "200 scan",
+      "actual": "200 id=6b041ee7f53380dc2d28878a"
+    },
+    {
+      "id": "TC-HIS-03",
+      "title": "Other user's scan hidden (IDOR)",
+      "status": "PASS",
+      "expected": "404 Scan result not found",
+      "actual": "404 {\"success\":false,\"message\":\"Scan result not found\"}"
+    },
+    {
+      "id": "TC-HIS-04",
+      "title": "Malformed id",
+      "status": "PASS",
+      "expected": "400 Invalid scan ID",
+      "actual": "400 {\"success\":false,\"message\":\"Invalid scan ID\"}"
+    },
+    {
+      "id": "TC-HIS-05",
+      "title": "Non-existent id",
+      "status": "PASS",
+      "expected": "404",
+      "actual": "404 {\"success\":false,\"message\":\"Scan result not found\"}"
+    },
+    {
+      "id": "TC-NOTE-01",
+      "title": "Add note to own scan",
+      "status": "PASS",
+      "expected": "200 and note persisted",
+      "actual": "200, persisted note=\"Fix CSP first\""
+    },
+    {
+      "id": "TC-NOTE-02",
+      "title": "Note 501 chars rejected",
+      "status": "PASS",
+      "expected": "400 max 500",
+      "actual": "400 {\"success\":false,\"message\":\"A note cannot be longer than 500 characters\",\"errors\":[{\"type\":\"field\",\"value\":\"nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn"
+    },
+    {
+      "id": "TC-NOTE-03",
+      "title": "Non-string note rejected",
+      "status": "PASS",
+      "expected": "400 A note must be text",
+      "actual": "400 {\"success\":false,\"message\":\"A note must be text\",\"errors\":[{\"type\":\"field\",\"value\":123,\"msg\":\"A note must be text\",\"path\":\"note\",\"location\":\"body\"}]}"
+    },
+    {
+      "id": "TC-NOTE-04",
+      "title": "Cannot edit other user's note",
+      "status": "PASS",
+      "expected": "404, B note unchanged",
+      "actual": "404, B note=\"\""
+    },
+    {
+      "id": "TC-DEL-01",
+      "title": "Delete own scan",
+      "status": "PASS",
+      "expected": "200 then GET 404",
+      "actual": "200 Scan deleted; GET after=404"
+    },
+    {
+      "id": "TC-DEL-02",
+      "title": "Cannot delete other user's scan",
+      "status": "PASS",
+      "expected": "404; B still 200",
+      "actual": "404; B GET=200"
+    },
+    {
+      "id": "TC-LOG-01",
+      "title": "Valid login",
+      "status": "PASS",
+      "expected": "200 + token",
+      "actual": "200 {\"success\":true,\"token\":\"<redacted-test-jwt>"
+    },
+    {
+      "id": "TC-LOG-02",
+      "title": "Wrong password",
+      "status": "PASS",
+      "expected": "401 Invalid email or password",
+      "actual": "401 {\"success\":false,\"message\":\"Invalid email or password\"}"
+    },
+    {
+      "id": "TC-LOG-03",
+      "title": "Unknown email same message",
+      "status": "PASS",
+      "expected": "401 identical message to LOG-02",
+      "actual": "401 {\"success\":false,\"message\":\"Invalid email or password\"}"
+    },
+    {
+      "id": "TC-LOG-04",
+      "title": "Missing password",
+      "status": "PASS",
+      "expected": "400 Password is required",
+      "actual": "400 {\"success\":false,\"message\":\"Password is required\",\"errors\":[{\"type\":\"field\",\"msg\":\"Password is required\",\"path\":\"password\",\"location\":\"body\"}]}"
+    },
+    {
+      "id": "TC-LOG-05",
+      "title": "5 attempts allowed, 6th blocked",
+      "status": "PASS",
+      "expected": "#5 not 429, #6 429",
+      "actual": "#5=401, #6=429 {\"success\":false,\"message\":\"Too many login attempts. Please try again in 15 minutes.\"}"
+    },
+    {
+      "id": "TC-SCAN-08",
+      "title": "10 scans allowed, 11th blocked",
+      "status": "PASS",
+      "expected": "#10=400, #11=429",
+      "actual": "statuses=400,400,400,400,400,400,400,400,400,400,429"
+    }
+  ]
+}

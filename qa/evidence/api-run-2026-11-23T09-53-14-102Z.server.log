@@ -1,0 +1,55 @@
+
+--- Group 1 ---
+[qa] API starting on :5055 (NODE_ENV=development, local DB)
+◇ injected env (0) from server\.env // tip: ⌘ override existing { override: true }
+MongoDB connected
+Server is running on http://localhost:5055
+[GET /api/does-not-exist] Error: Route not found: /api/does-not-exist
+    at notFound (C:\dev\mernStack\server\middleware\errorHandler.js:15:8)
+    at Layer.handleRequest (C:\dev\mernStack\server\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\dev\mernStack\server\node_modules\router\index.js:342:13)
+    at C:\dev\mernStack\server\node_modules\router\index.js:297:9
+    at processParams (C:\dev\mernStack\server\node_modules\router\index.js:582:12)
+    at next (C:\dev\mernStack\server\node_modules\router\index.js:291:5)
+    at C:\dev\mernStack\server\node_modules\router\index.js:688:15
+    at next (C:\dev\mernStack\server\node_modules\router\index.js:276:14)
+    at router.handle (C:\dev\mernStack\server\node_modules\router\index.js:186:3)
+    at router (C:\dev\mernStack\server\node_modules\router\index.js:60:12)
+[GET /api/health] Error: Not allowed by CORS
+    at origin (C:\dev\mernStack\server\server.js:47:18)
+    at C:\dev\mernStack\server\node_modules\cors\lib\index.js:219:13
+    at optionsCallback (C:\dev\mernStack\server\node_modules\cors\lib\index.js:199:9)
+    at corsMiddleware (C:\dev\mernStack\server\node_modules\cors\lib\index.js:204:7)
+    at Layer.handleRequest (C:\dev\mernStack\server\node_modules\router\lib\layer.js:152:17)
+    at trimPrefix (C:\dev\mernStack\server\node_modules\router\index.js:342:13)
+    at C:\dev\mernStack\server\node_modules\router\index.js:297:9
+    at processParams (C:\dev\mernStack\server\node_modules\router\index.js:582:12)
+    at next (C:\dev\mernStack\server\node_modules\router\index.js:291:5)
+    at internalNext (C:\dev\mernStack\server\node_modules\helmet\index.cjs:558:6)
+[POST /api/auth/login] SyntaxError: Unexpected end of JSON input
+    at JSON.parse (<anonymous>)
+    at parse (C:\dev\mernStack\server\node_modules\body-parser\lib\types\json.js:91:21)
+    at C:\dev\mernStack\server\node_modules\body-parser\lib\read.js:162:18
+    at AsyncResource.runInAsyncScope (node:async_hooks:226:14)
+    at invokeCallback (C:\dev\mernStack\server\node_modules\raw-body\index.js:238:16)
+    at done (C:\dev\mernStack\server\node_modules\raw-body\index.js:227:7)
+    at IncomingMessage.onEnd (C:\dev\mernStack\server\node_modules\raw-body\index.js:287:7)
+    at IncomingMessage.emit (node:events:508:20)
+    at endReadableNT (node:internal/streams/readable:1729:12)
+    at process.processTicksAndRejections (node:internal/process/task_queues:90:21)
+Scan requested by user 6b040d0509f09f1e1e6b98d4 for url: http://127.0.0.1:5070/
+Scan requested by user 6b040d0509f09f1e1e6b98d4 for url: http://127.0.0.1:5079/
+Scan requested by user 6b040d0509f09f1e1e6b98d4 for url: http://127.0.0.1:5070/
+Scan requested by user 6b040d0709f09f1e1e6b98ee for url: http://127.0.0.1:5070/
+
+--- Group 2 ---
+[qa] API starting on :5055 (NODE_ENV=development, local DB)
+◇ injected env (0) from server\.env // tip: ◈ secrets for agents [www.dotenvx.com]
+MongoDB connected
+Server is running on http://localhost:5055
+
+--- Group 3 ---
+[qa] API starting on :5055 (NODE_ENV=development, local DB)
+◇ injected env (0) from server\.env // tip: ⌘ enable debugging { debug: true }
+MongoDB connected
+Server is running on http://localhost:5055

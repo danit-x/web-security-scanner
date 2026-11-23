@@ -143,7 +143,7 @@ function Register() {
                 type="password"
                 value={formData.password}
                 onChange={handleChange}
-                minLength="6"
+                minLength="8"
                 required
                 className="w-full bg-black/40 border border-[#8f706b]/40 text-white focus:border-red-900 focus:bg-black/60 focus:outline-none focus:ring-0 transition-all p-4 pt-5 rounded-none text-sm tracking-wider relative z-0 backdrop-blur-sm"
               />
@@ -159,7 +159,7 @@ function Register() {
                 type="password"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                minLength="6"
+                minLength="8"
                 required
                 className="w-full bg-black/40 border border-[#8f706b]/40 text-white focus:border-red-900 focus:bg-black/60 focus:outline-none focus:ring-0 transition-all p-4 pt-5 rounded-none text-sm tracking-wider relative z-0 backdrop-blur-sm"
               />

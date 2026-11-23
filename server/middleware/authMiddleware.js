@@ -27,7 +27,10 @@ const authMiddleware = (req, res, next) => {
       return res.status(401).json({ message: 'Authorization token has expired' });
     }
 
-    if (error.name === 'JsonWebTokenError') {
+    // JsonWebTokenError is the base class of every jsonwebtoken verification
+    // error, including NotBeforeError (token not active yet), which used to
+    // fall through to the 500 below (DEF-007).
+    if (error instanceof jwt.JsonWebTokenError) {
       return res.status(401).json({ message: 'Invalid authorization token' });
     }
 

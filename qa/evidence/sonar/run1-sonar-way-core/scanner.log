@@ -1,0 +1,120 @@
+14:21:01.063 INFO  Scanner configuration file: /opt/sonar-scanner/conf/sonar-scanner.properties
+14:21:01.065 INFO  Project root configuration file: /usr/src/sonar-project.properties
+14:21:01.075 INFO  SonarScanner CLI 8.4.0.16527
+14:21:01.079 INFO  Linux 6.18.44-fc-v726 amd64
+14:21:01.671 INFO  Communicating with SonarQube Community Build 26.11.0.134175
+14:21:01.672 INFO  JRE provisioning: os[linux], arch[x86_64]
+14:21:03.261 INFO  Starting SonarScanner Engine...
+14:21:03.262 INFO  Java 21.0.13 Eclipse Adoptium (64-bit)
+14:21:03.866 INFO  Load global settings
+14:21:03.981 INFO  Load global settings (done) | time=115ms
+14:21:03.984 INFO  Server id: 147B411E-AaIIxuueEOdFqeK6oKS0
+14:21:04.245 INFO  Loading required plugins
+14:21:04.247 INFO  Load plugins index
+14:21:04.303 INFO  Load plugins index (done) | time=53ms
+14:21:04.307 INFO  Load/download plugins
+14:21:04.575 INFO  Load/download plugins (done) | time=274ms
+14:21:04.816 INFO  Load project settings for component key: 'danit-x_web-security-scanner'
+14:21:04.840 INFO  Load project settings for component key: 'danit-x_web-security-scanner' (done) | time=22ms
+14:21:04.857 INFO  Process project properties
+14:21:04.872 INFO  Process project properties (done) | time=14ms
+14:21:04.892 INFO  Project key: danit-x_web-security-scanner
+14:21:04.893 INFO  Base dir: /usr/src
+14:21:04.893 INFO  Working dir: /tmp/.scannerwork
+14:21:05.022 INFO  Load quality profiles
+14:21:05.079 INFO  Load quality profiles (done) | time=58ms
+14:21:05.109 INFO  Load active rules
+14:21:05.300 INFO  Load active rules (done) | time=192ms
+14:21:05.306 INFO  Load analysis cache
+14:21:05.327 INFO  Load analysis cache | time=21ms
+14:21:05.395 INFO  Preprocessing files...
+14:21:05.450 INFO  3 languages detected in 78 preprocessed files (done) | time=53ms
+14:21:05.452 INFO  10 files ignored because of inclusion/exclusion patterns
+14:21:05.452 INFO  1 directory skipped because of exclusion patterns (content not counted)
+14:21:05.453 INFO  Loading plugins for detected languages
+14:21:05.453 INFO  Load/download plugins
+14:21:06.102 INFO  Load/download plugins (done) | time=649ms
+14:21:06.207 INFO  Load project repositories
+14:21:06.286 INFO  Load project repositories (done) | time=80ms
+14:21:06.314 INFO  Indexing files...
+14:21:06.317 INFO  Project configuration:
+14:21:06.318 INFO    Excluded sources: **/node_modules/**, server/tests/**, client/dist/**, **/*.test.js, **/*.test.js, qa/06-bdd/**/*.js
+14:21:06.319 INFO    Included tests: **/*.test.js, qa/06-bdd/**/*.js
+14:21:06.320 INFO    Excluded sources for coverage: client/**, server/server.js, server/scripts/**
+14:21:06.348 INFO  78 files indexed (done) | time=32ms
+14:21:06.350 INFO  Quality profile for css: Sonar way core
+14:21:06.351 INFO  Quality profile for js: Sonar way core
+14:21:06.352 INFO  Quality profile for json: Sonar way comprehensive
+14:21:06.355 INFO  ------------- Run sensors on module Website Security Scanner (EC4206 QA)
+14:21:06.381 INFO  Load metrics repository
+14:21:06.405 INFO  Load metrics repository (done) | time=23ms
+14:21:06.677 INFO  Reflections took 54 ms to scan 1 urls, producing 30 keys and 313 values
+14:21:06.773 INFO  Sensor IaC YAML File Type Classification Sensor [iac]
+14:21:06.816 INFO  Sensor IaC YAML File Type Classification Sensor [iac] (done) | time=43ms
+14:21:06.819 INFO  Sensor IaC CloudFormation Sensor [iac]
+14:21:06.819 INFO  There are no files to be analyzed for the CloudFormation language
+14:21:06.820 INFO  Sensor IaC CloudFormation Sensor [iac] (done) | time=0ms
+14:21:06.820 INFO  Sensor IaC cfn-lint report Sensor [iac]
+14:21:06.821 INFO  Sensor IaC cfn-lint report Sensor [iac] (done) | time=2ms
+14:21:06.823 INFO  Sensor IaC hadolint report Sensor [iac]
+14:21:06.824 INFO  Sensor IaC hadolint report Sensor [iac] (done) | time=0ms
+14:21:06.824 INFO  Sensor IaC Azure Resource Manager Sensor [iac]
+14:21:06.824 INFO  There are no files to be analyzed for the Azure Resource Manager language
+14:21:06.825 INFO  Sensor IaC Azure Resource Manager Sensor [iac] (done) | time=0ms
+14:21:06.825 INFO  Sensor Java Config Sensor [iac]
+14:21:06.825 INFO  There are no files to be analyzed for the Java language
+14:21:06.825 INFO  Sensor Java Config Sensor [iac] (done) | time=0ms
+14:21:06.826 INFO  Sensor IaC Docker Sensor [iac]
+14:21:06.828 INFO  There are no files to be analyzed for the Docker language
+14:21:06.828 INFO  Sensor IaC Docker Sensor [iac] (done) | time=3ms
+14:21:06.828 INFO  Sensor HTML [web]
+14:21:06.836 INFO  Sensor HTML [web] (done) | time=10ms
+14:21:06.836 INFO  Sensor JavaScript/TypeScript Coverage [javascript]
+14:21:06.836 INFO  Analysing [/usr/src/qa/evidence/coverage/jest/lcov.sonar.info]
+14:21:06.899 INFO  Sensor JavaScript/TypeScript Coverage [javascript] (done) | time=63ms
+14:21:06.900 INFO  Sensor TextAndSecretsSensor [text]
+14:21:06.921 INFO  Available processors: 4
+14:21:06.922 INFO  Using 4 threads for analysis.
+14:21:07.215 INFO  Start fetching files for the text and secrets analysis
+14:21:07.223 INFO  Using Git CLI to retrieve dirty files
+14:21:07.228 WARN  Retrieving only language associated files, make sure to run the analysis inside a git repository to make use of inclusions specified via "sonar.text.inclusions"
+14:21:07.228 INFO  Starting the text and secrets analysis
+14:21:07.229 INFO  77 source files to be analyzed for the text and secrets analysis
+14:21:07.601 INFO  77/77 source files have been analyzed for the text and secrets analysis
+14:21:07.603 INFO  Sensor TextAndSecretsSensor [text] (done) | time=703ms
+14:21:07.608 INFO  ------------- Run sensors on project
+14:21:07.759 INFO  Sensor JavaScript/TypeScript/CSS analysis [javascript]
+14:21:07.985 INFO  Detected os: Linux arch: amd64 alpine: false. Platform: LINUX_X64
+14:21:07.987 INFO  Deploy location /opt/sonar-scanner/.sonar/js/node-runtime, tagetRuntime: /opt/sonar-scanner/.sonar/js/node-runtime/node,  version: /opt/sonar-scanner/.sonar/js/node-runtime/version.txt
+14:21:10.398 INFO  Using embedded Node.js runtime.
+14:21:10.398 INFO  Using Node.js executable: '/opt/sonar-scanner/.sonar/js/node-runtime/node'.
+14:21:12.433 INFO  Memory configuration: OS (16087 MB), Node.js (4288 MB).
+14:21:12.446 INFO  gRPC analyze-project server listening on 127.0.0.1:45447
+14:21:12.630 INFO  Plugin version: [14.3.0.46350]
+14:21:14.855 INFO  Found 0 tsconfig.json file(s): []
+14:21:17.377 INFO  74 source files to be analyzed
+14:21:17.377 INFO  Analyzing 72 file(s) using default options [lib: lib.esnext.d.ts, lib.dom.d.ts]
+14:21:17.379 INFO  74/74 source files have been analyzed
+14:21:17.391 INFO  Hit the cache for 0 out of 72
+14:21:17.392 INFO  Miss the cache for 72 out of 72: ANALYSIS_MODE_INELIGIBLE [72/72]
+14:21:17.392 INFO  Sensor JavaScript/TypeScript/CSS analysis [javascript] (done) | time=9633ms
+14:21:17.393 INFO  Sensor IaC Project Sensor [iac]
+14:21:17.393 INFO  Sensor IaC Project Sensor [iac] (done) | time=1ms
+14:21:17.394 INFO  Sensor Zero Coverage Sensor
+14:21:17.397 INFO  Sensor Zero Coverage Sensor (done) | time=3ms
+14:21:17.397 INFO  ------------- Gather SCA dependencies on project
+14:21:17.402 INFO  Dependency analysis skipped
+14:21:17.405 INFO  SCM Publisher is disabled
+14:21:17.413 INFO  CPD Executor 6 files had no CPD blocks
+14:21:17.414 INFO  CPD Executor Calculating CPD for 42 files
+14:21:17.440 INFO  CPD Executor CPD calculation finished (done) | time=23ms
+14:21:17.538 INFO  Analysis report generated in 89ms, dir size=684.9 kB
+14:21:17.599 INFO  Analysis report compressed in 59ms, zip size=350.4 kB
+14:21:17.633 INFO  Analysis report uploaded in 34ms
+14:21:17.634 INFO  ANALYSIS SUCCESSFUL, you can find the results at: http://127.0.0.1:9000/dashboard?id=danit-x_web-security-scanner
+14:21:17.634 INFO  Note that you will be able to access the updated dashboard once the server has processed the submitted analysis report
+14:21:17.635 INFO  More about the report processing at http://127.0.0.1:9000/api/ce/task?id=01f8ccd6-0b3d-4b2d-b56a-64749afe717e
+14:21:17.726 INFO  Analysis total time: 14.423 s
+14:21:17.729 INFO  SonarScanner Engine completed successfully
+14:21:17.757 INFO  EXECUTION SUCCESS
+14:21:17.758 INFO  Total time: 16.697s

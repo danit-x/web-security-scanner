@@ -1,0 +1,1896 @@
+{
+  "info": {
+    "name": "WebSec Scanner API (EC4206 QA)",
+    "description": "Phase 7 API test suite for the Website Security Scanner. Run against the LOCAL QA API only (environment: local). Requests are chained: register -> token -> scan -> history. Two users (Alice, Bob) test access control (IDOR).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// The API trusts one proxy hop, so X-Forwarded-For is the client IP the rate",
+          "// limiters see. One random IP per run keeps repeated runs independent.",
+          "pm.request.headers.upsert({ key: \"X-Forwarded-For\", value: pm.environment.get(\"clientIp\") || \"10.0.0.1\" });"
+        ]
+      }
+    },
+    {
+      "listen": "test",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "// Checks applied to every response (non-functional / contract checks)",
+          "const limit = Number(pm.variables.get(\"maxResponseMs\") || pm.environment.get(\"maxResponseMs\") || 2000);",
+          "pm.test(`[all] responds within ${limit} ms`, () => pm.expect(pm.response.responseTime).to.be.below(limit));",
+          "pm.test(\"[all] JSON response\", () => pm.expect(pm.response.headers.get(\"Content-Type\") || \"\").to.include(\"application/json\"));",
+          "pm.test(\"[all] no stack trace leaked\", () => pm.expect(pm.response.text()).to.not.match(/\\bat .+\\.js:\\d+/));",
+          "pm.test(\"[all] X-Powered-By hidden\", () => pm.response.to.not.have.header(\"X-Powered-By\"));"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "00 Setup",
+      "description": "Health check and per-run variables",
+      "item": [
+        {
+          "name": "Health check (TC-API-01)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// New identity for this run: unique emails and client IPs, so the run can be repeated.",
+                  "const r = () => Math.floor(Math.random() * 254) + 1;",
+                  "pm.environment.set(\"runId\", Date.now().toString(36));",
+                  "pm.environment.set(\"clientIp\", `10.${r()}.${r()}.${r()}`);",
+                  "pm.environment.set(\"bruteForceIp\", `10.${r()}.${r()}.${r()}`);",
+                  "pm.environment.set(\"aliceEmail\", `alice.${pm.environment.get(\"runId\")}@example.com`);",
+                  "pm.environment.set(\"bobEmail\", `bob.${pm.environment.get(\"runId\")}@example.com`);",
+                  "pm.request.headers.upsert({ key: \"X-Forwarded-For\", value: pm.environment.get(\"clientIp\") });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"body is {status: ok}\", () => pm.expect(pm.response.json()).to.eql({ status: \"ok\" }));",
+                  "pm.test(\"helmet: X-Content-Type-Options nosniff (TC-API-03)\", () => pm.response.to.have.header(\"X-Content-Type-Options\", \"nosniff\"));",
+                  "pm.test(\"helmet: X-Frame-Options set\", () => pm.response.to.have.header(\"X-Frame-Options\"));",
+                  "pm.test(\"helmet: Content-Security-Policy set\", () => pm.response.to.have.header(\"Content-Security-Policy\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01 Auth",
+      "description": "Registration and login",
+      "item": [
+        {
+          "name": "Register Alice (TC-REG-01)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Alice\",\n  \"email\": \"{{aliceEmail}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 201\", () => pm.response.to.have.status(201));",
+                  "pm.test(\"response matches the user contract (JSON schema)\", () => pm.response.to.have.jsonSchema({\"type\":\"object\",\"required\":[\"success\",\"token\",\"user\"],\"properties\":{\"success\":{\"const\":true},\"token\":{\"type\":\"string\",\"pattern\":\"^[\\\\w-]+\\\\.[\\\\w-]+\\\\.[\\\\w-]+$\"},\"user\":{\"type\":\"object\",\"required\":[\"_id\",\"name\",\"email\",\"createdAt\"],\"additionalProperties\":false,\"properties\":{\"_id\":{\"type\":\"string\",\"pattern\":\"^[a-f0-9]{24}$\"},\"name\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"},\"createdAt\":{\"type\":\"string\"}}}}}));",
+                  "pm.test(\"password never returned (TC-REG-11)\", () => pm.expect(pm.response.text()).to.not.match(/password/i));",
+                  "pm.environment.set(\"aliceToken\", pm.response.json().token);",
+                  "pm.environment.set(\"aliceId\", pm.response.json().user._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register Bob",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Bob\",\n  \"email\": \"{{bobEmail}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 201\", () => pm.response.to.have.status(201));",
+                  "pm.environment.set(\"bobToken\", pm.response.json().token);",
+                  "pm.environment.set(\"bobId\", pm.response.json().user._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register duplicate, different case (TC-REG-02, TC-REG-09)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Imposter\",\n  \"email\": \"{{upperEmail}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.set(\"upperEmail\", pm.environment.get(\"aliceEmail\").toUpperCase());"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"message is 'User already exists'\", () => pm.expect(pm.response.json().message).to.eql(\"User already exists\"));",
+                  "pm.test(\"no token issued\", () => pm.expect(pm.response.json().token).to.be.undefined);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register with 7-char password (TC-REG-03, BVA)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Short\",\n  \"email\": \"short.{{runId}}@example.com\",\n  \"password\": \"Passw0r\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"message is 'Password must be at least 8 characters long'\", () => pm.expect(pm.response.json().message).to.eql(\"Password must be at least 8 characters long\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Register with numeric password (DEF-005 regression)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/register",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "register"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"name\": \"Num\",\n  \"email\": \"num.{{runId}}@example.com\",\n  \"password\": 12345678\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"message is 'Password must be text'\", () => pm.expect(pm.response.json().message).to.eql(\"Password must be text\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login Alice (TC-LOG-01)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{aliceEmail}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"response matches the user contract (JSON schema)\", () => pm.response.to.have.jsonSchema({\"type\":\"object\",\"required\":[\"success\",\"token\",\"user\"],\"properties\":{\"success\":{\"const\":true},\"token\":{\"type\":\"string\",\"pattern\":\"^[\\\\w-]+\\\\.[\\\\w-]+\\\\.[\\\\w-]+$\"},\"user\":{\"type\":\"object\",\"required\":[\"_id\",\"name\",\"email\",\"createdAt\"],\"additionalProperties\":false,\"properties\":{\"_id\":{\"type\":\"string\",\"pattern\":\"^[a-f0-9]{24}$\"},\"name\":{\"type\":\"string\"},\"email\":{\"type\":\"string\"},\"createdAt\":{\"type\":\"string\"}}}}}));",
+                  "pm.test(\"same user as registered\", () => pm.expect(pm.response.json().user._id).to.eql(pm.environment.get(\"aliceId\")));",
+                  "pm.environment.set(\"aliceToken\", pm.response.json().token);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login wrong password (TC-LOG-02)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{aliceEmail}}\",\n  \"password\": \"WrongPass1\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"message is 'Invalid email or password'\", () => pm.expect(pm.response.json().message).to.eql(\"Invalid email or password\"));",
+                  "pm.test(\"no token issued\", () => pm.expect(pm.response.json().token).to.be.undefined);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login unknown email, same message (TC-LOG-03)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"nobody.{{runId}}@example.com\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"message is 'Invalid email or password'\", () => pm.expect(pm.response.json().message).to.eql(\"Invalid email or password\"));",
+                  "pm.test(\"no token issued\", () => pm.expect(pm.response.json().token).to.be.undefined);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login missing password (TC-LOG-04)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{aliceEmail}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"message is 'Password is required'\", () => pm.expect(pm.response.json().message).to.eql(\"Password is required\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Login malformed JSON (TC-API-05, DEF-002 regression)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\"email\": \"{{aliceEmail}}\", ",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"no stack property\", () => pm.expect(pm.response.json().stack).to.be.undefined);"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02 Token",
+      "description": "JWT-protected route /auth/me",
+      "item": [
+        {
+          "name": "Me with valid token (TC-AUTH-01)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"returns Alice\", () => pm.expect(pm.response.json().user.email).to.eql(pm.environment.get(\"aliceEmail\")));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Me without token (TC-AUTH-02)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"message is 'Authorization token is required'\", () => pm.expect(pm.response.json().message).to.eql(\"Authorization token is required\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Me with tampered token (TC-AUTH-03)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{tamperedToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Flip one character in the signature part of Alice's real token.",
+                  "const t = pm.environment.get(\"aliceToken\");",
+                  "const last = t.slice(-1) === \"A\" ? \"B\" : \"A\";",
+                  "pm.variables.set(\"tamperedToken\", t.slice(0, -1) + last);"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"message is 'Invalid authorization token'\", () => pm.expect(pm.response.json().message).to.eql(\"Invalid authorization token\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Me with empty bearer value (TC-AUTH-05)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer "
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/me",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "me"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 401\", () => pm.response.to.have.status(401));",
+                  "pm.test(\"message is 'Authorization token is required'\", () => pm.expect(pm.response.json().message).to.eql(\"Authorization token is required\"));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "03 Scan",
+      "description": "POST /scan against the local fixture website only",
+      "item": [
+        {
+          "name": "Scan fixture as Alice (TC-SCAN-01)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/scan",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "scan"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"{{fixtureUrl}}\",\n  \"ownershipConfirmed\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.set(\"maxResponseMs\", 10000); // a scan makes real outbound requests"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+                  "const r = pm.response.json();",
+                  "pm.test(\"report matches the scan contract (JSON schema)\", () => pm.response.to.have.jsonSchema({\"type\":\"object\",\"required\":[\"success\",\"_id\",\"grade\",\"score\",\"summary\",\"findings\",\"findingsByCategory\",\"statusCode\"],\"properties\":{\"success\":{\"const\":true},\"_id\":{\"type\":\"string\",\"pattern\":\"^[a-f0-9]{24}$\"},\"grade\":{\"type\":\"string\",\"enum\":[\"A\",\"B\",\"C\",\"D\",\"F\"]},\"score\":{\"type\":\"integer\",\"minimum\":0,\"maximum\":100},\"summary\":{\"type\":\"object\",\"required\":[\"critical\",\"high\",\"medium\",\"low\"],\"properties\":{\"critical\":{\"type\":\"integer\"},\"high\":{\"type\":\"integer\"},\"medium\":{\"type\":\"integer\"},\"low\":{\"type\":\"integer\"}}},\"findings\":{\"type\":\"array\",\"items\":{\"type\":\"object\",\"required\":[\"category\",\"severity\",\"description\"],\"properties\":{\"severity\":{\"enum\":[\"CRITICAL\",\"HIGH\",\"MEDIUM\",\"LOW\"]}}}}}}));",
+                  "pm.test(\"summary counts agree with findings\", () => {",
+                  "  const n = (s) => r.findings.filter((f) => f.severity === s).length;",
+                  "  pm.expect(r.summary).to.eql({ critical: n(\"CRITICAL\"), high: n(\"HIGH\"), medium: n(\"MEDIUM\"), low: n(\"LOW\") });",
+                  "});",
+                  "pm.test(\"fixture weaknesses detected\", () => {",
+                  "  const cats = r.findings.map((f) => f.category);",
+                  "  pm.expect(cats).to.include.members([\"Missing Security Header\", \"No HTTPS\", \"Cookie Missing HttpOnly Flag\", \"Outdated / Vulnerable Library\"]);",
+                  "});",
+                  "pm.environment.set(\"aliceScanId\", r._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Scan fixture as Bob",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bobToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/scan",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "scan"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"{{fixtureUrl}}\",\n  \"ownershipConfirmed\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.set(\"maxResponseMs\", 10000); // a scan makes real outbound requests"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.environment.set(\"bobScanId\", pm.response.json()._id);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Scan without ownership confirmation (TC-SCAN-02)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/scan",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "scan"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"{{fixtureUrl}}\",\n  \"ownershipConfirmed\": false\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"message is 'You must confirm you own this website or have permission to scan it.'\", () => pm.expect(pm.response.json().message).to.eql(\"You must confirm you own this website or have permission to scan it.\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Scan URL without protocol (TC-SCAN-03)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/scan",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "scan"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"example.com\",\n  \"ownershipConfirmed\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"message is 'Please provide a valid URL including http:// or https://'\", () => pm.expect(pm.response.json().message).to.eql(\"Please provide a valid URL including http:// or https://\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Scan empty URL (TC-SCAN-04)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/scan",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "scan"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"\",\n  \"ownershipConfirmed\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"message is 'A URL is required'\", () => pm.expect(pm.response.json().message).to.eql(\"A URL is required\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Scan ftp:// URL (TC-SCAN-05)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/scan",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "scan"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"ftp://127.0.0.1/file\",\n  \"ownershipConfirmed\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"message is 'URL must start with http:// or https://'\", () => pm.expect(pm.response.json().message).to.eql(\"URL must start with http:// or https://\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Scan unreachable host (TC-SCAN-06)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/scan",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "scan"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"{{deadUrl}}\",\n  \"ownershipConfirmed\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.set(\"maxResponseMs\", 10000); // a scan makes real outbound requests"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 502\", () => pm.response.to.have.status(502));",
+                  "pm.test(\"message is 'Site could not be reached.'\", () => pm.expect(pm.response.json().message).to.eql(\"Site could not be reached.\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Scan without login (TC-SCAN-07)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/scan",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "scan"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"url\": \"{{fixtureUrl}}\",\n  \"ownershipConfirmed\": true\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 401\", () => pm.response.to.have.status(401));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "04 History",
+      "description": "History, notes, delete, and access control between users",
+      "item": [
+        {
+          "name": "List my history (TC-HIS-01)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/history",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "history"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+                  "const b = pm.response.json();",
+                  "pm.test(\"exactly my one scan\", () => pm.expect(b.count).to.eql(1));",
+                  "pm.test(\"every scan belongs to me\", () => b.scans.forEach((s) => pm.expect(s.userId).to.eql(pm.environment.get(\"aliceId\"))));",
+                  "pm.test(\"Bob's scan is not listed\", () => pm.expect(b.scans.map((s) => s._id)).to.not.include(pm.environment.get(\"bobScanId\")));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Open my scan (TC-HIS-02)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/history/{{aliceScanId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "history",
+                "{{aliceScanId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"same scan\", () => pm.expect(pm.response.json().scan._id).to.eql(pm.environment.get(\"aliceScanId\")));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Open Bob's scan as Alice (TC-HIS-03, IDOR)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/history/{{bobScanId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "history",
+                "{{bobScanId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"message is 'Scan result not found'\", () => pm.expect(pm.response.json().message).to.eql(\"Scan result not found\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Open malformed id (TC-HIS-04)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/history/abc",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "history",
+                "abc"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"message is 'Invalid scan ID'\", () => pm.expect(pm.response.json().message).to.eql(\"Invalid scan ID\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Open unknown id (TC-HIS-05)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/history/000000000000000000000000",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "history",
+                "000000000000000000000000"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"message is 'Scan result not found'\", () => pm.expect(pm.response.json().message).to.eql(\"Scan result not found\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Add note to my scan (TC-NOTE-01)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/history/{{aliceScanId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "history",
+                "{{aliceScanId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"Add a Content-Security-Policy header\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Note was saved",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/history/{{aliceScanId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "history",
+                "{{aliceScanId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"note persisted\", () => pm.expect(pm.response.json().scan.note).to.eql(\"Add a Content-Security-Policy header\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Note of 501 chars (TC-NOTE-02, BVA)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/history/{{aliceScanId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "history",
+                "{{aliceScanId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"{{longNote}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.variables.set(\"longNote\", \"n\".repeat(501));"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"message is 'A note cannot be longer than 500 characters'\", () => pm.expect(pm.response.json().message).to.eql(\"A note cannot be longer than 500 characters\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Non-string note (TC-NOTE-03)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/history/{{aliceScanId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "history",
+                "{{aliceScanId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{ \"note\": 42 }",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 400\", () => pm.response.to.have.status(400));",
+                  "pm.test(\"message is 'A note must be text'\", () => pm.expect(pm.response.json().message).to.eql(\"A note must be text\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Note on Bob's scan as Alice (TC-NOTE-04, IDOR)",
+          "request": {
+            "method": "PATCH",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              },
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/history/{{bobScanId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "history",
+                "{{bobScanId}}"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"note\": \"hacked\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete Bob's scan as Alice (TC-DEL-02, IDOR)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/history/{{bobScanId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "history",
+                "{{bobScanId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Bob's scan still exists, unchanged",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{bobToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/history/{{bobScanId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "history",
+                "{{bobScanId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"note untouched\", () => pm.expect(pm.response.json().scan.note || \"\").to.eql(\"\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Delete my scan (TC-DEL-01)",
+          "request": {
+            "method": "DELETE",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/history/{{aliceScanId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "history",
+                "{{aliceScanId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"confirmation body\", () => pm.expect(pm.response.json()).to.eql({ success: true, message: \"Scan deleted\" }));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Deleted scan is gone",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Authorization",
+                "value": "Bearer {{aliceToken}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/history/{{aliceScanId}}",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "history",
+                "{{aliceScanId}}"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 404\", () => pm.response.to.have.status(404));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "05 Security",
+      "description": "Hardening: routing, CORS, brute-force throttling",
+      "item": [
+        {
+          "name": "Unknown route (TC-API-02)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{baseUrl}}/does-not-exist",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "does-not-exist"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 404\", () => pm.response.to.have.status(404));",
+                  "pm.test(\"success false\", () => pm.expect(pm.response.json().success).to.eql(false));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CORS: allowed origin echoed",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Origin",
+                "value": "{{clientOrigin}}"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", () => pm.response.to.have.status(200));",
+                  "pm.test(\"Access-Control-Allow-Origin is the client\", () => pm.response.to.have.header(\"Access-Control-Allow-Origin\", pm.environment.get(\"clientOrigin\")));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "CORS: other origin refused (TC-API-04, DEF-003 regression)",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "Origin",
+                "value": "https://evil.example"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/health",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "health"
+              ]
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 403\", () => pm.response.to.have.status(403));",
+                  "pm.test(\"no CORS allow header\", () => pm.response.to.not.have.header(\"Access-Control-Allow-Origin\"));"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Brute force: wrong password x6 from one IP (TC-LOG-05)",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "description": "Loops on itself with pm.execution.setNextRequest: attempts 1-5 must be 401, attempt 6 must be 429.",
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{aliceEmail}}\",\n  \"password\": \"Guess{{bfCount}}xx\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const n = Number(pm.environment.get(\"bfCount\") || 0) + 1;",
+                  "pm.environment.set(\"bfCount\", n);",
+                  "pm.request.headers.upsert({ key: \"X-Forwarded-For\", value: pm.environment.get(\"bruteForceIp\") });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const n = Number(pm.environment.get(\"bfCount\"));",
+                  "if (n <= 5) {",
+                  "  pm.test(`attempt ${n}: 401 (allowed, wrong password)`, () => pm.response.to.have.status(401));",
+                  "  pm.execution.setNextRequest(pm.info.requestName); // run this request again",
+                  "} else {",
+                  "  pm.test(\"attempt 6: 429 throttled\", () => pm.response.to.have.status(429));",
+                  "  pm.test(\"message is 'Too many login attempts. Please try again in 15 minutes.'\", () => pm.expect(pm.response.json().message).to.eql(\"Too many login attempts. Please try again in 15 minutes.\"));",
+                  "  pm.test(\"RateLimit headers present\", () => pm.response.to.have.header(\"RateLimit-Policy\"));",
+                  "  pm.environment.unset(\"bfCount\");",
+                  "}"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Correct password is also blocked from the throttled IP",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{aliceEmail}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.request.headers.upsert({ key: \"X-Forwarded-For\", value: pm.environment.get(\"bruteForceIp\") });"
+                ]
+              }
+            },
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 429\", () => pm.response.to.have.status(429));",
+                  "pm.test(\"no token issued\", () => pm.expect(pm.response.json().token).to.be.undefined);"
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Another IP can still log in",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "url": {
+              "raw": "{{baseUrl}}/auth/login",
+              "host": [
+                "{{baseUrl}}"
+              ],
+              "path": [
+                "auth",
+                "login"
+              ]
+            },
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"{{aliceEmail}}\",\n  \"password\": \"{{password}}\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            }
+          },
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"status is 200\", () => pm.response.to.have.status(200));"
+                ]
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

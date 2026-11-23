@@ -43,7 +43,8 @@ const scanResultSchema = new mongoose.Schema(
       type: String,
       required: [true, "A report grade is required"],
       enum: {
-        values: ["A", "B", "C", "D", "E", "F"],
+        // Exactly what utils/scoring.js can produce (no "E": OBS-03).
+        values: ["A", "B", "C", "D", "F"],
         message: "{VALUE} is not a valid grade",
       },
     },
