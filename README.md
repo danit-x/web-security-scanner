@@ -10,7 +10,7 @@
 A full-stack MERN application that scans a user-submitted website URL for common security misconfigurations and returns a graded report with plain-language explanations and fix recommendations.
 
 
-## Table of Contents
+## Table of Contents 
 
 - [Overview](#overview)
 - [Screenshots](#screenshots)
@@ -63,7 +63,7 @@ The scanner performs **inspection only** — it does not attempt to exploit vuln
 
 <img width="932" height="470" alt="image" src="https://github.com/user-attachments/assets/0c660e0d-5328-46b1-be34-34d2701d31ff" />
 
-## Tech Stack
+## Tech Stack 
 
 **Frontend:** React (Vite), React Router, Axios
 **Backend:** Node.js, Express
