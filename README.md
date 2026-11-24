@@ -26,6 +26,7 @@ A full-stack MERN application that scans a user-submitted website URL for common
 - [Responsible Use & Ethical Considerations](#responsible-use--ethical-considerations)
 - [Known Limitations](#known-limitations)
 - [Roadmap](#roadmap)
+- [QA Team (EC4206)](#qa-team-ec4206)
 - [License](#license)
 
 ---
@@ -228,6 +229,15 @@ Potential future improvements, not currently implemented:
 - [ ] Live CVE database integration
 - [ ] CORS misconfiguration and server info leakage checks
 - [ ] Scheduled/recurring scans with email alerts
+
+## QA Team (EC4206)
+
+Quality assurance for this project was carried out as an EC4206 Software Testing & Quality Assurance group project (University of Ruhuna). The full QA work is in [`qa/`](qa/README.md).
+
+| Name | Registration No. | Role | Phases |
+|------|------------------|------|--------|
+| Thanthrige D.P. | EG/2023/5916 | Test lead, Automation engineer | 1–9, 12 |
+| Jayasekara J.M.O.S. | EG/2023/5658 | Defect manager | 10–11 |
 
 ## License
 
