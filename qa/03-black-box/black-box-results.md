@@ -3,7 +3,7 @@
 Run: 2026-11-23T11:09:40.543Z · Node v25.6.0 · local MongoDB · runner `qa/scripts/run-black-box.mjs`
 Raw evidence: `qa/evidence/black-box-2026-11-23T11-09-40-512Z.json` and the matching `.server.log`. Test design: [black-box-design.md](black-box-design.md)
 
-**Total 123 · PASS 123 · FAIL 0**
+All 123 black-box cases passed on the final build: 40 equivalence partitioning cases, 53 boundary value cases and 30 decision-table cases. The tables below list each case with its input, the expected and actual results, and the outcome.
 
 | Technique | Cases | Pass | Fail |
 |---|---|---|---|

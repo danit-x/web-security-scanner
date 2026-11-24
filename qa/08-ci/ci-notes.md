@@ -1,24 +1,18 @@
 # Phase 8: Continuous Integration (GitHub Actions)
 
-**Workflow:** [.github/workflows/qa.yml](../../.github/workflows/qa.yml)
-**Runs:** <https://github.com/danit-x/web-security-scanner/actions/workflows/qa.yml>
+The pipeline is defined in [.github/workflows/qa.yml](../../.github/workflows/qa.yml), and every run can be seen at <https://github.com/danit-x/web-security-scanner/actions/workflows/qa.yml>.
 
 ## 1. Concepts
 
-**Continuous Integration (CI):** every push or pull request is built and tested automatically on a clean machine, so a breaking change is found within minutes of being made, not at the end of the project.
+With continuous integration (CI), every push and pull request is built and tested automatically on a clean machine. A change that breaks something is found within minutes of being pushed, rather than at the end of the project.
 
-| | Meaning | Here |
+| | Meaning | In this project |
 |---|---|---|
-| Continuous **Integration** | build + test every change automatically | ✅ this phase |
-| Continuous **Delivery** | every green build is *ready* to release; a human presses deploy | Vercel/Render deploy `main` (outside QA scope) |
-| Continuous **Deployment** | every green build is released automatically | not used |
+| Continuous Integration | build and test every change automatically | This phase |
+| Continuous Delivery | every green build is ready to release, but a person decides when to deploy | Vercel and Render deploy `main` |
+| Continuous Deployment | every green build is released automatically | Not used |
 
-**Why it matters for quality:**
-- **Regression safety:** all ≈ 440 automated checks from phases 2–7 run on every change.
-- **Same result every time:** a fresh Ubuntu VM and a fresh MongoDB on every run, so no "works on my machine".
-- **Quality gate:** a red pipeline blocks merging to `main` when branch protection requires the check.
-- **Shift-left:** problems are caught early, when they are cheapest to fix.
-- **Fail fast:** cheap checks run first and expensive ones only if those pass.
+CI matters for quality for several reasons. All of the roughly 440 automated checks from Phases 2 to 7 now run on every change, so regressions are caught straight away. Each run starts from a fresh Ubuntu machine and a fresh MongoDB, so results do not depend on anyone's laptop. A red pipeline can block a merge into `main` once branch protection is switched on, which turns the tests into a real quality gate. Problems are found early, when they are cheapest to fix, and the cheap checks run first, so a broken build fails within a minute instead of wasting time on the slow suites.
 
 ### GitHub Actions vocabulary (as used in qa.yml)
 
@@ -93,7 +87,7 @@ The servers are started with `nohup … &`, and [qa/scripts/wait-for.sh](../scri
 | API collection (Postman CLI) | 45 s | **288/288** + **72/72** assertions |
 | UI tests (Selenium) | 1 min 57 s | **11/11** in headless Chrome |
 
-The counts were read from the job logs, not just the green ticks, to confirm the suites really ran (a job that runs zero tests is also green). In total there were ≈ 1,040 executed checks, including the second Node version.
+We read the counts from the job logs rather than trusting the green ticks, because a job that runs zero tests also shows green. Counting both Node versions, the run executed about 1,040 checks.
 
 ### Run 2: proving the gate blocks a real bug
 
@@ -107,15 +101,27 @@ A throw-away branch `qa/ci-gate-demo` removed the ownership check from `GET /his
 | Unit + API tests (Node 22 and 24) | **failure**: `GET /history/:id another user's scan`, expected 404, received 200 (1 failed, 209 passed) |
 | BDD / Postman / Selenium | **skipped**: `needs: unit-api` stopped them (fail fast; no runner time spent on a known-bad build) |
 
-The branch was then deleted. This shows the pipeline acts as a *quality gate*: with branch protection ("require status checks to pass") on `main`, that pull request could not be merged.
+We deleted the branch afterwards. The run shows that the pipeline really works as a quality gate: with branch protection ("require status checks to pass") on `main`, that pull request could not have been merged.
+
+### Run 3: the final pipeline on `main`
+
+After the QA branch was merged and SonarCloud was connected, the pipeline grew to seven jobs: the original five, with `unit-api` counted once per Node version, plus a SonarCloud static-analysis job. [Run 45411465382](https://github.com/danit-x/web-security-scanner/actions/runs/45411465382) on `main` (commit `7b03a3f`, 24 November 2026) passed every job in 2 minutes 26 seconds:
+
+| Job | Result read from the log |
+|---|---|
+| Lint + build client | ESLint clean, Vite build of 98 modules |
+| Unit + API tests (Node 22 and 24) | node:test 57/57; Jest 259/259 in 13 suites; coverage 95.02 % statements, 89.1 % branches |
+| BDD (Cucumber) | 44/44 scenarios, 202/202 steps |
+| API collection (Postman CLI) | 288/288 and 72/72 assertions, 0 failures |
+| UI tests (Selenium) | 11 passing |
+| Static analysis (SonarCloud) | analysis uploaded, quality gate passed |
+
+Screenshots of this run are in [../evidence/ci/](../evidence/ci/): the run summary with all seven jobs green, the run history, and one page per job showing each step's result.
 
 ## 5. Recommended next step (repository settings, owner only)
 
-Turn on branch protection for `main`: *Settings → Branches → Add rule → Require status checks to pass*, then select the six `QA pipeline` checks. That makes the gate mandatory instead of advisory. It is a repository setting, so it is left to the owner.
+We recommend turning on branch protection for `main` (*Settings → Branches → Add rule → Require status checks to pass*) and selecting the `QA pipeline` checks. That makes the gate compulsory rather than advisory. It is a repository setting, so we left the decision to the owner.
 
-## 6. Exam summary
+## 6. Summary
 
-- CI = automatic build + test on every change; CD = always releasable (Delivery) or automatically released (Deployment).
-- Pipeline design: **fail fast** (cheap checks first), **parallelise** independent suites, **isolate** with fresh VMs and service containers, **keep evidence** as artifacts.
-- The test pyramid shows in the timings: unit ≈ 30 s for 267 tests; UI ≈ 2 min for 11 tests.
-- A pipeline only adds value if it can fail, so Run 2 proves it does.
+CI means every change is built and tested automatically. Continuous delivery means the software is always ready to release, and continuous deployment means it is released automatically. When designing the pipeline we tried to fail fast by running cheap checks first, to run independent suites in parallel, to isolate every run with fresh machines and service containers, and to keep the evidence of every run as downloadable artifacts. The test pyramid shows up clearly in the timings: about 30 seconds for 267 unit-level tests, but about 2 minutes for 11 UI tests. Finally, a pipeline only adds value if it can fail, and Run 2 showed that ours does.

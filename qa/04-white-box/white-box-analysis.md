@@ -8,7 +8,7 @@
 | Coverage evidence | `qa/evidence/coverage/baseline.txt` (before), `qa/evidence/coverage/after-whitebox.txt` (after) |
 | Tools | Node.js built-in test runner + V8 coverage (`--experimental-test-coverage`), ESLint `complexity` rule (tool-computed V(G)) |
 
-**White-box testing** designs tests from the **internal structure** of the code. Black-box asks "does it meet the spec?". White-box asks "has every path in the code been exercised, and is any of it dead, unreachable or wrong?"
+White-box testing designs tests from the internal structure of the code. Black-box testing asks whether the software meets its specification. White-box testing asks a different question: has every path through the code actually been exercised, and is any of it dead, unreachable or simply wrong?
 
 ## 1. Key concepts
 
@@ -87,10 +87,7 @@ flowchart TD
 | P4 | … 5 → 6(F) → 8 → 9 → 5 → 10 | `[{UNKNOWN}]` | 100 | CS-P4 |
 | P5 | loop several times, floor applies | `5 × CRITICAL` | 0 | CS-P5 |
 
-**Statement vs. branch coverage, illustrated:**
-- The single test `[{HIGH}]` executes **line 45 completely**, so statement coverage counts it as covered.
-- But it never takes the `|| 0` outcome. Only **branch** coverage exposes that P4 is untested.
-- The same applies to D1 and D2: a test with `[]` executes line 35, but only `null` exercises the first operand being true.
+This function is a good illustration of the difference between statement and branch coverage. The single test `[{HIGH}]` runs line 45 completely, so statement coverage counts that line as covered. But it never takes the `|| 0` outcome, and only branch coverage reveals that path P4 is untested. The same goes for D1 and D2: a test with `[]` runs line 35, but only a `null` input makes the first condition true.
 
 ## 4. `scoreToGrade(score)`: V(G) = 3
 
@@ -115,7 +112,7 @@ flowchart TD
 | P2 | 1 → 2(F) → 1 → … → 2(T) → 3 | 50 | D | SG-P2 |
 | P3 | 1 → 2(F) ×5 → 1(F) → 4 | `NaN` | F | SG-P3 |
 
-**Finding:** line 64 is commented *"unreachable given the thresholds above"*. White-box analysis shows it **is** reachable: `NaN >= 0` is false, and so is any negative number. Baseline coverage confirmed line 64 was the only uncovered line in scoring.js. The comment is wrong, though the behaviour is safe.
+Line 64 carries the comment "unreachable given the thresholds above". Our analysis showed that it is in fact reachable: `NaN >= 0` is false, and so is the comparison for any negative number. The baseline coverage run confirmed that line 64 was the only uncovered line in scoring.js. The comment is wrong, although the behaviour (returning F) is safe.
 
 ## 5. `authMiddleware`: V(G) = 8
 
@@ -161,10 +158,7 @@ flowchart TD
 | P7 | … 8(T) → 10(F) → 12(T) → 13 | wrong signature | 401 invalid | AM-P7 | yes |
 | P8 | … 8(T) → 10(F) → 12(F) → 14 | **token with `nbf` in the future** | **401** | AM-P8 | **no → FAILS: 500** |
 
-**Finding, DEF-007:**
-- Path analysis asked: "which errors can `jwt.verify` throw, and does each reach a correct branch?"
-- jsonwebtoken throws three error types: `TokenExpiredError`, `JsonWebTokenError` and **`NotBeforeError`**. The third has `name === "NotBeforeError"`, so it matches neither check and falls through to **500 Server error**.
-- A black-box tester would be unlikely to try this input. It came directly from reading the decision at node 12.
+This analysis found DEF-007. Working through the paths made us ask which errors `jwt.verify` can throw, and whether each one reaches the right branch. The jsonwebtoken library throws three error types: `TokenExpiredError`, `JsonWebTokenError` and `NotBeforeError`. The third has `name === "NotBeforeError"`, so it matches neither check in the code and falls through to a 500 Server error. A black-box tester would be unlikely to think of a token that is "not valid yet"; the idea came directly from reading the decision at node 12.
 
 ## 6. `blockPrivateTargets(url)` (SSRF guard): V(G) = 9
 
@@ -203,7 +197,7 @@ flowchart TD
 | P + 1 | 8 decisions + 1 | **9** |
 | ESLint | | **9** |
 
-The guard is not exported, so it is tested **through the real validator chain** (`scanValidationRules`). DNS is replaced by a **test double** (a stub for `dns.promises.lookup`), which makes the rebinding and DNS-failure paths deterministic and network-free.
+The guard is not exported, so we tested it through the real validator chain (`scanValidationRules`). We replaced DNS with a test double, a stub for `dns.promises.lookup`, which made the rebinding and DNS-failure paths predictable and kept the tests off the network.
 
 | Path | Route | Input | Expected | Test id | Feasible? |
 |---|---|---|---|---|---|
@@ -217,9 +211,9 @@ The guard is not exported, so it is tested **through the real validator chain** 
 | P8 | … 11(F) → 12(F) → 17 | stub returns `93.184.216.34` | allowed | BP-P7 | ✔ (was uncovered) |
 | P9 | … 11(T) → 14(T) → 15 | a DNS error whose message contains "private or internal" | rethrow | – | **✘ Infeasible** (resolver errors never contain that text) |
 
-**Findings, OBS-05 (the SSRF guard has checks that can never fire):**
-1. **A test that passes for the wrong reason.** The existing test "production blocks `http://localhost:3000`" passes, but baseline coverage showed **lines 58–59 (the localhost branch) never ran**. `isURL()` rejects `localhost` (no TLD) *before* the guard, so the `"localhost"` entry in `BLOCKED_HOSTNAMES` is dead. Only `0.0.0.0` reaches it (BP-P4b documents this).
-2. **The IPv6 regexes can never match a literal.** `new URL("http://[::1]/").hostname` is `"[::1]"` *with brackets*, so `/^::1$/`, `/^fc00:/` and `/^fe80:/` never match. IPv6 literals are rejected only because DNS can't resolve `"[::1]"` (BP-X1). They're still blocked, but **by accident**. This needs a focused check in Phase 9 (OWASP A10, SSRF).
+The SSRF guard turned out to contain checks that can never fire, which we logged as OBS-05. The first problem was a test that passes for the wrong reason. The existing test "production blocks `http://localhost:3000`" passes, yet the baseline coverage showed that lines 58–59, the localhost branch, never ran. `isURL()` rejects `localhost` (it has no top-level domain) before the guard is even reached, so the `"localhost"` entry in `BLOCKED_HOSTNAMES` is dead code; only `0.0.0.0` reaches it, as test BP-P4b documents.
+
+The second problem was that the IPv6 patterns could never match. `new URL("http://[::1]/").hostname` returns `"[::1]"` with the square brackets, so `/^::1$/`, `/^fc00:/` and `/^fe80:/` never match anything. IPv6 literals were only being rejected because DNS cannot resolve `"[::1]"` (test BP-X1). They were still blocked, but by accident rather than by design, so we flagged this for a closer look in Phase 9 under OWASP A10 (SSRF).
 
 ## 7. Coverage: before and after
 
@@ -235,13 +229,17 @@ node --test --experimental-test-coverage --test-coverage-include="server/**" --t
 | validators/scanValidators.js | 72.09 → **91.47** | 40.00 → **95.00** | 46–47 (infeasible P2), 114–122 (`handleValidationErrors`, covered at API level) |
 | *All loaded files* | 56.19 → 58.05 | 85.71 → 97.83 | |
 
-Tests: 32 existing + 25 basis-path = **57, with 56 passing**. The 1 failure is AM-P8, which deliberately documents DEF-007 and will pass once the defect is fixed in Phase 5.
+In total we had 57 tests (the 32 existing ones plus our 25 basis-path tests), and 56 of them passed. The one failure was AM-P8, which we left failing on purpose to document DEF-007 until it was fixed in Phase 5.
 
-### How to read these numbers (coverage pitfalls)
-1. **Unloaded files are invisible.** `authController.js`, `authValidators.js`, `errorHandler.js`, `rateLimiter.js` and `models/user.js` are not required by any unit test, so V8 doesn't list them at all. Their real unit coverage is 0%, yet "all files 58%" hides that. Phase 5 fixes this with Jest `collectCoverageFrom`.
-2. **"100% branch" on a mostly unexecuted file is meaningless.** `sslCheck.js` shows 17% lines but 100% branches, because V8 only counts branches inside functions that ran. Read line, branch *and* function % together.
-3. **100% coverage ≠ correct.** Coverage proves code *ran*, not that it was *checked*. The localhost SSRF test executed code and passed, while the branch it was named after never ran.
-4. **100% is sometimes impossible.** Infeasible paths (P2, P9 above) and dead UI code (OBS-01, the ownership message in `Dashboard.jsx`) cap coverage below 100%. The right response is to delete or simplify the dead code, not to game the metric.
+### How to read these numbers
+
+Coverage figures are easy to misread, and this phase gave us four examples. First, files that no test loads are invisible. `authController.js`, `authValidators.js`, `errorHandler.js`, `rateLimiter.js` and `models/user.js` are not required by any unit test, so V8 does not list them at all. Their real unit coverage was 0%, but the headline "all files 58%" hid that. We fixed this in Phase 5 with Jest's `collectCoverageFrom`.
+
+Second, "100% branch coverage" means little for a file that hardly ran. `sslCheck.js` showed 17% line coverage but 100% branch coverage, because V8 only counts branches inside functions that actually executed. Line, branch and function percentages have to be read together.
+
+Third, full coverage does not mean the code is correct. Coverage shows that code ran, not that its result was checked. The localhost SSRF test ran code and passed, while the branch it was named after never executed at all.
+
+Fourth, 100% is sometimes impossible. Infeasible paths (P2 and P9 above) and dead UI code (OBS-01, the ownership message in `Dashboard.jsx`) keep coverage below 100%. The right response is to remove or simplify the dead code, not to game the number.
 
 ## 8. Recommendations
 

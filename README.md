@@ -236,8 +236,10 @@ Quality assurance for this project was carried out as an EC4206 Software Testing
 
 | Name | Registration No. | Role | Phases |
 |------|------------------|------|--------|
-| Thanthrige D.P. | EG/2023/5916 | Test lead, Automation engineer | 1–9, 12 |
-| Jayasekara J.M.O.S. | EG/2023/5658 | Defect manager | 10–11 |
+| Thanthrige D.P. | EG/2023/5916 | Test lead, Automation engineer | 1, 5, 8, 12 |
+| Wijerathna K.A.A.M. | EG/2023/5971 | Test designer | 2, 3, 4 |
+| Rathnaweera R.P.B.P. | EG/2023/5828 | Automation, performance and security tester | 6, 7, 9 |
+| Jayasekara J.M.O.S. | EG/2023/5658 | Defect manager, quality metrics | 10, 11 |
 
 ## License
 

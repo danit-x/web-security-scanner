@@ -1,0 +1,17 @@
+Lint + build client	Production build (vite)	2026-11-24T14:12:32.9776057Z ✓ 98 modules transformed.
+Lint + build client	Production build (vite)	2026-11-24T14:12:33.0602576Z ✓ built in 249ms
+Unit + API tests (Node 24)	Original unit tests + white-box basis paths (node:test, 57 tests)	2026-11-24T14:13:07.1821139Z ℹ tests 57
+Unit + API tests (Node 24)	Original unit tests + white-box basis paths (node:test, 57 tests)	2026-11-24T14:13:07.1822085Z ℹ pass 57
+Unit + API tests (Node 24)	Original unit tests + white-box basis paths (node:test, 57 tests)	2026-11-24T14:13:07.1822419Z ℹ fail 0
+Unit + API tests (Node 24)	Jest unit, API and security tests with coverage gate (259 tests)	2026-11-24T14:13:11.5917741Z All files          |   95.02 |     89.1 |      95 |   96.17 |                   
+Unit + API tests (Node 24)	Jest unit, API and security tests with coverage gate (259 tests)	2026-11-24T14:13:11.6007695Z Test Suites: 13 passed, 13 total
+Unit + API tests (Node 24)	Jest unit, API and security tests with coverage gate (259 tests)	2026-11-24T14:13:11.6008828Z Tests:       259 passed, 259 total
+UI tests (Selenium, headless Chrome)	Selenium + Mocha (11 tests)	2026-11-24T14:14:36.2727259Z   11 passing (38s)
+BDD (Cucumber)	Cucumber (44 scenarios)	2026-11-24T14:13:49.7908914Z 44 scenarios (44 passed)
+BDD (Cucumber)	Cucumber (44 scenarios)	2026-11-24T14:13:49.7909521Z 202 steps (202 passed)
+Static analysis (SonarCloud)	SonarCloud scan	2026-11-24T14:14:00.2696383Z 14:14:00.269 INFO  ANALYSIS SUCCESSFUL, you can find the results at: https://sonarcloud.io/dashboard?id=danit-x_web-security-scanner&branch=main
+Static analysis (SonarCloud)	SonarCloud scan	2026-11-24T14:14:04.0903346Z 14:14:04.089 INFO  EXECUTION SUCCESS
+API collection (Postman CLI)	Main collection (43 requests)	2026-11-24T14:13:56.5667037Z |                requests |                 48 |                  0 |
+API collection (Postman CLI)	Main collection (43 requests)	2026-11-24T14:13:56.5670913Z |              assertions |                288 |                  0 |
+API collection (Postman CLI)	Data-driven registration (12 CSV rows)	2026-11-24T14:13:59.1590319Z |                requests |                 12 |                  0 |
+API collection (Postman CLI)	Data-driven registration (12 CSV rows)	2026-11-24T14:13:59.1594653Z |              assertions |                 72 |                  0 |
