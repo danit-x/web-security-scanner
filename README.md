@@ -10,7 +10,7 @@
 A full-stack MERN application that scans a user-submitted website URL for common security misconfigurations and returns a graded report with plain-language explanations and fix recommendations.
 
 
-## Table of Contents 
+## Table of Contents in below
 
 - [Overview](#overview)
 - [Screenshots](#screenshots)
