@@ -2,29 +2,39 @@
 
 | File | What it contains |
 |---|---|
-| [sonar-metrics.md](sonar-metrics.md) | Full report: metrics, every issue triaged, coverage and duplication per file, complexity, Phase 4 comparison |
-| [sonarcloud-setup.md](sonarcloud-setup.md) | One-off SonarCloud setup (owner installs app, adds `SONAR_TOKEN` secret) |
-| [run-sonar-local.sh](run-sonar-local.sh) / [.ps1](run-sonar-local.ps1) | Local SonarQube (Docker) run, the fallback used for the numbers |
-| [fix-lcov-paths.js](fix-lcov-paths.js) | Makes Jest's lcov paths repo-relative (and fixes `User.js` → `user.js` case) |
-| [`../../sonar-project.properties`](../../sonar-project.properties) | Sources, tests, coverage and exclusions |
-| [`../evidence/sonar/`](../evidence/sonar/) | API JSON for 3 runs (Phase 4 baseline, core rules, extended rules), scanner logs, screenshots |
+| [sonar-metrics.md](sonar-metrics.md) | The full report: metrics, every issue triaged, coverage and duplication per file, complexity, and a comparison with Phase 4 |
+| [sonarcloud-setup.md](sonarcloud-setup.md) | One-off SonarCloud setup (the owner installs the app and adds the `SONAR_TOKEN` secret) |
+| [run-sonar-local.sh](run-sonar-local.sh) / [.ps1](run-sonar-local.ps1) | Local SonarQube run in Docker, used for the main figures |
+| [fix-lcov-paths.js](fix-lcov-paths.js) | Makes Jest's coverage paths relative to the repository root, and fixes the `User.js` / `user.js` case mismatch |
+| [`../../sonar-project.properties`](../../sonar-project.properties) | Analysis scope, coverage report and exclusions |
+| [`../evidence/sonar/`](../evidence/sonar/) | API exports for three local runs (Phase 4 baseline, core rules, extended rules), scanner logs, screenshots and the SonarCloud results |
 
-No application code was changed in this phase. CI gained a `sonar` job that skips cleanly until the secret exists.
+No application code changed in this phase. CI gained a `sonar` job that uploads an analysis to SonarCloud on every push.
 
-## Key numbers (Sonar way extended, commit `89787cd`)
+## Key numbers (local SonarQube, "Sonar way extended" rules, commit `89787cd`)
 
 | Bugs | Vulnerabilities | Hotspots | Code smells | Debt | Coverage | Duplication | Cyclomatic | Cognitive |
 |---|---|---|---|---|---|---|---|---|
-| 5 (all false positives) | **0** (A) | 0 | 4 (2 Critical) | 49 min (0.1 %, A) | **93.9 %** (line 96.1, branch 89.1) | **2.5 %** | 425 | 263 |
+| 5 (all false positives) | 0 (A) | 0 | 4 (2 Critical) | 49 min (0.1 %, A) | 93.9 % (line 96.1, branch 89.1) | 2.5 % | 425 | 263 |
 
-## Key points for the viva
+## Main findings
 
-1. **Static vs. dynamic.** Phases 2–9 ran the code. SonarQube reads it without running it, and measures *internal* quality (maintainability) that no functional test can see.
-2. **runScan, Phase 4 → Phase 11:** V(G) **31 → 32**, cognitive 26 → 28, coverage **23.9 % → 98.5 %**. Tests made it *well covered* but not *simpler*. The Phase 4 refactor was never done, and the DEF-009 fix added one more branch. Complexity is a design property, and tests don't reduce it. Logged as **OBS-09** (deferred).
-3. **Phase 4 code had a Critical ReDoS vulnerability** (S5852, nested quantifier `(\w+)*` in the User email regex). It is the same regex as DEF-008 and was removed by accident when DEF-008 was fixed. One early static scan would have flagged it on day one. Security rating went from **E to A**.
-4. **Triage before you report.** Reliability rating **C** comes from 5 "floating promise" bugs that are all false positives (each async function catches its own errors). Of 9 issues, 4 are real: 44 % precision.
-5. **The rule set decides the result.** The default *core* profile reports 1 smell and misses the `runScan` complexity issue. *Extended* reports 4. Always name the profile.
-6. **Coverage numbers differ by formula.** Jest says 95.0 % statements / 89.1 % branches. Sonar's 93.9 % combines lines and branches: (634 + 270) / (660 + 303).
-7. **Static analysis did not find** DEF-001, DEF-009 or DEF-010: they are data-flow and design problems across files. The Community Build has no taint analysis. Static and dynamic testing catch different defects, so we need both.
-8. **Quality gate "Passed"** means little on a first scan: the gate judges *new code*. It becomes useful on every PR once SonarCloud runs in CI.
-9. **SonarCloud in CI (added 2026-11-23).** The first scan silently analysed the whole repo, because SonarCloud ignores `sonar.sources`. Fixed with `sonar.exclusions`. Now: quality gate **Passed**, 0 bugs, 0 vulnerabilities, 93.9 % coverage. Its **taint analysis** flagged a NoSQL injection (Blocker) and 2 log injections on the original code. All are not exploitable: the "user input" is the ID inside a signed JWT, and URLs cannot contain CR/LF. See [sonar-metrics.md §7](sonar-metrics.md).
+Static analysis complements everything we did before. Phases 2 to 9 all ran the code; SonarQube reads it without running it, and measures internal qualities such as maintainability that no functional test can see.
+
+The clearest example is `runScan`. Between Phase 4 and Phase 11 its cyclomatic complexity went from 31 to 32 and its cognitive complexity from 26 to 28, while its line coverage rose from 23.9 % to 98.5 %. Our tests made the function well covered, but not any simpler. The refactor we recommended in Phase 4 was never done, and the DEF-009 fix added one more branch. Complexity is a property of the design, and tests alone do not reduce it, so we logged this as OBS-09 and deferred it as a recommendation.
+
+Re-scanning the Phase 4 code also found a Critical ReDoS vulnerability (rule S5852): a nested quantifier `(\w+)*` in the User model's email regex. It was the same regex involved in DEF-008, and it disappeared when we fixed that defect. A single static scan at the start of the project would have flagged it on day one. Between the two versions, the security rating went from E to A.
+
+We also learned to triage before reporting. The Reliability rating of C came entirely from five "floating promise" bugs, and all five are false positives, because each async function already catches its own errors. Of the nine issues SonarQube raised, four were real, a precision of 44 %.
+
+The rule set has a big influence on the result. The default core profile reported only one code smell and missed the `runScan` complexity problem, while the extended profile reported four. Any SonarQube result should therefore say which profile was used.
+
+Coverage figures also depend on the formula. Jest reports 95.0 % statement and 89.1 % branch coverage, while SonarQube's 93.9 % combines lines and branches: (634 + 270) / (660 + 303).
+
+Static analysis did not find DEF-001, DEF-009 or DEF-010. Those are data-flow and design problems spread across several files, and the Community Build has no taint analysis. Static and dynamic testing catch different kinds of defects, which is why we needed both.
+
+The quality gate result of "Passed" also needs some care. The gate only judges new code, so on a first scan it has very little to judge. It becomes useful once SonarCloud checks every pull request in CI.
+
+## SonarCloud in CI (added 23 November 2026)
+
+When we connected SonarCloud, its first scan quietly analysed the whole repository, because SonarCloud ignores `sonar.sources`. We fixed that with `sonar.exclusions`. On `main`, SonarCloud now reports a passing quality gate and 93.9 % coverage, the same coverage as our local run. It also lists 5 bugs and 3 vulnerabilities. The 5 bugs are the same floating-promise false positives as above. The 3 vulnerabilities come from SonarCloud's taint analysis, which the local Community Build does not have: one NoSQL injection (Blocker) and two log injections. We checked all three and none is exploitable. The "user input" in the NoSQL case is the user ID inside a JWT that the server has already verified with its own secret, and the logged URLs cannot contain line breaks. The full triage is in [sonar-metrics.md §7](sonar-metrics.md).

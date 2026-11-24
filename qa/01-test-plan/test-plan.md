@@ -108,9 +108,7 @@ Both are needed. Verification catches defects early and cheaply. Validation catc
 | Static | Verification | Review, metrics | SonarQube Community | P4, P11 |
 | Regression | Automated suite on every push | | GitHub Actions | P8 |
 
-**Risk-based priority:**
-- **High priority:** authentication, authorisation (data isolation between users), SSRF and scoring correctness. These are the areas where a defect means a security breach or a wrong security grade.
-- **Lower priority:** cosmetic UI.
+We prioritised by risk. Authentication, authorisation (keeping each user's data separate), SSRF and the correctness of the scoring got the most attention, because a defect in any of them means either a security breach or a wrong security grade for the user. Cosmetic UI issues had the lowest priority.
 
 ## 7. Risks and mitigations
 
@@ -137,20 +135,15 @@ Both are needed. Verification catches defects early and cheaply. Validation catc
 
 ## 9. Entry and exit criteria
 
-**Entry criteria:**
-- The code builds and the existing unit suite passes. Baseline: **32/32 pass**, recorded 2026-11-23.
-- The local MongoDB is running and the API reports `/api/health` = `ok`.
-- Test cases have been reviewed.
+Testing could start once three conditions were met: the code builds and the existing unit suite passes (our baseline was 32 of 32 tests passing on 23 November 2026), the local MongoDB is running and `/api/health` reports `ok`, and the test cases have been reviewed.
 
-**Exit criteria:**
-- 100% of High-priority test cases have been executed, and at least 90% of all test cases.
-- No open Critical or High defects. Any open Medium defect has a documented workaround or RCA.
-- Statement coverage of `server/` business logic (validators, middleware, utils, controllers) is at least 80%.
+We agreed four exit criteria in advance:
+- 100% of High-priority test cases, and at least 90% of all test cases, have been executed.
+- No Critical or High defect is still open, and any open Medium defect has a documented workaround or root cause analysis.
+- Statement coverage of the `server/` business logic (validators, middleware, utilities and controllers) is at least 80%.
 - The CI pipeline is green on the QA branch.
 
-**Suspension / resumption:**
-- Testing is suspended if the environment is unavailable (DB down) or a blocker defect stops more than 30% of the cases.
-- Testing resumes after the fix is verified.
+We would suspend testing if the environment became unavailable (for example, the database going down) or if a blocking defect stopped more than 30% of the cases, and resume once the fix had been verified.
 
 ## 10. Deliverables
 
@@ -171,15 +164,14 @@ Both are needed. Verification catches defects early and cheaply. Validation catc
 
 ## 11. Roles (group)
 
-| Role | Responsibility |
-|---|---|
-| Test lead | Plan, schedule, exit decision |
-| Test designer | Test cases, EP/BVA/decision table |
-| Automation engineer | Jest, Cucumber, Postman, Selenium, CI |
-| Performance/security tester | JMeter, OWASP checks |
-| Defect manager | Bug tracking, RCA, lifecycle |
+We split the work by QA role, so that each member owned a set of phases from start to finish, and we reviewed each other's work through pull requests.
 
-*(Add group member names here.)*
+| Member | Registration No. | Role | Responsibilities | Phases |
+|---|---|---|---|---|
+| Thanthrige D.P. | EG/2023/5916 | Test lead, automation engineer | Test plan, schedule and exit decision; Jest unit tests and TDD fixes; the CI pipeline; test summary report and reflection | 1, 5, 8, 12 |
+| Wijerathna K.A.A.M. | EG/2023/5971 | Test designer | STLC, test environment and test cases; black-box design (EP, BVA, decision tables); white-box analysis (control flow, cyclomatic complexity, coverage) | 2, 3, 4 |
+| Rathnaweera R.P.B.P. | EG/2023/5828 | Automation, performance and security tester | Cucumber BDD scenarios; Postman API and Selenium UI automation; JMeter load testing and OWASP security testing | 6, 7, 9 |
+| Jayasekara J.M.O.S. | EG/2023/5658 | Defect manager, quality metrics | Defect tracking, root cause analysis and lifecycle; defect metrics; SonarQube static analysis | 10, 11 |
 
 ## 12. Schedule
 

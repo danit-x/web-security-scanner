@@ -1,8 +1,8 @@
 # Phase 6: Behaviour-Driven Development (Cucumber)
 
-**Tool:** Cucumber.js 12.9 (`@cucumber/cucumber`) with supertest, running the real Express app in-process (`server/app.js`).
-**Environment:** local MongoDB `127.0.0.1:27099` only. The hooks refuse to start against any other host, and each run uses a throw-away database. The only scan target is the deliberately weak local fixture website from Phase 5.
-**Result:** 4 features, **44 scenarios, 202 steps, 44 passed** (≈10 s). Report: [../evidence/bdd/cucumber-report.html](../evidence/bdd/cucumber-report.html).
+For this phase we used Cucumber.js 12.9 together with supertest, which runs the real Express app (`server/app.js`) inside the test process. Everything ran against the local MongoDB on `127.0.0.1:27099`; the hooks refuse to start against any other host, and every run gets its own throw-away database. The only website we scanned was the deliberately weak local fixture site from Phase 5.
+
+The final suite has 4 features, 44 scenarios and 202 steps, and all 44 scenarios pass in about 10 seconds. The full report is in [../evidence/bdd/cucumber-report.html](../evidence/bdd/cucumber-report.html).
 
 ```powershell
 npm run test:bdd --prefix server                       # all scenarios
@@ -13,7 +13,7 @@ npm run test:bdd --prefix server -- --tags "@regression"
 
 ## 1. What BDD is
 
-BDD extends TDD. The expected behaviour is written first, as examples in plain business language (Gherkin). Business, developers and testers (the "three amigos") agree on those examples, and Cucumber then runs them as automated acceptance tests.
+BDD grows out of TDD. Instead of starting from code, the team first writes down the expected behaviour as concrete examples in plain language, using the Gherkin format. The business side, the developers and the testers (often called the "three amigos") agree on these examples, and Cucumber then runs them as automated acceptance tests.
 
 | | TDD (Phase 5) | BDD (Phase 6) |
 |---|---|---|
@@ -43,17 +43,13 @@ BDD extends TDD. The expected behaviour is written first, as examples in plain b
      "When I log in with email {string} …"    When("I log in with email {string} …", fn)
 ```
 
-- **Cucumber expressions** such as `{string}` and `{int}` extract the parameters. One regular expression drives the IDOR outline (`tries to (view|add a note|delete)`).
-- The **World** (`support/world.js`) is a new object for each scenario, so steps in one scenario share state (`this.response`, `this.users`), and nothing leaks into the next scenario.
-- **Hooks** (`support/hooks.js`):
-  - `BeforeAll` connects to the DB and starts the fixture site.
-  - `Before` empties every collection, so each scenario is independent.
-  - `Before/After @production` switch the production-only SSRF guard on and off.
-  - `After` attaches the last response to the report when a scenario fails.
-- Each scenario gets its own client IP (`X-Forwarded-For`; the app trusts one proxy hop), so the per-IP rate limiters do not leak between scenarios.
-- `strict: true` in `server/cucumber.js`: an undefined or pending step fails the run, so a typo in Gherkin cannot pass silently.
+Cucumber matches each Gherkin line to a step definition written in JavaScript. Placeholders such as `{string}` and `{int}` pull the values out of the sentence, and for the IDOR outline we used one regular expression (`tries to (view|add a note|delete)`) to cover all three actions.
 
-**Declarative vs. imperative steps.** The steps describe *what* the user does ("Alice adds the note … to alice-scan"), not *how* ("PATCH /api/history/:id with body …"). The HTTP details live in the step definitions, so a stakeholder can read the features. If an endpoint changes, only one step definition changes.
+Each scenario gets a fresh World object (`support/world.js`). Steps within a scenario share state through it, such as the last response and the users created, but nothing carries over into the next scenario. The hooks in `support/hooks.js` handle setup: `BeforeAll` connects to the database and starts the fixture site, `Before` empties every collection so each scenario starts clean, the `@production` hooks switch the production-only SSRF guard on and off, and `After` attaches the last response to the report whenever a scenario fails.
+
+Two smaller details made the suite reliable. Every scenario sends its own client IP in `X-Forwarded-For` (the app trusts one proxy hop), so the per-IP rate limiters never carry over from one scenario to the next. We also set `strict: true` in `server/cucumber.js`, which makes any undefined or pending step fail the run, so a typo in a feature file cannot slip through as a silent pass.
+
+We kept the steps declarative. They describe what the user does ("Alice adds the note … to alice-scan"), not how the request is made ("PATCH /api/history/:id with body …"). The HTTP details live in the step definitions, which keeps the feature files readable for non-developers and means that if an endpoint changes, only one step definition needs updating.
 
 ## 2. Files
 
@@ -100,14 +96,11 @@ BDD extends TDD. The expected behaviour is written first, as examples in plain b
 | Another user's scan is invisible (outline: view / note / delete) | TC-HIS-03, TC-NOTE-04, TC-DEL-02 | OWASP A01 (IDOR) |
 | A malformed scan ID is rejected | TC-HIS-04 | |
 
-**Not covered here, deliberately:**
-- UI cases (TC-UI-*) belong to Selenium in Phase 7.
-- The scan rate limit (TC-SCAN-08), unreachable host (TC-SCAN-06) and expired token (TC-AUTH-04) are already automated in Jest (Phase 5).
-- Load and abuse testing belongs to JMeter in Phase 9.
+Some cases are deliberately left out of the BDD suite. The UI cases (TC-UI-*) are covered by Selenium in Phase 7. The scan rate limit (TC-SCAN-08), the unreachable host (TC-SCAN-06) and the expired token (TC-AUTH-04) were already automated in Jest in Phase 5. Load and abuse testing belongs to JMeter in Phase 9.
 
 ## 4. Do the scenarios actually catch bugs? (mutation check)
 
-All 44 scenarios passed on the first run, because Phase 5 had already fixed the defects. A suite that has never failed proves nothing, so three realistic bugs were planted in the source one at a time, the suite was run, and the source was restored with `git checkout`:
+All 44 scenarios passed the first time we ran them, because Phase 5 had already fixed the defects. That sounds good, but a suite that has never failed does not prove much. To check that ours could actually catch problems, we planted three realistic bugs in the source code one at a time, ran the suite after each, and restored the code with `git checkout` afterwards:
 
 | Mutant (bug planted) | File | Result | Scenario that caught it |
 |---|---|---|---|
@@ -115,11 +108,11 @@ All 44 scenarios passed on the first run, because Phase 5 had already fixed the 
 | M2: login limit raised from 5 to 50 | middleware/rateLimiter.js | **killed**: 1 failed / 43 passed | Repeated failed logins are throttled |
 | M3: `169.254.x.x` (cloud metadata) removed from the SSRF blocklist | validators/scanValidators.js | **killed**: 1 failed / 43 passed | In production, internal targets are blocked |
 
-Mutation score: **3/3 (100 %)**. Each mutant was caught by exactly the scenario written for that behaviour and by nothing else. That shows the scenarios are specific: a failure points straight at the broken behaviour.
+All three mutants were killed, giving a mutation score of 3/3. Better still, each one was caught by exactly the scenario written for that behaviour and by nothing else, so when a scenario fails it points straight at what broke.
 
 ## 5. Defects
 
-No new defects were found. The regression scenarios tagged `@DEF-001`, `@DEF-002` and `@DEF-005`, plus the `[::1]` SSRF row (OBS-05), confirm that the Phase 5 fixes still hold at the acceptance level. Regression check: the Jest suite still passes 210/210 after this phase.
+This phase found no new defects. The regression scenarios tagged `@DEF-001`, `@DEF-002` and `@DEF-005`, together with the `[::1]` SSRF row for OBS-05, confirmed that the Phase 5 fixes still hold at the acceptance level. The Jest suite also still passed 210/210 at the end of this phase.
 
 ## 6. Evidence
 

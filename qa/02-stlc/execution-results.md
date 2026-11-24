@@ -17,30 +17,26 @@
 | UI (manual) | 10 | 10 | 10 (1 with observation) | 0 | 100% |
 | **Total** | **55** | **55** | **52** | **3** | **94.5%** |
 
-**Defects raised:** 4 (DEF-001 to DEF-004) plus 1 observation (OBS-01). See [`qa/10-defects/defect-log.md`](../10-defects/defect-log.md).
+The first cycle raised four defects (DEF-001 to DEF-004) and one observation (OBS-01). All of them are recorded in the [defect log](../10-defects/defect-log.md).
 
-**Exit-criteria check (test plan §9):**
+We then checked the exit criteria from section 9 of the test plan:
 
 | Criterion | Status |
 |---|---|
-| 100% of High-priority cases executed | ✅ Met |
-| No open High defect | ❌ Not met: DEF-001 (High) is open |
+| 100% of High-priority cases executed | Met |
+| No open High defect | Not met: DEF-001 (High) is still open |
 | Coverage of at least 80% | Not measured yet (Phase 5) |
 | CI green | Not set up yet (Phase 8) |
 
-→ Cycle 1 is **not closed**. The defects go into the fix → retest → regression loop (fixed with TDD in Phase 5, tracked in Phase 10).
+Because a High defect was still open, we could not close Cycle 1. The defects went into the normal fix, retest and regression loop. They were fixed test-first in Phase 5 and tracked through to closure in Phase 10.
 
-## 2. What happened during the run (STLC execution notes)
+## 2. What happened during the run
 
-1. **Run 1** (`qa/evidence/api-run-2026-11-23T09-52-49-298Z.json`): 32 pass, 13 fail.
-   - Analysis showed that 10 of the 13 failures had a single cause. The scan validator uses `isURL()`, which requires a top-level domain, so it rejects `http://localhost:5070`.
-   - Every case that depended on the first scan's id (history, note, delete) then failed in turn.
-   - This was logged as **DEF-004**. The scan target was changed to `http://127.0.0.1:5070` and the test case document was updated to match.
-   - Lesson: **one root cause can produce many failures**. Analyse before logging 13 bugs.
-2. **Run 2** (`qa/evidence/api-run-2026-11-23T09-53-14-102Z.json`): **42 pass, 3 fail**. The 3 failures are real defects.
-3. **UI run**: 10 of 10 pass.
-   - **TC-UI-05:** no scan is created, which meets the requirement. The expected message is never shown because the button is disabled while the box is unticked. Logged as **OBS-01**.
-   - **TC-UI-08:** used a `window.confirm` stub (a test double) so Cancel and OK could be driven separately. The real native dialog will be handled by Selenium in Phase 7.
+Our first automated run (`qa/evidence/api-run-2026-11-23T09-52-49-298Z.json`) looked bad at first sight: 32 cases passed and 13 failed. When we looked closer, 10 of the 13 failures came from a single cause. The scan validator uses `isURL()`, which requires a top-level domain, so it rejected our local test target `http://localhost:5070`. Every case that needed the ID of that first scan (history, notes and delete) then failed as well. We logged the root cause once, as DEF-004, switched the scan target to `http://127.0.0.1:5070` and updated the test case document. The lesson for us was that one root cause can produce many failures, so it pays to analyse a failed run before raising a pile of bug reports.
+
+The second run (`qa/evidence/api-run-2026-11-23T09-53-14-102Z.json`) gave 42 passes and 3 failures, and all three were genuine defects.
+
+All 10 UI cases passed, with two notes worth recording. In TC-UI-05 no scan was created, which is what the requirement asks for, but the expected warning message never appeared, because the button stays disabled while the ownership box is unticked. We logged this as OBS-01. In TC-UI-08 we replaced `window.confirm` with a stub (a simple test double) so we could drive the Cancel and OK paths separately. The real browser dialog was later handled by Selenium in Phase 7.
 
 ## 3. Failed cases
 
@@ -59,7 +55,7 @@
 | TC-UI-03 | PASS | "Invalid email or password" shown. Stayed on `/login`. | `TC-UI-03-invalid-email-or-password.jpg` |
 | TC-UI-04 | PASS | `/history` while logged out → `/login` | `TC-UI-04-guard-redirects-to-login.jpg` |
 | TC-UI-05 | PASS (OBS-01) | Button disabled. No `/api/scan` request. No explanatory message. | `TC-UI-05-scan-button-disabled-no-message.jpg` |
-| TC-UI-06 | PASS | `/report/:id` shows grade **B, 82/100**, with 0 Critical, 1 High, 0 Medium, 1 Low. Oracle check: 100 − 15 − 3 = 82, which falls in B (75–89). ✔ | `TC-UI-06-report-grade-B-82.jpg` |
+| TC-UI-06 | PASS | `/report/:id` shows grade **B, 82/100**, with 0 Critical, 1 High, 0 Medium, 1 Low. We checked the score by hand: 100 − 15 − 3 = 82, which falls in band B (75–89). | `TC-UI-06-report-grade-B-82.jpg` |
 | TC-UI-07 | PASS | Note "Add Permissions-Policy header first" still present after a full reload | `TC-UI-07-note-persists-after-reload.jpg` |
 | TC-UI-08 | PASS | Dialog text: "Delete the scan of http://127.0.0.1:5000/api/health? This cannot be undone." Cancel → row kept. OK → row removed and the empty state shown. | `TC-UI-08-history-empty-after-delete.jpg` |
 | TC-UI-09 | PASS | After Logout, `/dashboard` → `/login`. `localStorage.token` = null and `user` = null. | (DOM check, recorded here) |
